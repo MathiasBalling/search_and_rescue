@@ -1,0 +1,10 @@
+[project]
+name = "search-and-rescue"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "python-ev3dev>=1.2.0",
+    "python-ev3dev2>=2.1.0.post1",
+]
