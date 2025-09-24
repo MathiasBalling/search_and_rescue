@@ -38,5 +38,8 @@ class EV3Robot:
         assert self.touch_sensor.connected, "Touch sensor is not connected to port 3"
 
         # Set up sound
-        self.speaker = Sound()
+        # self.speaker = Sound()
         # self.speaker.speak("death and destruction to all perkere")
+
+    def get_color_sensor_readings(self):
+        return (self.left_color_sensor.value(), self.right_color_sensor.value())
