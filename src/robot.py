@@ -24,8 +24,9 @@ class EV3Robot:
         # Set up sensors
         self.right_color_sensor = ev3.ColorSensor(ev3.INPUT_1)
         self.left_color_sensor = ev3.ColorSensor(ev3.INPUT_2)
-        self.left_color_sensor.mode = "COL-COLOR"
-        self.right_color_sensor.mode = "COL-COLOR"
+        self.left_color_sensor.mode = ev3.ColorSensor.MODE_COL_REFLECT
+        self.right_color_sensor.mode = ev3.ColorSensor.MODE_COL_REFLECT
+
         assert self.right_color_sensor.connected, (
             "Right color sensor 1 is not connected to port 1"
         )
@@ -38,8 +39,8 @@ class EV3Robot:
         assert self.touch_sensor.connected, "Touch sensor is not connected to port 3"
 
         # Set up sound
-        # self.speaker = Sound()
-        # self.speaker.speak("death and destruction to all perkere")
+        self.speaker = Sound()
+        self.speaker.speak("death and destruction to all perkere")
 
     def get_color_sensor_readings(self):
         return (self.left_color_sensor.value(), self.right_color_sensor.value())
