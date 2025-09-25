@@ -18,12 +18,13 @@ class EV3Robot:
         self.right_motor = ev3.LargeMotor(ev3.OUTPUT_B)
         self.left_motor.run_direct()
         self.right_motor.run_direct()
+
         assert self.left_motor.connected, "Left motor is not connected to port A"
         assert self.right_motor.connected, "Right motor is not connected to port B"
 
         # Set up sensors
-        self.right_color_sensor = ev3.ColorSensor(ev3.INPUT_1)
-        self.left_color_sensor = ev3.ColorSensor(ev3.INPUT_2)
+        self.left_color_sensor = ev3.ColorSensor(ev3.INPUT_1)
+        self.right_color_sensor = ev3.ColorSensor(ev3.INPUT_2)
         self.left_color_sensor.mode = ev3.ColorSensor.MODE_COL_REFLECT
         self.right_color_sensor.mode = ev3.ColorSensor.MODE_COL_REFLECT
 
