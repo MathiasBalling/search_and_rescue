@@ -8,7 +8,7 @@ class PIDController:
         ki: float,
         kd: float,
         setpoint=0.0,
-        output_limits: Tuple[float | None, float | None] = (None, None),
+        output_limits = (None, None)
     ):
         self.kp = kp
         self.ki = ki

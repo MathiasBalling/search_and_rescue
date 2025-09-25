@@ -36,8 +36,8 @@ class EV3Robot:
         )
 
         # Set up touch sensor
-        self.touch_sensor = ev3.TouchSensor(ev3.INPUT_3)
-        assert self.touch_sensor.connected, "Touch sensor is not connected to port 3"
+        # self.touch_sensor = ev3.TouchSensor(ev3.INPUT_3)
+        # assert self.touch_sensor.connected, "Touch sensor is not connected to port 3"
 
         # Set up sound
         self.speaker = Sound()

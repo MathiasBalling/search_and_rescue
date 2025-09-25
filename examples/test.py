@@ -20,14 +20,14 @@ BASE_SPEED_FORWARD = 100
 BASE_SPEED_BACKWARD = -60
 TURN_SPEED = 80
 
-TouchSensor = ev3.TouchSensor(ev3.INPUT_3)
+# TouchSensor = ev3.TouchSensor(ev3.INPUT_3)
 color_sensor1 = ev3.ColorSensor(ev3.INPUT_1)
 color_sensor2 = ev3.ColorSensor(ev3.INPUT_2)
 
 color_sensor1.mode = "COL-COLOR"
 color_sensor2.mode = "COL-COLOR"
 
-assert TouchSensor.connected, "Touch sensor is not connected to port 3"
+# assert TouchSensor.connected, "Touch sensor is not connected to port 3"
 assert color_sensor1.connected, "Color sensor 1 is not connected to port 1"
 assert color_sensor2.connected, "Color sensor 2 is not connected to port 2"
 
