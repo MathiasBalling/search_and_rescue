@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from enum import Enum
+from typing import List
 
 
 class BTStatus(Enum):
@@ -35,10 +36,10 @@ class Sequence(BTNode):
     Returns SUCCESS only if all children return SUCCESS.
     """
 
-    def __init__(self, children: list[BTNode]):
+    def __init__(self, children: List[BTNode]):
         """
         Args:
-            children (list[Node]): The child nodes to execute in sequence.
+            children (List[Node]): The child nodes to execute in sequence.
         """
         self.children = children
 
@@ -66,10 +67,10 @@ class Selector(BTNode):
     Returns FAILURE only if all children return FAILURE.
     """
 
-    def __init__(self, children: list[BTNode]):
+    def __init__(self, children: List[BTNode]):
         """
         Args:
-            children (list[Node]): The child nodes to execute in selection.
+            children (List[Node]): The child nodes to execute in selection.
         """
         self.children = children
 
@@ -124,7 +125,7 @@ class Parallel(BTNode):
 
     def __init__(
         self,
-        children: list[BTNode],
+        children: List[BTNode],
         success_threshold: int,
         failure_threshold: int,
     ):

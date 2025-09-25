@@ -1,11 +1,14 @@
+from typing import Tuple
+
+
 class PIDController:
     def __init__(
         self,
         kp: float,
         ki: float,
         kd: float,
-        setpoint: float = 0.0,
-        output_limits: tuple[float | None, float | None] = (None, None),
+        setpoint=0.0,
+        output_limits: Tuple[float | None, float | None] = (None, None),
     ):
         self.kp = kp
         self.ki = ki
@@ -13,9 +16,9 @@ class PIDController:
         self.setpoint = setpoint
         self.output_limits = output_limits
 
-        self._last_error: float = 0.0
-        self._integral: float = 0.0
-        self._last_time: float | None = None
+        self._last_error = 0.0
+        self._integral = 0.0
+        self._last_time = None
 
     def reset(self):
         self._last_error = 0.0
