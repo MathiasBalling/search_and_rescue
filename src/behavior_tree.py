@@ -175,5 +175,5 @@ class DebugNode(BTNode):
         Ticks the child node, prints its result, and returns the result.
         """
         result = self.child.tick()
-        print(f"{self.name}: {result}")
+        print(self.name + ":" + str(result))
         return result
