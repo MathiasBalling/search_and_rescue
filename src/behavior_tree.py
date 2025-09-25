@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import override
 
-from enum import Enum, auto
+from enum import Enum
 
 
 class BTStatus(Enum):
@@ -9,9 +8,9 @@ class BTStatus(Enum):
     Enumeration representing the possible statuses of a behavior tree node.
     """
 
-    RUNNING = auto()
-    SUCCESS = auto()
-    FAILURE = auto()
+    RUNNING = 1
+    SUCCESS = 2
+    FAILURE = 3
 
 
 class BTNode(ABC):
@@ -43,7 +42,6 @@ class Sequence(BTNode):
         """
         self.children = children
 
-    @override
     def tick(self) -> BTStatus:
         """
         Ticks each child node in sequence.
@@ -75,7 +73,6 @@ class Selector(BTNode):
         """
         self.children = children
 
-    @override
     def tick(self):
         """
         Ticks each child node in order.
@@ -105,7 +102,6 @@ class Inverter(BTNode):
     def __init__(self, child: BTNode):
         self.child = child
 
-    @override
     def tick(self) -> BTStatus:
         """
         Ticks the child node and inverts its result.
@@ -138,7 +134,6 @@ class Parallel(BTNode):
         )  # default: all must succeed
         self.failure_threshold = failure_threshold or 1  # default: fail if any fails
 
-    @override
     def tick(self) -> BTStatus:
         """
         Ticks all children and counts successes and failures.
@@ -169,7 +164,6 @@ class DebugNode(BTNode):
         self.child = child
         self.name = name
 
-    @override
     def tick(self) -> BTStatus:
         """
         Ticks the child node, prints its result, and returns the result.

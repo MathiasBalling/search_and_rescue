@@ -1,4 +1,3 @@
-from typing import override
 from behavior_tree import BTStatus, BTNode
 from robot import EV3Robot
 
@@ -8,7 +7,6 @@ class CanPickup(BTNode):
         self.robot = robot
         self.object_picked_up = False
 
-    @override
     def tick(self) -> BTStatus:
         if not self.object_picked_up:
             # TODO: Make gripping behavior

@@ -1,5 +1,4 @@
 import time
-from typing import override
 from behavior_tree import BTStatus, BTNode
 from robot import EV3Robot
 from pid_controller import PIDController
@@ -15,7 +14,6 @@ class LineFollowing(BTNode):
         )
         self._last_time_line_seen = time.time()
 
-    @override
     def tick(self) -> BTStatus:
         left_color, right_color = self.robot.get_color_sensor_readings()
         current_time = time.time()
