@@ -3,7 +3,7 @@ from behavior_tree import BTStatus, BTNode
 from robot import EV3Robot
 from pid_controller import PIDController
 
-BASE_SPEED = 70
+from params import RETURN_TO_LINE_BASE_SPEED
 
 
 class ReturnToLine(BTNode):

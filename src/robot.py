@@ -9,6 +9,8 @@ class EV3Robot:
         "left_color_sensor",
         "right_color_sensor",
         "touch_sensor",
+        "gripper_motor",
+        "ultrasound_sensor",
         "speaker",
     )
 
@@ -32,7 +34,7 @@ class EV3Robot:
         self.left_color_sensor.mode = ev3.ColorSensor.MODE_COL_REFLECT
         self.right_color_sensor.mode = ev3.ColorSensor.MODE_COL_REFLECT
         self.ultrasound_sensor = ev3.UltrasonicSensor(ev3.INPUT_4)
-        self.ultrasound_sensor.mode = 'US-DIST-CM'
+        self.ultrasound_sensor.mode = "US-DIST-CM"
 
         assert self.right_color_sensor.connected, (
             "Right color sensor 1 is not connected to port 1"
@@ -41,7 +43,9 @@ class EV3Robot:
             "Left color sensor 2 is not connected to port 2"
         )
         assert self.touch_sensor.connected, "Touch sensor is not connected to port 3"
-        assert self.ultrasound_sensor.connected, "Ultrasound sensor is not connected to port 4"
+        assert self.ultrasound_sensor.connected, (
+            "Ultrasound sensor is not connected to port 4"
+        )
 
         # Set up sound
         self.speaker = Sound()

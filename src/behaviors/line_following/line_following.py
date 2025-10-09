@@ -3,14 +3,23 @@ from behavior_tree import BTStatus, BTNode
 from robot import EV3Robot
 from pid_controller import PIDController
 
-BASE_SPEED = 70
+from params import (
+    LINE_FOLLOWING_BASE_SPEED,
+    LINE_FOLLOWING_COLOR_THRESHOLD,
+    LINE_FOLLOWING_PID_KD,
+    LINE_FOLLOWING_PID_KI,
+)
 
 
 class LineFollowing(BTNode):
     def __init__(self, robot: EV3Robot):
         self.robot = robot
         self.pid = PIDController(
-            kp=1, ki=0.2, kd=0.1, setpoint=0, output_limits=(-100, 100)
+            kp=LINE_FOLLOWING_PID_KD,
+            ki=LINE_FOLLOWING_PID_KI,
+            kd=LINE_FOLLOWING_PID_KD,
+            setpoint=0,
+            output_limits=(-100, 100),
         )
         self.pid_turn = PIDController(
             kp=4, ki=0.0, kd=1.5, setpoint=0, output_limits=(-100, 100)
@@ -27,14 +36,17 @@ class LineFollowing(BTNode):
             right_color,
         )
 
-        if left_color > 20 and right_color > 20:
+        if (
+            left_color > LINE_FOLLOWING_COLOR_THRESHOLD
+            and right_color > LINE_FOLLOWING_COLOR_THRESHOLD
+        ):
             self.robot.left_motor.duty_cycle_sp = 0
             self.robot.right_motor.duty_cycle_sp = 0
 
             control = self.pid.compute(left_color - right_color, current_time)
 
-            left_control = BASE_SPEED - control
-            right_control = BASE_SPEED + control
+            left_control = LINE_FOLLOWING_BASE_SPEED - control
+            right_control = LINE_FOLLOWING_BASE_SPEED + control
 
             left_control = min(max(0, left_control), 100)
             right_control = min(max(0, right_control), 100)
