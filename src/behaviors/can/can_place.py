@@ -5,7 +5,8 @@ from robot import EV3Robot
 class CanPlace(BTNode):
     def __init__(self, robot: EV3Robot):
         self.robot = robot
+        self.gripper = robot.gripper_motor
 
     def tick(self) -> BTStatus:
-        self.robot.gripper_motor.duty_cycle_sp = -50  # either 50 or -50 depending on motor orientation
+        self.gripper.duty_cycle_sp = -50
         return BTStatus.SUCCESS

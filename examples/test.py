@@ -11,6 +11,8 @@ mA = ev3.LargeMotor(ev3.OUTPUT_A)
 mB = ev3.LargeMotor(ev3.OUTPUT_B)
 TouchSensor = ev3.TouchSensor(ev3.INPUT_3)
 gm = ev3.MediumMotor(ev3.OUTPUT_C)
+us = ev3.UltrasonicSensor(ev3.INPUT_4)
+us.mode = 'US-DIST-CM'
 
 assert mA.connected, "Motor A is not connected to port A"
 assert mB.connected, "Motor B is not connected to port B"
@@ -31,22 +33,29 @@ mB.run_direct()
 gm.run_direct()
 
 while True:
-    mA.duty_cycle_sp = BASE_SPEED_FORWARD
-    mB.duty_cycle_sp = BASE_SPEED_FORWARD
+    # mA.duty_cycle_sp = BASE_SPEED_FORWARD
+    # mB.duty_cycle_sp = BASE_SPEED_FORWARD
     tou_val = TouchSensor.value()
+    distance = us.value() / 10
+    if distance < 20:
+        print("Can detected at distance:", distance, "cm")
+    else:
+        print("Can detected at distance: 0 cm")
     if tou_val == 1:
         mA.duty_cycle_sp = 0
         mB.duty_cycle_sp = 0
         gm.duty_cycle_sp = 50
+        sleep(3)
+        gm.duty_cycle_sp = -50
         sleep(5)
         gm.duty_cycle_sp = 0
         sleep(1)
-        gm.duty_cycle_sp = -50
+        gm.duty_cycle_sp = 50
         sleep(1)
         gm.duty_cycle_sp = 0
         sleep(1)
-        mA.duty_cycle_sp = BASE_SPEED_BACKWARD
-        mB.duty_cycle_sp = BASE_SPEED_BACKWARD
+        # mA.duty_cycle_sp = BASE_SPEED_BACKWARD
+        # mB.duty_cycle_sp = BASE_SPEED_BACKWARD
         sleep(1)
         mA.duty_cycle_sp = 0
         mB.duty_cycle_sp = 0
