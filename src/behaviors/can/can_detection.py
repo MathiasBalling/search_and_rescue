@@ -12,10 +12,10 @@ class CanDetection(BTNode):
 
     def detecting_can(self) -> bool:
         distance = self.ultrasound.value() / 10
-        self.right_motor.duty_cycle_sp = 10
-        self.left_motor.duty_cycle_sp = -10
+        self.right_motor.duty_cycle_sp = 20
+        self.left_motor.duty_cycle_sp = -20
         print("Distance to can:", distance, "cm")
-        if distance < 10:
+        if distance < 20:
             self.right_motor.duty_cycle_sp = 0
             self.left_motor.duty_cycle_sp = 0
             self.can_found = True

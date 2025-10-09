@@ -17,9 +17,9 @@ class CanPickup(BTNode):
             self.gripper.duty_cycle_sp = 0
             distance = self.ultrasonic.value() / 10
             print("Distance to can:", distance, "cm")
-            self.right_motor.duty_cycle_sp = 10
-            self.left_motor.duty_cycle_sp = 10
-            if distance < 3:
+            self.right_motor.duty_cycle_sp = -40
+            self.left_motor.duty_cycle_sp = -40
+            if distance < 5:
                 self.right_motor.duty_cycle_sp = 0
                 self.left_motor.duty_cycle_sp = 0
                 sleep(1)

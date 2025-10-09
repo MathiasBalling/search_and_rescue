@@ -9,56 +9,56 @@ import signal
 
 mA = ev3.LargeMotor(ev3.OUTPUT_A)
 mB = ev3.LargeMotor(ev3.OUTPUT_B)
-TouchSensor = ev3.TouchSensor(ev3.INPUT_3)
-gm = ev3.MediumMotor(ev3.OUTPUT_C)
+# gm = ev3.MediumMotor(ev3.OUTPUT_C)
 us = ev3.UltrasonicSensor(ev3.INPUT_4)
 us.mode = 'US-DIST-CM'
 
 assert mA.connected, "Motor A is not connected to port A"
 assert mB.connected, "Motor B is not connected to port B"
-assert TouchSensor.connected, "Touch sensor is not connected to port 3"
-assert gm.connected, "Gripper motor is not connected to port C"
+# assert gm.connected, "Gripper motor is not connected to port C"
 
 THRESHOLD_LEFT = 30
 THRESHOLD_RIGHT = 350
 
-BASE_SPEED_FORWARD = 100
-BASE_SPEED_BACKWARD = -60
+BASE_SPEED_FORWARD = -100
+SLOWER_SPEED_FORWARD = -50
+BASE_SPEED_BACKWARD = 60
 TURN_SPEED = 80
 
-TouchSensor = ev3.TouchSensor(ev3.INPUT_3)
 
 mA.run_direct()
 mB.run_direct()
-gm.run_direct()
+# gm.run_direct()
 
 while True:
     # mA.duty_cycle_sp = BASE_SPEED_FORWARD
     # mB.duty_cycle_sp = BASE_SPEED_FORWARD
-    tou_val = TouchSensor.value()
     distance = us.value() / 10
+    print("Can detected at distance:", distance, "cm")
     if distance < 20:
-        print("Can detected at distance:", distance, "cm")
+        mA.duty_cycle_sp = SLOWER_SPEED_FORWARD
+        mB.duty_cycle_sp = SLOWER_SPEED_FORWARD
+        if distance < 5:
+            mA.duty_cycle_sp = 0
+            mB.duty_cycle_sp = 0
+            # gm.duty_cycle_sp = 50
+            # sleep(3)
+            # gm.duty_cycle_sp = -50
+            # sleep(5)
+            # gm.duty_cycle_sp = 0
+            # sleep(1)
+            # gm.duty_cycle_sp = 50
+            # sleep(1)
+            # gm.duty_cycle_sp = 0
+            # sleep(1)
+            # mA.duty_cycle_sp = BASE_SPEED_BACKWARD
+            # mB.duty_cycle_sp = BASE_SPEED_BACKWARD
+            sleep(1)
+            print("done")
+            break
     else:
-        print("Can detected at distance: 0 cm")
-    if tou_val == 1:
-        mA.duty_cycle_sp = 0
-        mB.duty_cycle_sp = 0
-        gm.duty_cycle_sp = 50
-        sleep(3)
-        gm.duty_cycle_sp = -50
-        sleep(5)
-        gm.duty_cycle_sp = 0
-        sleep(1)
-        gm.duty_cycle_sp = 50
-        sleep(1)
-        gm.duty_cycle_sp = 0
-        sleep(1)
-        # mA.duty_cycle_sp = BASE_SPEED_BACKWARD
-        # mB.duty_cycle_sp = BASE_SPEED_BACKWARD
-        sleep(1)
-        mA.duty_cycle_sp = 0
-        mB.duty_cycle_sp = 0
-        break
+        mA.duty_cycle_sp = 20
+        mB.duty_cycle_sp = -20
+  
 
 exit()
