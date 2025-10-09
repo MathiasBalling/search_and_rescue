@@ -38,6 +38,7 @@ class Sequence(BTNode):
 
     def __init__(self, children: List[BTNode]):
         """
+        Composite node that ticks its children in order until one fails or is running.
         Args:
             children (List[Node]): The child nodes to execute in sequence.
         """
@@ -69,6 +70,7 @@ class Selector(BTNode):
 
     def __init__(self, children: List[BTNode]):
         """
+        Composite node that ticks its children in order until one succeeds or is running.
         Args:
             children (List[Node]): The child nodes to execute in selection.
         """

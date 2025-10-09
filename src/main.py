@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from behaviors.line_following.return_to_line import ReturnToLine
 from robot import EV3Robot
 from behavior_tree import Selector, Sequence
 from behaviors.line_following.line_following import LineFollowing
@@ -12,27 +13,29 @@ def main():
     robot = EV3Robot()
 
     # Leaf Behaviors
-    # object_detection = CanDetection(robot)
-    # object_pickup = CanPickup(robot)
-    # object_place = CanPlace(robot)
-    # line_following = LineFollowing(robot)
+    object_detection = CanDetection(robot)
+    object_pickup = CanPickup(robot)
+    object_place = CanPlace(robot)
+    line_following = LineFollowing(robot)
+    return_to_line = ReturnToLine(robot)
 
     # Sub branches:
     # Follow the line until we find the object and then pick it up
     # TODO: Make these in "behaviors/"
-    # object_find = Selector(
-    #     [Sequence([object_detection, object_pickup]), line_following]
-    # )
+    object_find = Selector(
+        [line_following, Sequence([object_detection, object_pickup])]
+    )
     # Follow the line until we are back at the start and then place the object
-    # object_deliver = Selector([line_following, object_place])
+    object_deliver = Sequence(
+        [return_to_line, Selector([line_following, object_place])]
+    )
 
     # Top branch:
     # 1. Find the can
     # 2. Deliver the can
-    # root = Selector([object_find, object_deliver])
+    root = Selector([object_find, object_deliver])
 
-    root = LineFollowing(robot)
-    
+    # root = LineFollowing(robot)
 
     while True:
         root.tick()
