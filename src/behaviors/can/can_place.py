@@ -7,5 +7,5 @@ class CanPlace(BTNode):
         self.robot = robot
 
     def tick(self) -> BTStatus:
-        # TODO: Make placing object behavior
+        self.robot.gripper_motor.duty_cycle_sp = -50  # either 50 or -50 depending on motor orientation
         return BTStatus.SUCCESS

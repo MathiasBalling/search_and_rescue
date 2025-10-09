@@ -32,6 +32,7 @@ def main():
     # root = Selector([object_find, object_deliver])
 
     root = LineFollowing(robot)
+    
 
     while True:
         root.tick()
