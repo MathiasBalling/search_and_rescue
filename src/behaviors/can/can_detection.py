@@ -1,12 +1,13 @@
-from behavior_tree import BTStatus, BTNode
+from behavior_tree import BTStatus, BTNode, BlackBoard
 from robot import EV3Robot
 
 from params import CAN_DETECTION_BASE_SPEED, CAN_DETECTION_DISTANCE_THRESHOLD, MOTOR_OFF
 
 
 class CanDetection(BTNode):
-    def __init__(self, robot: EV3Robot):
+    def __init__(self, robot: EV3Robot, blackboard: BlackBoard):
         self.robot = robot
+        self.blackboard = blackboard
         self.can_found = False
 
     def detecting_can(self) -> bool:

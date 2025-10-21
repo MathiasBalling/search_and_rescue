@@ -1,11 +1,12 @@
-from behavior_tree import BTStatus, BTNode
+from behavior_tree import BTStatus, BTNode, BlackBoard
 from time import sleep
 from robot import EV3Robot
 
 
 class CanPickup(BTNode):
-    def __init__(self, robot: EV3Robot):
+    def __init__(self, robot: EV3Robot, blackboard: BlackBoard):
         self.robot = robot
+        self.blackboard = blackboard
         self.object_picked_up = False
 
     def tick(self) -> BTStatus:

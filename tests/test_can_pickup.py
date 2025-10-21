@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 
+from behavior_tree import BlackBoard
 from behaviors.can.can_pickup import CanPickup
 from robot import EV3Robot
 
 
 def main():
     robot = EV3Robot()
+    blackboard = BlackBoard()
 
-    root = CanPickup(robot)
+    root = CanPickup(robot, blackboard)
 
     while True:
         root.tick()

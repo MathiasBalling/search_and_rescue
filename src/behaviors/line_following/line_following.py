@@ -1,5 +1,5 @@
 import time
-from behavior_tree import BTStatus, BTNode
+from behavior_tree import BTStatus, BTNode, BlackBoard
 from robot import EV3Robot
 from pid_controller import PIDController
 
@@ -12,8 +12,9 @@ from params import (
 
 
 class LineFollowing(BTNode):
-    def __init__(self, robot: EV3Robot):
+    def __init__(self, robot: EV3Robot, blackboard: BlackBoard):
         self.robot = robot
+        self.blackboard = blackboard
         self.ultra_sound_sensor = robot.ultrasound_sensor
         self.pid = PIDController(
             kp=LINE_FOLLOWING_PID_KD,

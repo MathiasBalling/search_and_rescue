@@ -2,7 +2,7 @@
 
 from behaviors.line_following.return_to_line import ReturnToLine
 from robot import EV3Robot
-from behavior_tree import Selector, Sequence
+from behavior_tree import BlackBoard, Selector, Sequence
 from behaviors.line_following.line_following import LineFollowing
 from behaviors.can.can_detection import CanDetection
 from behaviors.can.can_pickup import CanPickup
@@ -11,13 +11,14 @@ from behaviors.can.can_place import CanPlace
 
 def main():
     robot = EV3Robot()
+    blackboard = BlackBoard()
 
     # Leaf Behaviors
-    object_detection = CanDetection(robot)
-    object_pickup = CanPickup(robot)
-    object_place = CanPlace(robot)
-    line_following = LineFollowing(robot)
-    return_to_line = ReturnToLine(robot)
+    object_detection = CanDetection(robot, blackboard)
+    object_pickup = CanPickup(robot, blackboard)
+    object_place = CanPlace(robot, blackboard)
+    line_following = LineFollowing(robot, blackboard)
+    return_to_line = ReturnToLine(robot, blackboard)
 
     # Sub branches:
     # Follow the line until we find the object and then pick it up
