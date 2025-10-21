@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
+from behaviors.can.can_detection import CanDetection
 from robot import EV3Robot
-from behaviors.line_following.line_following import LineFollowing
 
 
 def main():
     robot = EV3Robot()
 
-    root = LineFollowing(robot)
+    root = CanDetection(robot)
 
     while True:
         root.tick()

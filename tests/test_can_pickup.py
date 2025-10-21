@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
+from behaviors.can.can_pickup import CanPickup
 from robot import EV3Robot
-from behaviors.line_following.line_following import LineFollowing
 
 
 def main():
     robot = EV3Robot()
 
-    root = LineFollowing(robot)
+    root = CanPickup(robot)
 
     while True:
         root.tick()

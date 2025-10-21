@@ -13,7 +13,7 @@ mB = ev3.LargeMotor(ev3.OUTPUT_B)
 us = ev3.UltrasonicSensor(ev3.INPUT_2)
 cl_sensor_right = ev3.ColorSensor(ev3.INPUT_4)
 cl_sensor_left = ev3.ColorSensor(ev3.INPUT_3)
-us.mode = 'US-DIST-CM'
+us.mode = "US-DIST-CM"
 
 assert mA.connected, "Motor A is not connected to port A"
 assert mB.connected, "Motor B is not connected to port B"
@@ -42,20 +42,28 @@ while True:
     # mA.duty_cycle_sp = BASE_SPEED_FORWARD
     # mB.duty_cycle_sp = BASE_SPEED_FORWARD
     distance = us.value() / 10
-    print("Can detected at distance:", distance, "cm", "Left color sensor:", cl_sensor_left.value(), "Right color sensor:", cl_sensor_right.value())
+    print(
+        "Can detected at distance:",
+        distance,
+        "cm",
+        "Left color sensor:",
+        cl_sensor_left.value(),
+        "Right color sensor:",
+        cl_sensor_right.value(),
+    )
     # if distance < 20:
-        # mA.duty_cycle_sp = SLOWER_SPEED_FORWARD
-        # mB.duty_cycle_sp = SLOWER_SPEED_FORWARD
-        # if distance < 5:
-        #     mA.duty_cycle_sp = 0
-        #     mB.duty_cycle_sp = 0
+    # mA.duty_cycle_sp = SLOWER_SPEED_FORWARD
+    # mB.duty_cycle_sp = SLOWER_SPEED_FORWARD
+    # if distance < 5:
+    #     mA.duty_cycle_sp = 0
+    #     mB.duty_cycle_sp = 0
 
-        #     sleep(1)
-        #     print("done")
-        #     break
+    #     sleep(1)
+    #     print("done")
+    #     break
     # else:
     #     mA.duty_cycle_sp = 20
     #     mB.duty_cycle_sp = -20
-  
+
 
 exit()

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
+from behaviors.line_following.return_to_line import ReturnToLine
 from robot import EV3Robot
-from behaviors.line_following.line_following import LineFollowing
 
 
 def main():
     robot = EV3Robot()
 
-    root = LineFollowing(robot)
+    root = ReturnToLine(robot)
 
     while True:
         root.tick()
