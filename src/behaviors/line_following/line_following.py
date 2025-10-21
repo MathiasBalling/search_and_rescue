@@ -54,8 +54,8 @@ class LineFollowing(BTNode):
             left_control = min(max(0, left_control), 100)
             right_control = min(max(0, right_control), 100)
 
-            self.robot.left_motor.duty_cycle_sp = -left_control
-            self.robot.right_motor.duty_cycle_sp = -right_control
+            self.robot.left_motor.duty_cycle_sp = left_control
+            self.robot.right_motor.duty_cycle_sp = right_control
         else:
             # If we lose the line, turn in place to try and find it
             turn_control = self.pid_turn.compute(left_color - right_color, current_time)

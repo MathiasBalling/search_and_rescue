@@ -16,7 +16,7 @@ class EV3Robot:
     def __init__(self):
         # Set up motors
         self.left_motor = ev3.LargeMotor(ev3.OUTPUT_A)
-        self.right_motor = ev3.LargeMotor(ev3.OUTPUT_B)
+        self.right_motor = ev3.LargeMotor(ev3.OUTPUT_D)
         self.gripper_motor = ev3.MediumMotor(ev3.OUTPUT_C)
         self.left_motor.run_direct()
         self.right_motor.run_direct()
