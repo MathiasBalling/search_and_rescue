@@ -17,14 +17,14 @@ class EV3Robot:
         # Set up motors
         self.left_motor = ev3.LargeMotor(ev3.OUTPUT_A)
         self.right_motor = ev3.LargeMotor(ev3.OUTPUT_D)
-        self.gripper_motor = ev3.MediumMotor(ev3.OUTPUT_C)
+        # self.gripper_motor = ev3.MediumMotor(ev3.OUTPUT_C)
         self.left_motor.run_direct()
         self.right_motor.run_direct()
-        self.gripper_motor.run_direct()
+        # self.gripper_motor.run_direct()
 
         assert self.left_motor.connected, "Left motor is not connected to port A"
         assert self.right_motor.connected, "Right motor is not connected to port B"
-        assert self.gripper_motor.connected, "Gripper motor is not connected to port C"
+        # assert self.gripper_motor.connected, "Gripper motor is not connected to port C"
 
         # Set up sensors
         self.left_color_sensor = ev3.ColorSensor(ev3.INPUT_1)

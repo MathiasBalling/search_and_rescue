@@ -20,7 +20,7 @@ class CanPickup(BTNode):
                 self.robot.right_motor.duty_cycle_sp = 0
                 self.robot.left_motor.duty_cycle_sp = 0
                 sleep(1)
-                self.robot.gripper_motor.duty_cycle_sp = -30
+                self.robot.gripper_motor.duty_cycle_sp = 30
                 sleep(3)
                 self.robot.gripper_motor.duty_cycle_sp = 0
                 self.object_picked_up = True
