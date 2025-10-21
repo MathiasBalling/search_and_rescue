@@ -37,8 +37,8 @@ class LineFollowing(BTNode):
         )
 
         if (
-            left_color > LINE_FOLLOWING_COLOR_THRESHOLD
-            and right_color > LINE_FOLLOWING_COLOR_THRESHOLD
+            left_color < LINE_FOLLOWING_COLOR_THRESHOLD
+            and right_color < LINE_FOLLOWING_COLOR_THRESHOLD
         ):
             self.robot.left_motor.duty_cycle_sp = 0
             self.robot.right_motor.duty_cycle_sp = 0

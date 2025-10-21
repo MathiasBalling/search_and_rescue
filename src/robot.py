@@ -8,7 +8,6 @@ class EV3Robot:
         "right_motor",
         "left_color_sensor",
         "right_color_sensor",
-        "touch_sensor",
         "gripper_motor",
         "ultrasound_sensor",
         "speaker",
@@ -30,26 +29,24 @@ class EV3Robot:
         # Set up sensors
         self.left_color_sensor = ev3.ColorSensor(ev3.INPUT_1)
         self.right_color_sensor = ev3.ColorSensor(ev3.INPUT_2)
-        self.touch_sensor = ev3.TouchSensor(ev3.INPUT_3)
         self.left_color_sensor.mode = ev3.ColorSensor.MODE_COL_REFLECT
         self.right_color_sensor.mode = ev3.ColorSensor.MODE_COL_REFLECT
-        self.ultrasound_sensor = ev3.UltrasonicSensor(ev3.INPUT_4)
+        self.ultrasound_sensor = ev3.UltrasonicSensor(ev3.INPUT_2)
         self.ultrasound_sensor.mode = "US-DIST-CM"
 
         assert self.right_color_sensor.connected, (
-            "Right color sensor 1 is not connected to port 1"
+            "Right color sensor 1 is not connected to port 4"
         )
         assert self.left_color_sensor.connected, (
-            "Left color sensor 2 is not connected to port 2"
+            "Left color sensor 2 is not connected to port 3"
         )
-        assert self.touch_sensor.connected, "Touch sensor is not connected to port 3"
         assert self.ultrasound_sensor.connected, (
-            "Ultrasound sensor is not connected to port 4"
+            "Ultrasound sensor is not connected to port 2"
         )
 
         # Set up sound
         self.speaker = Sound()
-        self.speaker.speak("death and destruction to all perkere")
+        self.speaker.speak("bing bong")
 
     def get_color_sensor_readings(self):
         return (self.left_color_sensor.value(), self.right_color_sensor.value())
