@@ -44,8 +44,12 @@ class LineFollowing(BTNode):
         left_control = round(min(max(0, left_control), 100))
         right_control = round(min(max(0, right_control), 100))
 
+        if abs(diff) <= 30:
+            left_control = LINE_FOLLOWING_BASE_SPEED
+            right_control = LINE_FOLLOWING_BASE_SPEED
+            print("On track")
         
-        if left_color > 40:
+        elif left_color > 40:
             left_control = 100
             self.robot.left_motor.duty_cycle_sp = left_control
             self.robot.right_motor.duty_cycle_sp = -50
@@ -57,10 +61,6 @@ class LineFollowing(BTNode):
             self.robot.left_motor.duty_cycle_sp = -50
             print("Sharp left turn")
 
-        elif abs(diff) <= 30:
-            left_control = LINE_FOLLOWING_BASE_SPEED
-            right_control = LINE_FOLLOWING_BASE_SPEED
-            print("On track")
 
         self.robot.left_motor.duty_cycle_sp = left_control
         self.robot.right_motor.duty_cycle_sp = right_control
