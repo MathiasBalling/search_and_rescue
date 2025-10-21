@@ -28,7 +28,7 @@ class EV3Robot:
 
         # Set up sensors
         self.left_color_sensor = ev3.ColorSensor(ev3.INPUT_1)
-        self.right_color_sensor = ev3.ColorSensor(ev3.INPUT_2)
+        self.right_color_sensor = ev3.ColorSensor(ev3.INPUT_4)
         self.left_color_sensor.mode = ev3.ColorSensor.MODE_COL_REFLECT
         self.right_color_sensor.mode = ev3.ColorSensor.MODE_COL_REFLECT
         self.ultrasound_sensor = ev3.UltrasonicSensor(ev3.INPUT_2)
@@ -38,7 +38,7 @@ class EV3Robot:
             "Right color sensor 1 is not connected to port 4"
         )
         assert self.left_color_sensor.connected, (
-            "Left color sensor 2 is not connected to port 3"
+            "Left color sensor 2 is not connected to port 1"
         )
         assert self.ultrasound_sensor.connected, (
             "Ultrasound sensor is not connected to port 2"
