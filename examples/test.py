@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 import ev3dev.ev3 as ev3
 from time import sleep
-
+import ev3dev2.sound as sound
 import signal
 
-# sound = Sound()
-# sound.speak("death and destruction to all perkere")
+sound = sound.Sound()
+sound.speak("Patte hvad laver du?")
 
 mA = ev3.LargeMotor(ev3.OUTPUT_A)
 mB = ev3.LargeMotor(ev3.OUTPUT_B)

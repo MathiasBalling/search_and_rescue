@@ -14,6 +14,7 @@ from params import (
 class LineFollowing(BTNode):
     def __init__(self, robot: EV3Robot):
         self.robot = robot
+        self.ultra_sound_sensor = robot.ultrasound_sensor
         self.pid = PIDController(
             kp=LINE_FOLLOWING_PID_KD,
             ki=LINE_FOLLOWING_PID_KI,
@@ -34,6 +35,7 @@ class LineFollowing(BTNode):
             "Sensor readings",
             left_color,
             right_color,
+            self.ultra_sound_sensor.value() / 10,
         )
 
         if (
