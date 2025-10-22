@@ -2,7 +2,8 @@
 
 from behaviors.line_following.return_to_line import ReturnToLine
 from robot import EV3Robot
-from behavior_tree import BlackBoard, Selector, Sequence
+from blackboard import BlackBoard
+from behavior_tree import Selector, Sequence
 from behaviors.line_following.line_following import LineFollowing
 from behaviors.can.can_detection import CanDetection
 from behaviors.can.can_pickup import CanPickup

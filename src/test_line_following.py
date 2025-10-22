@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from behavior_tree import BlackBoard
+from blackboard import BlackBoard
 from robot import EV3Robot
 from behaviors.line_following.line_following import LineFollowing
 

@@ -24,12 +24,11 @@ class LineFollowing(BTNode):
             setpoint=0,
             output_limits=(-100, 100),
         )
-        self._last_time_line_seen = time.time()
+        self.last_time_line_seen = time.time()
 
     def tick(self) -> BTStatus:
         left_color, right_color = self.robot.get_color_sensor_readings()
         current_time = time.time()
-
 
         self.robot.left_motor.duty_cycle_sp = 0
         self.robot.right_motor.duty_cycle_sp = 0
@@ -48,7 +47,7 @@ class LineFollowing(BTNode):
             left_control = LINE_FOLLOWING_BASE_SPEED
             right_control = LINE_FOLLOWING_BASE_SPEED
             print("On track")
-        
+
         elif left_color > 40:
             left_control = 100
             self.robot.left_motor.duty_cycle_sp = left_control
@@ -60,7 +59,6 @@ class LineFollowing(BTNode):
             self.robot.right_motor.duty_cycle_sp = right_control
             self.robot.left_motor.duty_cycle_sp = -50
             print("Sharp left turn")
-
 
         self.robot.left_motor.duty_cycle_sp = left_control
         self.robot.right_motor.duty_cycle_sp = right_control
