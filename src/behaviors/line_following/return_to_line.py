@@ -1,5 +1,6 @@
 import time
-from behavior_tree import BTStatus, BTNode, BlackBoard
+from behavior_tree import BTStatus, BTNode
+from blackboard import BlackBoard
 from robot import EV3Robot
 from pid_controller import PIDController
 

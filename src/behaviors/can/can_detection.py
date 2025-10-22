@@ -1,4 +1,5 @@
-from behavior_tree import BTStatus, BTNode, BlackBoard
+from behavior_tree import BTStatus, BTNode
+from blackboard import BlackBoard
 from robot import EV3Robot
 
 from params import CAN_DETECTION_BASE_SPEED, CAN_DETECTION_DISTANCE_THRESHOLD, MOTOR_OFF

@@ -1,5 +1,6 @@
 import time
-from behavior_tree import BTStatus, BTNode, BlackBoard
+from behavior_tree import BTStatus, BTNode
+from blackboard import BlackBoard
 from robot import EV3Robot
 from pid_controller import PIDController
 
@@ -30,8 +31,7 @@ class LineFollowing(BTNode):
         left_color, right_color = self.robot.get_color_sensor_readings()
         current_time = time.time()
 
-        self.robot.left_motor.duty_cycle_sp = 0
-        self.robot.right_motor.duty_cycle_sp = 0
+        self.robot.set_wheel_duty_cycles(left=0, right=0)
 
         diff = left_color - right_color
 
@@ -50,18 +50,16 @@ class LineFollowing(BTNode):
 
         elif left_color > 40:
             left_control = 100
-            self.robot.left_motor.duty_cycle_sp = left_control
-            self.robot.right_motor.duty_cycle_sp = -50
+            self.robot.set_wheel_duty_cycles(left=left_control, right=-50)
             print("Sharp right turn")
 
         elif right_color > 40:
             right_control = 100
-            self.robot.right_motor.duty_cycle_sp = right_control
-            self.robot.left_motor.duty_cycle_sp = -50
+            self.robot.set_wheel_duty_cycles(left=-50, right=right_control)
             print("Sharp left turn")
 
-        self.robot.left_motor.duty_cycle_sp = left_control
-        self.robot.right_motor.duty_cycle_sp = right_control
+        # FIX: What?
+        self.robot.set_wheel_duty_cycles(left=left_control, right=right_control)
 
         print(
             "Sensor readings",
