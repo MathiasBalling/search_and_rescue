@@ -68,7 +68,7 @@ class EV3Robot:
             self.set_wheel_duty_cycles(left=-40, right=40)
         else:
             self.set_wheel_duty_cycles(left=40, right=-40)
-        sleep_time = 0.012 * degrees
+        sleep_time = 0.0111 * degrees
         time.sleep(sleep_time)
         self.set_wheel_duty_cycles(left=MOTOR_OFF, right=MOTOR_OFF)
 
