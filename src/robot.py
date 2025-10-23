@@ -4,7 +4,6 @@ import time
 import math
 
 
-
 class EV3Robot:
     def __init__(self):
         # Set up motors
@@ -55,13 +54,13 @@ class EV3Robot:
     def open_gripper(self):
         if self.gripper_closed:
             self.gripper_motor.duty_cycle_sp = 40
-            time.sleep(0.5)
+            time.sleep(1)
             self.gripper_motor.duty_cycle_sp = 0
             self.gripper_closed = False
 
     def close_gripper(self):
         if not self.gripper_closed:
             self.gripper_motor.duty_cycle_sp = -40
-            time.sleep(0.5)
+            time.sleep(1)
             self.gripper_motor.duty_cycle_sp = 0
             self.gripper_closed = True
