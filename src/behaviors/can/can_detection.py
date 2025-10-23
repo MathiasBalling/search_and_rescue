@@ -32,7 +32,7 @@ class CanDetection(BTNode):
 
         distance = self.robot.get_ultrasound_sensor_reading()
         if distance <= CAN_DETECTION_DISTANCE_THRESHOLD:
-            self.robot.set_wheel_duty_cycles(left=40, right=40)
+            self.robot.set_wheel_duty_cycles(left=20, right=20)
             self.can_found = True
             print("Can detected!")
             time.sleep(1)

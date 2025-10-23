@@ -17,6 +17,7 @@ class ReturnToLine(BTNode):
         if self.returned_to_line:
             return BTStatus.SUCCESS
 
+        self.robot.open_gripper()
         self.robot.set_wheel_duty_cycles(
             left=-RETURN_TO_LINE_BASE_SPEED, right=-RETURN_TO_LINE_BASE_SPEED
         )
