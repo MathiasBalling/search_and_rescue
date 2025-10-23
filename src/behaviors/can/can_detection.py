@@ -1,8 +1,9 @@
+import time
 from behavior_tree import BTStatus, BTNode
 from blackboard import BlackBoard
 from robot import EV3Robot
 
-from params import CAN_DETECTION_BASE_SPEED, CAN_DETECTION_DISTANCE_THRESHOLD, MOTOR_OFF
+from params import CAN_DETECTION_BASE_SPEED, CAN_DETECTION_DISTANCE_THRESHOLD, MOTOR_OFF, CAN_PICKUP_BASE_SPEED
 
 
 class CanDetection(BTNode):
@@ -11,23 +12,16 @@ class CanDetection(BTNode):
         self.blackboard = blackboard
         self.can_found = False
 
-    def detecting_can(self) -> bool:
-        distance = self.robot.ultrasound_sensor.value() / 10
-        self.robot.right_motor.duty_cycle_sp = CAN_DETECTION_BASE_SPEED
-        self.robot.left_motor.duty_cycle_sp = -CAN_DETECTION_BASE_SPEED
-        print("Distance to can:", distance, "cm")
-        if distance < CAN_DETECTION_DISTANCE_THRESHOLD:
-            self.robot.right_motor.duty_cycle_sp = MOTOR_OFF
-            self.robot.left_motor.duty_cycle_sp = MOTOR_OFF
-            self.can_found = True
-
-        return self.can_found
-
     def tick(self) -> BTStatus:
-        if self.blackboard.get("can_detected")==True:
+        if self.can_found == True:
+            self.robot.can_pickup()
             return BTStatus.SUCCESS
-        else:
-            if self.detecting_can():
-                self.blackboard.set("can_detected", True)
-                return BTStatus.SUCCESS
-        return BTStatus.FAILURE
+        distance = self.robot.ultrasound_sensor.value() / 10
+        self.robot.set_wheel_duty_cycles(left=-CAN_DETECTION_BASE_SPEED, right=CAN_DETECTION_BASE_SPEED)
+        print("Distance to can:", distance, "cm")
+        if distance <= CAN_DETECTION_DISTANCE_THRESHOLD:
+            self.robot.set_wheel_duty_cycles(left=MOTOR_OFF, right=MOTOR_OFF)
+            self.can_found = True
+            print("Can detected!")
+            time.sleep(1)
+        return BTStatus.RUNNING

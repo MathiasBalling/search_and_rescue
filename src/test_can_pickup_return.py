@@ -13,10 +13,10 @@ def main():
     robot = EV3Robot()
     blackboard = BlackBoard()
     detection = CanDetection(robot, blackboard)
-    pickup = CanPickup(robot, blackboard)
+    # pickup = CanPickup(robot, blackboard)
     return_to_line = ReturnToLine(robot, blackboard)
 
-    root = Sequence([detection, pickup, return_to_line])
+    root = Sequence([detection, return_to_line])
 
     while True:
         root.tick()

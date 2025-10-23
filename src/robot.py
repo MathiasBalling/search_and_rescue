@@ -3,6 +3,8 @@ from ev3dev2.sound import Sound
 import time
 import math
 
+from params import MOTOR_OFF
+
 
 class EV3Robot:
     def __init__(self):
@@ -37,9 +39,9 @@ class EV3Robot:
         assert self.left_color_sensor.connected, (
             "Left color sensor 2 is not connected to port 1"
         )
-        # assert self.ultrasound_sensor.connected, (
-        #     "Ultrasound sensor is not connected to port 2"
-        # )
+        assert self.ultrasound_sensor.connected, (
+            "Ultrasound sensor is not connected to port 2"
+        )
 
         # Set up sound
         self.speaker = Sound()
@@ -66,7 +68,7 @@ class EV3Robot:
         self.right_motor.duty_cycle_sp = right
 
     def open_gripper(self):
-        if self.gripper_closed:
+        if not self.gripper_closed:
             self.gripper_motor.duty_cycle_sp = 40
             time.sleep(3)
             self.gripper_motor.duty_cycle_sp = 0
@@ -78,3 +80,13 @@ class EV3Robot:
             time.sleep(3)
             self.gripper_motor.duty_cycle_sp = 0
             self.gripper_closed = True
+
+    def can_pickup(self):   
+        distance = self.ultrasound_sensor.value() / 10
+        print("Distance to can:", distance, "cm")
+        self.set_wheel_duty_cycles(left=40, right=40)
+        if distance < 5:
+            self.set_wheel_duty_cycles(left=MOTOR_OFF, right=MOTOR_OFF)
+            self.close_gripper()
+            print("Can picked up!")
+            time.sleep(2)

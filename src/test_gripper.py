@@ -8,8 +8,8 @@ import time
 
 def main():
     robot = EV3Robot()
-    robot.close_gripper()
-    time.sleep(5)
+    # robot.close_gripper()
+    # time.sleep(5)
     robot.open_gripper()
 
 
