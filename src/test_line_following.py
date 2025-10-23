@@ -14,6 +14,8 @@ def main():
     while True:
         root.tick()
 
+        
+
 
 if __name__ == "__main__":
     main()

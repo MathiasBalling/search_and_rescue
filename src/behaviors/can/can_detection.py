@@ -24,6 +24,10 @@ class CanDetection(BTNode):
         return self.can_found
 
     def tick(self) -> BTStatus:
-        if self.detecting_can():
+        if self.blackboard.get("can_detected")==True:
             return BTStatus.SUCCESS
+        else:
+            if self.detecting_can():
+                self.blackboard.set("can_detected", True)
+                return BTStatus.SUCCESS
         return BTStatus.FAILURE

@@ -8,7 +8,7 @@ class EV3Robot:
     def __init__(self):
         self.filtered_left_color = 0
         self.filtered_right_color = 0
-        self.filter_alpha_color = 0.90  # Adjust for smoothing
+        self.filter_alpha_color = 0.50  # Adjust for smoothing
 
         # Set up motors
         self.left_motor = ev3.LargeMotor(ev3.OUTPUT_A)
@@ -48,15 +48,15 @@ class EV3Robot:
     def get_color_sensor_readings(self):
         left = self.left_color_sensor.value()
         right = self.right_color_sensor.value()
-        self.filtered_left = (
+        self.filtered_left_color = (
             self.filter_alpha_color * left
-            + (1 - self.filter_alpha_color) * self.filtered_left
+            + (1 - self.filter_alpha_color) * self.filtered_left_color
         )
-        self.filtered_right = (
+        self.filtered_right_color = (
             self.filter_alpha_color * right
-            + (1 - self.filter_alpha_color) * self.filtered_right
+            + (1 - self.filter_alpha_color) * self.filtered_right_color
         )
-        return (self.filtered_left, self.filtered_right)
+        return (self.filtered_left_color, self.filtered_right_color)
 
     def get_ultrasound_sensor_readings(self):
         return self.ultrasound_sensor.distance_centimeters()
