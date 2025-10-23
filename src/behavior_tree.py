@@ -181,7 +181,7 @@ class Condition(BTNode):
         self.condition = condition
 
     def tick(self) -> BTStatus:
-        if self.condition(self):
+        if self.condition():
             print("Condition met!")
             return BTStatus.SUCCESS
         return BTStatus.FAILURE
