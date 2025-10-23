@@ -24,7 +24,6 @@ class ReturnToLine(BTNode):
         print("Return to line - Left color:", left_color, "Right color:", right_color)
         if left_color < 20 or right_color < 20:
             self.robot.set_wheel_duty_cycles(left=0, right=0)
-            # self.robot.open_gripper()
             self.blackboard["returned_to_line"] = True
             self.blackboard["last_time_line_seen"] = time.time()
             return BTStatus.SUCCESS

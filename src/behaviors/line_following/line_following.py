@@ -68,6 +68,17 @@ class LineFollowing(BTNode):
                 left_color,
                 right_color,
             )
+
+        elif left_color > 40:
+            left_control = 100
+            self.robot.set_wheel_duty_cycles(left=left_control, right=-50)
+            print("Sharp right turn")
+
+        elif right_color > 40:
+            right_control = 100
+            self.robot.set_wheel_duty_cycles(left=-50, right=right_control)
+            print("Sharp left turn")
+
         else:
             self.robot.set_wheel_duty_cycles(left=left_control, right=right_control)
             print(
@@ -79,19 +90,5 @@ class LineFollowing(BTNode):
                 left_color,
                 right_color,
             )
-
-        # elif left_color > 40:
-        #     left_control = 100
-        #     self.robot.set_wheel_duty_cycles(left=left_control, right=-50)
-        #     print("Sharp right turn")
-
-        # elif right_color > 40:
-        #     right_control = 100
-        #     self.robot.set_wheel_duty_cycles(left=-50, right=right_control)
-        #     print("Sharp left turn")
-
-        # else:
-        #     self.robot.set_wheel_duty_cycles(left_control, right_control)
-        #     print("PID control", control, left_color, right_color, left_control, right_control)
 
         return BTStatus.RUNNING
