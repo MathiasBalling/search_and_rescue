@@ -8,7 +8,7 @@ class EV3Robot:
     def __init__(self):
         self.filtered_left_color = 0
         self.filtered_right_color = 0
-        self.filter_alpha_color = 0.2  # Adjust for smoothing
+        self.filter_alpha_color = 0.90  # Adjust for smoothing
 
         # Set up motors
         self.left_motor = ev3.LargeMotor(ev3.OUTPUT_A)
