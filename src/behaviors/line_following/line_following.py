@@ -40,26 +40,29 @@ class LineFollowing(BTNode):
         left_control = LINE_FOLLOWING_BASE_SPEED - control
         right_control = LINE_FOLLOWING_BASE_SPEED + control
 
-        left_control = round(min(max(0, left_control), 100))
-        right_control = round(min(max(0, right_control), 100))
+        left_control = round(min(max(-50, left_control), 100))
+        right_control = round(min(max(-50, right_control), 100))
 
-        if abs(diff) <= 30:
-            left_control = LINE_FOLLOWING_BASE_SPEED
-            right_control = LINE_FOLLOWING_BASE_SPEED
-            print("On track")
+        if control <= 10 and control >= -10:
+            self.robot.set_wheel_duty_cycles(
+                left=LINE_FOLLOWING_BASE_SPEED, right=LINE_FOLLOWING_BASE_SPEED
+            )
+            print("Going straight")
 
-        elif left_color > 40:
-            left_control = 100
-            self.robot.set_wheel_duty_cycles(left=left_control, right=-50)
-            print("Sharp right turn")
+        # elif left_color > 40:
+        #     left_control = 100
+        #     self.robot.set_wheel_duty_cycles(left=left_control, right=-50)
+        #     print("Sharp right turn")
 
-        elif right_color > 40:
-            right_control = 100
-            self.robot.set_wheel_duty_cycles(left=-50, right=right_control)
-            print("Sharp left turn")
+        # elif right_color > 40:
+        #     right_control = 100
+        #     self.robot.set_wheel_duty_cycles(left=-50, right=right_control)
+        #     print("Sharp left turn")
 
-        # FIX: What?
-        self.robot.set_wheel_duty_cycles(left=left_control, right=right_control)
+        else: 
+            self.robot.set_wheel_duty_cycles(left=left_control, right=right_control)
+            print("PID control")
+
 
         print(
             "Sensor readings",

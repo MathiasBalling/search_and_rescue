@@ -54,13 +54,13 @@ class EV3Robot:
     def open_gripper(self):
         if self.gripper_closed:
             self.gripper_motor.duty_cycle_sp = 40
-            time.sleep(1)
+            time.sleep(3)
             self.gripper_motor.duty_cycle_sp = 0
             self.gripper_closed = False
 
     def close_gripper(self):
         if not self.gripper_closed:
             self.gripper_motor.duty_cycle_sp = -40
-            time.sleep(1)
+            time.sleep(3)
             self.gripper_motor.duty_cycle_sp = 0
             self.gripper_closed = True
