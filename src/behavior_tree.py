@@ -174,3 +174,14 @@ class DebugNode(BTNode):
         result = self.child.tick()
         print(self.name + ":" + str(result))
         return result
+
+
+class Condition(BTNode):
+    def __init__(self, condition):
+        self.condition = condition
+
+    def tick(self) -> BTStatus:
+        if self.condition(self):
+            print("Condition met!")
+            return BTStatus.SUCCESS
+        return BTStatus.FAILURE

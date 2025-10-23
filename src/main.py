@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from behaviors.line_following.return_to_line import ReturnToLine
+from params import setup_blackboard
 from robot import EV3Robot
 from blackboard import BlackBoard
 from behavior_tree import Selector, Sequence
@@ -13,6 +14,7 @@ from behaviors.can.can_place import CanPlace
 def main():
     robot = EV3Robot()
     blackboard = BlackBoard()
+    setup_blackboard(blackboard)
 
     # Leaf Behaviors
     object_detection = CanDetection(robot, blackboard)

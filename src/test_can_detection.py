@@ -2,12 +2,14 @@
 
 from blackboard import BlackBoard
 from behaviors.can.can_detection import CanDetection
+from params import setup_blackboard
 from robot import EV3Robot
 
 
 def main():
     robot = EV3Robot()
     blackboard = BlackBoard()
+    setup_blackboard(blackboard)
 
     root = CanDetection(robot, blackboard)
 

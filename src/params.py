@@ -1,4 +1,7 @@
 # General parameters
+from blackboard import BlackBoard
+
+
 MOTOR_OFF = 0
 BASE_SPEED = 50
 
@@ -21,3 +24,9 @@ CAN_DETECTION_PID_KD = 0.1
 
 # Parameters for the can pickup
 CAN_PICKUP_BASE_SPEED = 25
+
+
+def setup_blackboard(blackboard: BlackBoard):
+    blackboard["can_picked_up"] = False
+    blackboard["on_line"] = False
+    blackboard["returned_to_line"] = False

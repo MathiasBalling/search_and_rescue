@@ -17,7 +17,7 @@ class ReturnToLine(BTNode):
         self.both_on_line = False
 
     def tick(self) -> BTStatus:
-        if self.returned_to_line == True:
+        if self.blackboard["returned_to_line"]:
             return BTStatus.SUCCESS
 
         self.robot.open_gripper()
