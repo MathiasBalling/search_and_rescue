@@ -22,15 +22,18 @@ class ReturnToLine(BTNode):
             left=-RETURN_TO_LINE_BASE_SPEED, right=-RETURN_TO_LINE_BASE_SPEED
         )
         left_color, right_color = self.robot.get_color_sensor_readings()
-        if left_color > 30 and right_color <= 20:
+        print("Return to line - Left color:", left_color, "Right color:", right_color)
+        if left_color >= 20 and right_color < 20:
             self.robot.set_wheel_duty_cycles(left=RETURN_TO_LINE_BASE_SPEED, right=-30)
-            if left_color < 30 and right_color < 30:
+            if left_color < 20 and right_color < 20:
                 self.robot.set_wheel_duty_cycles(left=0, right=0)
+                time.sleep(5)
                 return BTStatus.SUCCESS
-        elif right_color > 30 and left_color <= 20:
+        elif right_color >= 20 and left_color < 20:
             self.robot.set_wheel_duty_cycles(left=-30, right=RETURN_TO_LINE_BASE_SPEED)
-            if left_color < 30 and right_color < 30:
+            if left_color < 20 and right_color < 20:
                 self.robot.set_wheel_duty_cycles(left=0, right=0)
+                time.sleep(5)
                 return BTStatus.SUCCESS
         return BTStatus.RUNNING
 
