@@ -18,6 +18,8 @@ class ReturnToLine(BTNode):
             return BTStatus.SUCCESS
 
         self.robot.open_gripper()
+        self.robot.set_wheel_duty_cycles(left=-50, right=50)
+        time.sleep(2)
         left_color, right_color = self.robot.get_color_sensor_readings()
         print("Return to line - Left color:", left_color, "Right color:", right_color)
         if left_color < 20 and right_color < 20:
@@ -35,6 +37,7 @@ class ReturnToLine(BTNode):
             self.robot.set_wheel_duty_cycles(left=RETURN_TO_LINE_BASE_SPEED, right=-30)
             return BTStatus.RUNNING
         else:
-            self.robot.set_wheel_duty_cycles(left=-RETURN_TO_LINE_BASE_SPEED, right=-RETURN_TO_LINE_BASE_SPEED)
+            self.robot.set_wheel_duty_cycles(
+                left=-RETURN_TO_LINE_BASE_SPEED, right=-RETURN_TO_LINE_BASE_SPEED
+            )
             return BTStatus.RUNNING
-

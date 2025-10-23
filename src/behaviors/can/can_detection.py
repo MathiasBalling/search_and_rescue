@@ -1,4 +1,3 @@
-import time
 from behavior_tree import BTStatus, BTNode
 from blackboard import BlackBoard
 from robot import EV3Robot

@@ -63,6 +63,11 @@ class EV3Robot:
     def get_ultrasound_sensor_reading(self):
         return self.ultrasound_sensor.value() / 10.0
 
+    def turn_deg(self, degrees):
+        self.set_wheel_duty_cycles(left=-40, right=-40)
+        sleep_time = 0.005 * degrees
+        time.sleep(sleep_time)
+
     def set_wheel_duty_cycles(self, left, right):
         self.left_motor.duty_cycle_sp = left
         self.right_motor.duty_cycle_sp = right
