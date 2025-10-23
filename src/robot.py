@@ -6,6 +6,10 @@ import math
 
 class EV3Robot:
     def __init__(self):
+        self.filtered_left_color = 0
+        self.filtered_right_color = 0
+        self.filter_alpha_color = 0.2  # Adjust for smoothing
+
         # Set up motors
         self.left_motor = ev3.LargeMotor(ev3.OUTPUT_A)
         self.right_motor = ev3.LargeMotor(ev3.OUTPUT_D)
@@ -42,7 +46,17 @@ class EV3Robot:
         self.speaker.speak("bing bong")
 
     def get_color_sensor_readings(self):
-        return (self.left_color_sensor.value(), self.right_color_sensor.value())
+        left = self.left_color_sensor.value()
+        right = self.right_color_sensor.value()
+        self.filtered_left = (
+            self.filter_alpha_color * left
+            + (1 - self.filter_alpha_color) * self.filtered_left
+        )
+        self.filtered_right = (
+            self.filter_alpha_color * right
+            + (1 - self.filter_alpha_color) * self.filtered_right
+        )
+        return (self.filtered_left, self.filtered_right)
 
     def get_ultrasound_sensor_readings(self):
         return self.ultrasound_sensor.distance_centimeters()
