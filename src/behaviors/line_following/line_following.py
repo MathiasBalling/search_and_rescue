@@ -37,17 +37,20 @@ class LineFollowing(BTNode):
 
         control = self.pid.compute(diff, current_time)
 
+        # print("Time:", current_time, "Diff:", diff, "Control:", control)
+
         left_control = LINE_FOLLOWING_BASE_SPEED - control
         right_control = LINE_FOLLOWING_BASE_SPEED + control
 
-        left_control = round(min(max(-50, left_control), 100))
-        right_control = round(min(max(-50, right_control), 100))
+        left_control = round(min(max(0, left_control), 100))
+        right_control = round(min(max(0, right_control), 100))
 
-        if control <= 10 and control >= -10:
-            self.robot.set_wheel_duty_cycles(
-                left=LINE_FOLLOWING_BASE_SPEED, right=LINE_FOLLOWING_BASE_SPEED
-            )
-            print("Going straight")
+        if False and abs(control) <= 80:
+            self.robot.set_wheel_duty_cycles(left=LINE_FOLLOWING_BASE_SPEED, right=LINE_FOLLOWING_BASE_SPEED)
+            print("Going straight", control, left_control, right_control, "Colors:", left_color, right_color)
+        else: 
+            self.robot.set_wheel_duty_cycles(left=left_control, right=right_control)
+            print("PID control", control, left_control, right_control, "Colors:", left_color, right_color)
 
         # elif left_color > 40:
         #     left_control = 100
@@ -59,20 +62,9 @@ class LineFollowing(BTNode):
         #     self.robot.set_wheel_duty_cycles(left=-50, right=right_control)
         #     print("Sharp left turn")
 
-        else: 
-            self.robot.set_wheel_duty_cycles(left=left_control, right=right_control)
-            print("PID control")
+        # else: 
+        #     self.robot.set_wheel_duty_cycles(left_control, right_control)
+        #     print("PID control", control, left_color, right_color, left_control, right_control)
 
-
-        print(
-            "Sensor readings",
-            left_color,
-            right_color,
-            # self.ultra_sound_sensor.value() / 10,
-            control,
-            left_control,
-            right_control,
-            diff,
-        )
 
         return BTStatus.RUNNING
