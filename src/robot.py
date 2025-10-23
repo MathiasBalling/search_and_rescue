@@ -84,7 +84,7 @@ class EV3Robot:
     def can_pickup(self) -> bool:
         distance = self.get_ultrasound_sensor_reading()
         print("Distance to can pickup:", distance, "cm")
-        if distance < 5:
+        if distance < 2:
             self.set_wheel_duty_cycles(left=MOTOR_OFF, right=MOTOR_OFF)
             self.close_gripper()
             print("Can picked up!")
