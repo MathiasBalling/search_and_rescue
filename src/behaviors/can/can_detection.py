@@ -37,6 +37,6 @@ class CanDetection(BTNode):
             self.robot.set_wheel_duty_cycles(
                 left=-CAN_DETECTION_BASE_SPEED, right=CAN_DETECTION_BASE_SPEED
             )
-            print("Distance to can:", distance, "cm")
+            print("Distance to can detection:", distance, "cm")
 
         return BTStatus.RUNNING
