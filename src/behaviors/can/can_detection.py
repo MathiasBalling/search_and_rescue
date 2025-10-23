@@ -20,16 +20,19 @@ class CanDetection(BTNode):
 
     def tick(self) -> BTStatus:
         if self.can_picked_up:
+            print("Can picked up!")
             return BTStatus.SUCCESS
 
         if self.can_found:
-            self.robot.can_pickup()
-            self.can_picked_up = True
-            return BTStatus.SUCCESS
+            if self.robot.can_pickup():
+                self.can_picked_up = True
+                return BTStatus.SUCCESS
+            else:
+                return BTStatus.RUNNING
 
-        distance = self.robot.get_ultrasound_sensor_readings()
+        distance = self.robot.get_ultrasound_sensor_reading()
         if distance <= CAN_DETECTION_DISTANCE_THRESHOLD:
-            self.robot.set_wheel_duty_cycles(left=MOTOR_OFF, right=MOTOR_OFF)
+            self.robot.set_wheel_duty_cycles(left=40, right=40)
             self.can_found = True
             print("Can detected!")
             time.sleep(1)
