@@ -18,15 +18,8 @@ class CanDetection(BTNode):
         self.can_found = False
 
     def tick(self) -> BTStatus:
-        if self.blackboard["can_picked_up"]:
-            return BTStatus.SUCCESS
-
         if self.can_found:
-            if self.robot.can_pickup():
-                self.blackboard["can_picked_up"] = True
-                return BTStatus.SUCCESS
-            else:
-                return BTStatus.RUNNING
+            return BTStatus.SUCCESS
 
         distance = self.robot.get_ultrasound_sensor_reading()
         if distance <= CAN_DETECTION_DISTANCE_THRESHOLD:
