@@ -35,7 +35,7 @@ def main():
     # Top branch:
     # 1. Find the can
     # 2. Deliver the can
-    root = Selector([object_find, object_deliver])
+    root = Sequence([object_find, object_deliver])
 
     # root = LineFollowing(robot)
 

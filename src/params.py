@@ -10,7 +10,7 @@ LINE_FOLLOWING_PID_KD = 0
 LINE_FOLLOWING_COLOR_THRESHOLD = 20
 
 # Parameters for the return to line
-RETURN_TO_LINE_BASE_SPEED = -50
+RETURN_TO_LINE_BASE_SPEED = 50
 
 # Parameters for the can detection
 CAN_DETECTION_BASE_SPEED = 30
