@@ -61,7 +61,7 @@ class EV3Robot:
         return (self.filtered_left_color, self.filtered_right_color)
 
     def get_ultrasound_sensor_readings(self):
-        return self.ultrasound_sensor.distance_centimeters()
+        return self.ultrasound_sensor.value() / 10.0
 
     def set_wheel_duty_cycles(self, left, right):
         self.left_motor.duty_cycle_sp = left
@@ -81,7 +81,7 @@ class EV3Robot:
             self.gripper_motor.duty_cycle_sp = 0
             self.gripper_closed = True
 
-    def can_pickup(self):   
+    def can_pickup(self):
         distance = self.ultrasound_sensor.value() / 10
         print("Distance to can:", distance, "cm")
         self.set_wheel_duty_cycles(left=40, right=40)
