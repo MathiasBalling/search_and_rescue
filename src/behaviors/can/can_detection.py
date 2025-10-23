@@ -6,8 +6,6 @@ from robot import EV3Robot
 from params import (
     CAN_DETECTION_BASE_SPEED,
     CAN_DETECTION_DISTANCE_THRESHOLD,
-    MOTOR_OFF,
-    CAN_PICKUP_BASE_SPEED,
 )
 
 

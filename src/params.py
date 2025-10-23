@@ -18,12 +18,9 @@ RETURN_TO_LINE_BASE_SPEED = 50
 # Parameters for the can detection
 CAN_DETECTION_BASE_SPEED = 20
 CAN_DETECTION_DISTANCE_THRESHOLD = 20
-CAN_DETECTION_PID_KP = 1
-CAN_DETECTION_PID_KI = 0.2
-CAN_DETECTION_PID_KD = 0.1
 
 # Parameters for the can pickup
-CAN_PICKUP_BASE_SPEED = 25
+CAN_PICKUP_BASE_SPEED = 15
 
 
 def setup_blackboard(blackboard: BlackBoard):
