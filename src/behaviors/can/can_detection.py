@@ -20,7 +20,6 @@ class CanDetection(BTNode):
 
     def tick(self) -> BTStatus:
         if self.can_picked_up:
-            print("Can picked up!")
             return BTStatus.SUCCESS
 
         if self.can_found:
