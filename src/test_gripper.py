@@ -10,7 +10,7 @@ def main():
     robot = EV3Robot()
     # robot.close_gripper()
     # time.sleep(5)
-    robot.open_gripper()
+    robot.open_gripper(force=True)
 
 
 if __name__ == "__main__":

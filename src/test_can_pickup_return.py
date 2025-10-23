@@ -26,7 +26,7 @@ def main():
 
     root = Selector(
         [
-            Condition(returned_to_line),
+            Sequence([Condition(returned_to_line), line_following]),
             Sequence([Inverter(line_following), detection, pickup, return_to_line]),
         ]
     )

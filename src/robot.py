@@ -76,15 +76,15 @@ class EV3Robot:
         self.left_motor.duty_cycle_sp = left
         self.right_motor.duty_cycle_sp = right
 
-    def open_gripper(self):
-        if self.gripper_closed:
+    def open_gripper(self, force=False):
+        if force or self.gripper_closed:
             self.gripper_motor.duty_cycle_sp = 40
             time.sleep(3)
             self.gripper_motor.duty_cycle_sp = 0
             self.gripper_closed = False
 
-    def close_gripper(self):
-        if not self.gripper_closed:
+    def close_gripper(self, force=False):
+        if force or not self.gripper_closed:
             self.gripper_motor.duty_cycle_sp = -40
             time.sleep(3)
             self.gripper_motor.duty_cycle_sp = 0
