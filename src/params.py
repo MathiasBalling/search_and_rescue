@@ -1,16 +1,16 @@
-# General parameters
+import time
 from blackboard import BlackBoard
 
-
+# General parameters
 MOTOR_OFF = 0
 BASE_SPEED = 50
+LINE_INTENSITY_THRESHOLD = 20
 
 # Parameters for the line following
 LINE_FOLLOWING_BASE_SPEED = 50
 LINE_FOLLOWING_PID_KP = 4
 LINE_FOLLOWING_PID_KI = 0.0
 LINE_FOLLOWING_PID_KD = 0
-LINE_FOLLOWING_COLOR_THRESHOLD = 20
 
 # Parameters for the return to line
 RETURN_TO_LINE_BASE_SPEED = 50
@@ -27,3 +27,4 @@ def setup_blackboard(blackboard: BlackBoard):
     blackboard["can_picked_up"] = False
     blackboard["on_line"] = False
     blackboard["returned_to_line"] = False
+    blackboard["last_time_line_seen"] = time.time()

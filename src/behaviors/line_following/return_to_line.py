@@ -1,3 +1,4 @@
+import time
 from behavior_tree import BTStatus, BTNode
 from blackboard import BlackBoard
 from robot import EV3Robot
@@ -24,5 +25,6 @@ class ReturnToLine(BTNode):
             self.robot.set_wheel_duty_cycles(left=0, right=0)
             self.robot.open_gripper()
             self.blackboard["returned_to_line"] = True
+            self.blackboard["last_time_line_seen"] = time.time()
             return BTStatus.SUCCESS
         return BTStatus.RUNNING
