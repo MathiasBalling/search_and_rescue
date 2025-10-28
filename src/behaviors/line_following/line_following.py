@@ -93,17 +93,17 @@ class LineFollowing(BTNode):
         left_control = round(min(max(low_limit, left_control), up_limit))
         right_control = round(min(max(low_limit, right_control), up_limit))
 
-        if left_color > 27:
-            left_control = 100
-            self.robot.set_wheel_duty_cycles(left=left_control, right=-50)
-            # print("Sharp right turn ", left_color, right_color)
+        # if left_color > 27:
+        #     left_control = 100
+        #     self.robot.set_wheel_duty_cycles(left=left_control, right=-50)
+        #     # print("Sharp right turn ", left_color, right_color)
 
-        elif right_color > 27:
-            right_control = 100
-            self.robot.set_wheel_duty_cycles(left=-50, right=right_control)
-            print("Sharp left turn ", left_color, right_color)
+        # elif right_color > 27:
+        #     right_control = 100
+        #     self.robot.set_wheel_duty_cycles(left=-50, right=right_control)
+        #     print("Sharp left turn ", left_color, right_color)
 
-        else:
+        if True:
             if abs((left_color - right_color)) <= 15:
                 self.robot.set_wheel_duty_cycles(
                     left=LINE_FOLLOWING_BASE_SPEED, right=LINE_FOLLOWING_BASE_SPEED
