@@ -15,7 +15,7 @@ def main():
     root = LineFollowing(robot, blackboard)
 
     while True:
-        blackboard["last_time_line_seen"] = time.time()
+        blackboard["last_time_line_seen"] = time()
         root.tick()
 
 

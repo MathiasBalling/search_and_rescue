@@ -75,10 +75,10 @@ class LineFollowing(BTNode):
             and right_color < LINE_INTENSITY_THRESHOLD
         ):
             self.last_time_line_seen = current_time
-
-        if self.robot.gyro_sensor.value() > 20:
+        rate = self.robot.gyro_sensor.value()
+        if rate > 25:
             self.set_controller_uphill()
-        elif self.robot.gyro_sensor.value() < -20:
+        elif rate < -25:
             self.set_controller_downhill()
         else:
             self.set_controller_straight()
@@ -94,28 +94,35 @@ class LineFollowing(BTNode):
         left_control = round(min(max(low_limit, left_control), up_limit))
         right_control = round(min(max(low_limit, right_control), up_limit))
 
-        if left_color > 40:
+        if left_color > 27:
             left_control = 100
             self.robot.set_wheel_duty_cycles(left=left_control, right=-50)
-            print("Sharp right turn")
+            # print("Sharp right turn ", left_color, right_color)
+            print(rate)
 
-        elif right_color > 40:
+        elif right_color > 27:
             right_control = 100
             self.robot.set_wheel_duty_cycles(left=-50, right=right_control)
-            print("Sharp left turn")
+            print("Sharp left turn ", left_color, right_color)
+            print(rate)
 
         else:
-            self.robot.set_wheel_duty_cycles(left=left_control, right=right_control)
+            if abs((left_color - right_color)) <= 15:
+                self.robot.set_wheel_duty_cycles(
+                    left=LINE_FOLLOWING_BASE_SPEED, right=LINE_FOLLOWING_BASE_SPEED
+                )
+            else:
+                self.robot.set_wheel_duty_cycles(left=left_control, right=right_control)
             print(
-                "PID control",
-                control,
-                left_control,
-                right_control,
-                "Colors:",
-                left_color,
-                right_color,
-                "Angle:", 
-                self.robot.gyro_sensor.value(),
+                # "PID control",
+                # control,
+                # left_control,
+                # right_control,
+                # "Colors:",
+                # left_color,
+                # right_color,
+                "Rate: ",
+                rate,
             )
 
         return BTStatus.RUNNING
