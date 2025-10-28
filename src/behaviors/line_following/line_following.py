@@ -12,6 +12,10 @@ from params import (
     LINE_FOLLOWING_PID_KI,
 )
 
+MODE_STRAIGHT = 0
+MODE_UPHILL = 1
+MODE_DOWNHILL = 2
+
 
 class LineFollowing(BTNode):
     def __init__(self, robot: EV3Robot, blackboard: BlackBoard):
@@ -32,33 +36,33 @@ class LineFollowing(BTNode):
         self.pid.output_limits = limit
 
     def set_controller_straight(self):
-        if self.controller_mode == 0:
+        if self.controller_mode == MODE_STRAIGHT:
             return
         self.pid.kp = LINE_FOLLOWING_PID_KP
         self.pid.ki = LINE_FOLLOWING_PID_KI
         self.pid.kd = LINE_FOLLOWING_PID_KD
-        self.controller_mode = 0
+        self.controller_mode = MODE_STRAIGHT
         self.set_limits((0, 100))
         self.pid.reset()
 
-    def set_controller_downhill(self):
-        if self.controller_mode == 1:
-            return
-        self.pid.kp = 1
-        self.pid.ki = 0
-        self.pid.kd = 0
-        self.controller_mode = 1
-        self.set_limits((-50, 50))
-        self.pid.reset()
-
     def set_controller_uphill(self):
-        if self.controller_mode == 2:
+        if self.controller_mode == MODE_UPHILL:
             return
         self.pid.kp = 5
         self.pid.ki = 0
         self.pid.kd = 0
-        self.controller_mode = 2
+        self.controller_mode = MODE_UPHILL
         self.set_limits((-100, 100))
+        self.pid.reset()
+
+    def set_controller_downhill(self):
+        if self.controller_mode == MODE_DOWNHILL:
+            return
+        self.pid.kp = 1
+        self.pid.ki = 0
+        self.pid.kd = 0
+        self.controller_mode = MODE_DOWNHILL
+        self.set_limits((-10, 10))
         self.pid.reset()
 
     def tick(self) -> BTStatus:
@@ -75,13 +79,8 @@ class LineFollowing(BTNode):
             and right_color < LINE_INTENSITY_THRESHOLD
         ):
             self.last_time_line_seen = current_time
-        rate = self.robot.gyro_sensor.value()
-        if rate > 25:
-            self.set_controller_uphill()
-        elif rate < -25:
-            self.set_controller_downhill()
-        else:
-            self.set_controller_straight()
+
+        self.update_mode()
 
         diff = left_color - right_color
 
@@ -98,13 +97,11 @@ class LineFollowing(BTNode):
             left_control = 100
             self.robot.set_wheel_duty_cycles(left=left_control, right=-50)
             # print("Sharp right turn ", left_color, right_color)
-            print(rate)
 
         elif right_color > 27:
             right_control = 100
             self.robot.set_wheel_duty_cycles(left=-50, right=right_control)
             print("Sharp left turn ", left_color, right_color)
-            print(rate)
 
         else:
             if abs((left_color - right_color)) <= 15:
@@ -121,8 +118,20 @@ class LineFollowing(BTNode):
                 # "Colors:",
                 # left_color,
                 # right_color,
-                "Rate: ",
-                rate,
             )
 
         return BTStatus.RUNNING
+
+    def update_mode(self):
+        rate = self.robot.gyro_sensor.value()
+        print("Angle:", rate)
+        if rate > 25:
+            if self.controller_mode == MODE_STRAIGHT:
+                self.set_controller_uphill()
+            else:
+                self.set_controller_straight()
+        elif rate < -25:
+            if self.controller_mode == MODE_STRAIGHT:
+                self.set_controller_downhill()
+            else:
+                self.set_controller_straight()
