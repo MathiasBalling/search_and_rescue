@@ -32,6 +32,8 @@ class EV3Robot:
         self.right_color_sensor.mode = ev3.ColorSensor.MODE_COL_REFLECT
         self.ultrasound_sensor = ev3.UltrasonicSensor(ev3.INPUT_2)
         self.ultrasound_sensor.mode = "US-DIST-CM"
+        self.gyro_sensor = ev3.GyroSensor(ev3.INPUT_3)
+        self.gyro_sensor.mode = "GYRO-ANG"
 
         assert self.right_color_sensor.connected, (
             "Right color sensor 1 is not connected to port 4"
@@ -41,6 +43,9 @@ class EV3Robot:
         )
         assert self.ultrasound_sensor.connected, (
             "Ultrasound sensor is not connected to port 2"
+        )
+        assert self.gyro_sensor.connected, (
+            "Gyro sensor is not connected to port 3"
         )
 
         # Set up sound
