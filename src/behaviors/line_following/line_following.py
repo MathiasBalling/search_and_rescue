@@ -78,7 +78,7 @@ class LineFollowing(BTNode):
             left_color < LINE_INTENSITY_THRESHOLD
             and right_color < LINE_INTENSITY_THRESHOLD
         ):
-            self.last_time_line_seen = current_time
+            self.blackboard["last_time_line_seen"] = current_time
 
         self.update_mode()
 

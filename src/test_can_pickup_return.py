@@ -26,7 +26,9 @@ def main():
 
     root = Selector(
         [
+            # Only do line following if we returned to the line
             Sequence([Condition(returned_to_line), line_following]),
+            # Try detection if the line_following fails
             Sequence([Inverter(line_following), detection, pickup, return_to_line]),
         ]
     )
