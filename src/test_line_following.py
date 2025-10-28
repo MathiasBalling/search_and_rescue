@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from time import time
 from blackboard import BlackBoard
 from params import setup_blackboard
 from robot import EV3Robot
@@ -14,7 +15,9 @@ def main():
     root = LineFollowing(robot, blackboard)
 
     while True:
+        blackboard["last_time_line_seen"] = time.time()
         root.tick()
+
 
 
 if __name__ == "__main__":

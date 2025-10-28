@@ -34,9 +34,10 @@ class LineFollowing(BTNode):
     def set_controller_straight(self):
         if self.controller_mode == 0:
             return
-        self.pid.kp = 1
-        self.pid.ki = 0
-        self.pid.kd = 0
+        self.pid.kp = LINE_FOLLOWING_PID_KP
+        self.pid.ki = LINE_FOLLOWING_PID_KI
+        self.pid.kd = LINE_FOLLOWING_PID_KD
+        self.controller_mode = 0
         self.set_limits((0, 100))
         self.pid.reset()
 
@@ -46,6 +47,7 @@ class LineFollowing(BTNode):
         self.pid.kp = 1
         self.pid.ki = 0
         self.pid.kd = 0
+        self.controller_mode = 1
         self.set_limits((-50, 50))
         self.pid.reset()
 
@@ -55,6 +57,7 @@ class LineFollowing(BTNode):
         self.pid.kp = 5
         self.pid.ki = 0
         self.pid.kd = 0
+        self.controller_mode = 2
         self.set_limits((-100, 100))
         self.pid.reset()
 
@@ -73,7 +76,6 @@ class LineFollowing(BTNode):
         ):
             self.last_time_line_seen = current_time
 
-        print("Angle:", self.robot.gyro_sensor.value())
         if self.robot.gyro_sensor.value() > 20:
             self.set_controller_uphill()
         elif self.robot.gyro_sensor.value() < -20:
@@ -84,8 +86,6 @@ class LineFollowing(BTNode):
         diff = left_color - right_color
 
         control = self.pid.compute(diff, current_time)
-
-        # print("Time:", current_time, "Diff:", diff, "Control:", control)
 
         left_control = LINE_FOLLOWING_BASE_SPEED - control
         right_control = LINE_FOLLOWING_BASE_SPEED + control
@@ -114,6 +114,8 @@ class LineFollowing(BTNode):
                 "Colors:",
                 left_color,
                 right_color,
+                "Angle:", 
+                self.robot.gyro_sensor.value(),
             )
 
         return BTStatus.RUNNING
