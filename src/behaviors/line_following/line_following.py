@@ -127,11 +127,11 @@ class LineFollowing(BTNode):
         if rate > 25:
             if self.controller_mode == MODE_STRAIGHT:
                 self.set_controller_uphill()
-            else:
+            elif self.controller_mode == MODE_DOWNHILL:
                 self.set_controller_straight()
         elif rate < -25:
             if self.controller_mode == MODE_STRAIGHT:
                 self.set_controller_downhill()
-            else:
+            elif self.controller_mode == MODE_UPHILL:
                 self.set_controller_straight()
         print("Angle:", rate, "Mode:", self.controller_mode)
