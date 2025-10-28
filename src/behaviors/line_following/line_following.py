@@ -123,6 +123,7 @@ class LineFollowing(BTNode):
         return BTStatus.RUNNING
 
     def update_mode(self):
+        # FIX: Shifts to fast to new state
         rate = self.robot.gyro_sensor.value()
         if rate > 25:
             if self.controller_mode == MODE_STRAIGHT:
