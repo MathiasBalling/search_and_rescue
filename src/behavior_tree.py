@@ -117,6 +117,17 @@ class Inverter(BTNode):
         return BTStatus.RUNNING
 
 
+class Condition(BTNode):
+    def __init__(self, condition):
+        self.condition = condition
+
+    def tick(self) -> BTStatus:
+        if self.condition():
+            print("Condition met!")
+            return BTStatus.SUCCESS
+        return BTStatus.FAILURE
+
+
 class Parallel(BTNode):
     """
     A composite node that ticks all children in parallel.
@@ -174,14 +185,3 @@ class DebugNode(BTNode):
         result = self.child.tick()
         print(self.name + ":" + str(result))
         return result
-
-
-class Condition(BTNode):
-    def __init__(self, condition):
-        self.condition = condition
-
-    def tick(self) -> BTStatus:
-        if self.condition():
-            print("Condition met!")
-            return BTStatus.SUCCESS
-        return BTStatus.FAILURE

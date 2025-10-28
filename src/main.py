@@ -23,12 +23,15 @@ def main():
     line_following = LineFollowing(robot, blackboard)
     return_to_line = ReturnToLine(robot, blackboard)
 
+    def returned_to_line():
+        return blackboard["returned_to_line"]
+
     # Sub branches:
     # Follow the line until we find the object and then pick it up
-    # TODO: Make these in "behaviors/"
     object_find = Selector(
         [line_following, Sequence([object_detection, object_pickup])]
     )
+
     # Follow the line until we are back at the start and then place the object
     object_deliver = Sequence(
         [return_to_line, Selector([line_following, object_place])]

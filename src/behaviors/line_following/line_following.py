@@ -18,13 +18,46 @@ class LineFollowing(BTNode):
         self.robot = robot
         self.blackboard = blackboard
         # self.ultra_sound_sensor = robot.ultrasound_sensor
+        self.limits = (-100, 100)
         self.pid = PIDController(
             kp=LINE_FOLLOWING_PID_KP,
             ki=LINE_FOLLOWING_PID_KI,
             kd=LINE_FOLLOWING_PID_KD,
             setpoint=0,
-            output_limits=(-100, 100),
+            output_limits=self.limits,
         )
+        self.controller_mode = 0
+
+    def set_limits(self, limit):
+        self.limits = limit
+        self.pid.output_limits = limit
+
+    def set_controller_straight(self):
+        if self.controller_mode == 0:
+            return
+        self.pid.kp = 1
+        self.pid.ki = 0
+        self.pid.kd = 0
+        self.set_limits((0, 100))
+        self.pid.reset()
+
+    def set_controller_downhill(self):
+        if self.controller_mode == 1:
+            return
+        self.pid.kp = 1
+        self.pid.ki = 0
+        self.pid.kd = 0
+        self.set_limits((-50, 50))
+        self.pid.reset()
+
+    def set_controller_uphill(self):
+        if self.controller_mode == 2:
+            return
+        self.pid.kp = 5
+        self.pid.ki = 0
+        self.pid.kd = 0
+        self.set_limits((-100, 100))
+        self.pid.reset()
 
     def tick(self) -> BTStatus:
         current_time = time.time()
@@ -41,7 +74,13 @@ class LineFollowing(BTNode):
         ):
             self.last_time_line_seen = current_time
 
-        self.robot.set_wheel_duty_cycles(left=0, right=0)
+        print("Angle:", self.robot.gyro_sensor.value())
+        if self.robot.gyro_sensor.value() > 20:
+            self.set_controller_uphill()
+        elif self.robot.gyro_sensor.value() < -20:
+            self.set_controller_downhill()
+        else:
+            self.set_controller_straight()
 
         diff = left_color - right_color
 
@@ -52,15 +91,10 @@ class LineFollowing(BTNode):
         left_control = LINE_FOLLOWING_BASE_SPEED - control
         right_control = LINE_FOLLOWING_BASE_SPEED + control
 
-        if self.robot.gyro_sensor.value() > 20:
-            left_control = round(min(max(-50, left_control), 50))
-            right_control = round(min(max(-50, right_control), 50))
-            self.robot.set_wheel_duty_cycles(left=left_control, right=right_control)
-            print("Angle:", self.robot.gyro_sensor.value())
-        else:
-            left_control = round(min(max(0, left_control), 100))
-            right_control = round(min(max(0, right_control), 100))
-            
+        low_limit, up_limit = self.limits
+        left_control = round(min(max(low_limit, left_control), up_limit))
+        right_control = round(min(max(low_limit, right_control), up_limit))
+
         if left_color > 40:
             left_control = 100
             self.robot.set_wheel_duty_cycles(left=left_control, right=-50)
