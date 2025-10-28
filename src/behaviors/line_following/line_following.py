@@ -17,7 +17,6 @@ class LineFollowing(BTNode):
     def __init__(self, robot: EV3Robot, blackboard: BlackBoard):
         self.robot = robot
         self.blackboard = blackboard
-        # self.ultra_sound_sensor = robot.ultrasound_sensor
         self.limits = (-100, 100)
         self.pid = PIDController(
             kp=LINE_FOLLOWING_PID_KP,
