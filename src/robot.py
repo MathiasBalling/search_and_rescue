@@ -3,7 +3,7 @@ from ev3dev2.sound import Sound
 import time
 import math
 
-from params import MOTOR_OFF
+from params import MOTOR_OFF, TURN_TIME_PER_DEGREE
 
 
 class EV3Robot:
@@ -44,9 +44,7 @@ class EV3Robot:
         assert self.ultrasound_sensor.connected, (
             "Ultrasound sensor is not connected to port 2"
         )
-        assert self.gyro_sensor.connected, (
-            "Gyro sensor is not connected to port 3"
-        )
+        assert self.gyro_sensor.connected, "Gyro sensor is not connected to port 3"
 
         # Set up sound
         self.speaker = Sound()
@@ -73,7 +71,7 @@ class EV3Robot:
             self.set_wheel_duty_cycles(left=-40, right=40)
         else:
             self.set_wheel_duty_cycles(left=40, right=-40)
-        sleep_time = 0.0111 * degrees
+        sleep_time = TURN_TIME_PER_DEGREE * degrees
         time.sleep(sleep_time)
         self.set_wheel_duty_cycles(left=MOTOR_OFF, right=MOTOR_OFF)
 

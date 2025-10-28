@@ -5,6 +5,7 @@ from blackboard import BlackBoard
 MOTOR_OFF = 0
 BASE_SPEED = 50
 LINE_INTENSITY_THRESHOLD = 20
+TURN_TIME_PER_DEGREE = 0.0111
 
 # Parameters for the line following
 LINE_FOLLOWING_BASE_SPEED = 50
