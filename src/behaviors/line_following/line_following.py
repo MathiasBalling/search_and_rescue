@@ -124,7 +124,6 @@ class LineFollowing(BTNode):
 
     def update_mode(self):
         rate = self.robot.gyro_sensor.value()
-        print("Angle:", rate)
         if rate > 25:
             if self.controller_mode == MODE_STRAIGHT:
                 self.set_controller_uphill()
@@ -135,3 +134,4 @@ class LineFollowing(BTNode):
                 self.set_controller_downhill()
             else:
                 self.set_controller_straight()
+        print("Angle:", rate, "Mode:", self.controller_mode)
