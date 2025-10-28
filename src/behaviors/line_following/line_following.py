@@ -52,24 +52,16 @@ class LineFollowing(BTNode):
         left_control = LINE_FOLLOWING_BASE_SPEED - control
         right_control = LINE_FOLLOWING_BASE_SPEED + control
 
-        left_control = round(min(max(0, left_control), 100))
-        right_control = round(min(max(0, right_control), 100))
-
-        if False and abs(control) <= 80:
-            self.robot.set_wheel_duty_cycles(
-                left=LINE_FOLLOWING_BASE_SPEED, right=LINE_FOLLOWING_BASE_SPEED
-            )
-            print(
-                "Going straight",
-                control,
-                left_control,
-                right_control,
-                "Colors:",
-                left_color,
-                right_color,
-            )
-
-        elif left_color > 40:
+        if self.robot.gyro_sensor.value() > 20:
+            left_control = round(min(max(-50, left_control), 50))
+            right_control = round(min(max(-50, right_control), 50))
+            self.robot.set_wheel_duty_cycles(left=left_control, right=right_control)
+            print("Angle:", self.robot.gyro_sensor.value())
+        else:
+            left_control = round(min(max(0, left_control), 100))
+            right_control = round(min(max(0, right_control), 100))
+            
+        if left_color > 40:
             left_control = 100
             self.robot.set_wheel_duty_cycles(left=left_control, right=-50)
             print("Sharp right turn")

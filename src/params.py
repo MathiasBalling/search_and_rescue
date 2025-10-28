@@ -22,6 +22,10 @@ CAN_DETECTION_DISTANCE_THRESHOLD = 20
 # Parameters for the can pickup
 CAN_PICKUP_BASE_SPEED = 15
 
+# Parameters for ramps
+RAMP_DETECTION_DISTANCE_THRESHOLD = 20
+RAMP_DETECTION_SPEED = 30
+
 
 def setup_blackboard(blackboard: BlackBoard):
     blackboard["can_picked_up"] = False
