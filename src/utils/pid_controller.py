@@ -1,14 +1,11 @@
-from typing import Tuple
-
-
 class PIDController:
     def __init__(
         self,
         kp: float,
         ki: float,
         kd: float,
+        output_limits=(None, None),
         setpoint=0.0,
-        output_limits = (None, None)
     ):
         self.kp = kp
         self.ki = ki
@@ -44,13 +41,11 @@ class PIDController:
         if delta_time > 0:
             d = self.kd * (error - self._last_error) / delta_time
 
-        
         # Save for next iteration
         self._last_error = error
         self._last_time = current_time
 
         output = p + i + d
-
 
         # Apply output limits
         low, high = self.output_limits

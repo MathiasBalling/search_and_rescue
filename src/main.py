@@ -1,51 +1,60 @@
 #!/usr/bin/env python3
-
-from behaviors.line_following.return_to_line import ReturnToLine
-from params import setup_blackboard
-from robot import EV3Robot
-from blackboard import BlackBoard
-from behavior_tree import Selector, Sequence
-from behaviors.line_following.line_following import LineFollowing
-from behaviors.can.can_detection import CanDetection
-from behaviors.can.can_pickup import CanPickup
-from behaviors.can.can_place import CanPlace
+from ai.behaviors.can_detect import CanDetectionBehavior
+from ai.behaviors.can_pickup import CanPickupBehavior
+from ai.behaviors.line_follow import LineFollowingBehavior
+from ai.behaviors.line_return import LineReturnBehavior
+from ai.controller import Controller
+from utils.blackboard import BlackBoard
+from sensors.colors import ColorSensors
+from sensors.gyro import GyroSensor
+from sensors.ultrasonic import UltrasonicSensor
 
 
 def main():
-    robot = EV3Robot()
+    controller = Controller()
     blackboard = BlackBoard()
-    setup_blackboard(blackboard)
 
-    # Leaf Behaviors
-    object_detection = CanDetection(robot, blackboard)
-    object_pickup = CanPickup(robot, blackboard)
-    object_place = CanPlace(robot, blackboard)
-    line_following = LineFollowing(robot, blackboard)
-    return_to_line = ReturnToLine(robot, blackboard)
+    # Create sensors
+    color_sensors = ColorSensors()
+    gyro_sensor = GyroSensor()
+    ultrasonic_sensor = UltrasonicSensor()
 
-    def returned_to_line():
-        return blackboard["returned_to_line"]
+    # Add sensors to the controller
+    controller.add_sensor(color_sensors)
+    controller.add_sensor(gyro_sensor)
+    controller.add_sensor(ultrasonic_sensor)
 
-    # Sub branches:
-    # Follow the line until we find the object and then pick it up
-    object_find = Selector(
-        [line_following, Sequence([object_detection, object_pickup])]
+    # Create behaviors
+    line_following_behavior = LineFollowingBehavior(
+        blackboard=blackboard, color_sensors=color_sensors, gyro=gyro_sensor
     )
 
-    # Follow the line until we are back at the start and then place the object
-    object_deliver = Sequence(
-        [return_to_line, Selector([line_following, object_place])]
+    line_return_behavior = LineReturnBehavior(
+        blackboard=blackboard, color_sensors=color_sensors
     )
 
-    # Top branch:
-    # 1. Find the can
-    # 2. Deliver the can
-    root = Sequence([object_find, object_deliver])
+    can_detect_behavior = CanDetectionBehavior(
+        blackboard=blackboard,
+        color_sensors=color_sensors,
+        gyro=gyro_sensor,
+        ultrasonic_sensor=ultrasonic_sensor,
+    )
 
-    # root = LineFollowing(robot)
+    can_pickup_behavior = CanPickupBehavior(
+        blackboard=blackboard,
+        color_sensors=color_sensors,
+        gyro=gyro_sensor,
+        ultrasonic_sensor=ultrasonic_sensor,
+    )
 
-    while True:
-        root.tick()
+    # Add behaviors to the controller
+    controller.add_behavior(line_following_behavior)
+    controller.add_behavior(line_return_behavior)
+    controller.add_behavior(can_detect_behavior)
+    controller.add_behavior(can_pickup_behavior)
+
+    # Run the controller forever
+    controller.run()
 
 
 if __name__ == "__main__":

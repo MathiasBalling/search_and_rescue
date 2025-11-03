@@ -25,8 +25,7 @@ def main():
     controller.add_sensor(ultrasonic_sensor)
 
     # Create behaviors
-
-    can_pickup_behavior = CanPickupBehavior(
+    can_detect_behavior = CanDetectionBehavior(
         blackboard=blackboard,
         color_sensors=color_sensors,
         gyro=gyro_sensor,
@@ -34,7 +33,7 @@ def main():
     )
 
     # Add behaviors to the controller
-    controller.add_behavior(can_pickup_behavior)
+    controller.add_behavior(can_detect_behavior)
 
     # Run the controller forever
     controller.run()
