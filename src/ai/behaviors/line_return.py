@@ -19,4 +19,6 @@ class LineReturnBehavior(Behavior):
 
     def actuators_proposal(self):
         # TODO:
-        return ActuatorsProposal(0, 0, False)
+        proposal = ActuatorsProposal(0, 0, False)
+
+        return proposal

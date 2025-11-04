@@ -5,7 +5,6 @@ from params import CAN_DETECTION_DISTANCE_THRESHOLD
 from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
 from sensors.ultrasonic import UltrasonicSensor
-from utils import blackboard
 from utils.blackboard import BlackBoard
 
 
@@ -39,6 +38,8 @@ class CanPickupBehavior(Behavior):
             self.weight += 1
 
     def actuators_proposal(self):
-        # TODO:
-        self.blackboard["can_picked_up"] = True
-        return ActuatorsProposal(0, 0, False)
+        if self.ultrasonic_sensor.get_value() < 6:
+            self.blackboard["can_picked_up"] = True
+            return ActuatorsProposal(0, 0, True)
+
+        return ActuatorsProposal(20, 20, False)
