@@ -1,3 +1,4 @@
+import time
 from actuators import ActuatorsProposal
 from ai.behaviors.behavior import Behavior
 from sensors.colors import ColorSensors
@@ -23,10 +24,14 @@ class CanDetectionBehavior(Behavior):
         if self.blackboard["can_picked_up"]:
             self.weight = 0.0
             return
-
+        
         last_time_line_seen = self.blackboard["last_time_line_seem"]
+        if time.time() - last_time_line_seen < 1.0:
+            self.weight = 0.0
+            return
+        else:
+            self.weight = 1
 
-        self.weight = 0.0
 
     def actuators_proposal(self):
         # TODO:
