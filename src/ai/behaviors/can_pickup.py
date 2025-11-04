@@ -1,3 +1,4 @@
+import time
 from actuators import ActuatorsProposal
 from ai.behaviors.behavior import Behavior
 from sensors.colors import ColorSensors
@@ -20,8 +21,10 @@ class CanPickupBehavior(Behavior):
         self.ultrasonic_sensor = ultrasonic_sensor
 
     def update(self):
-        # TODO: Update self.weight
-        pass
+        last_time_line_seen = self.blackboard["last_time_line_seem"]
+        if time.time() - last_time_line_seen < 2.0:
+            self.weight = 0.0
+            return
 
     def get_control_proposal(self):
         # TODO:

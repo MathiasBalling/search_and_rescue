@@ -4,7 +4,7 @@ from ai.behaviors.can_pickup import CanPickupBehavior
 from ai.behaviors.line_follow import LineFollowingBehavior
 from ai.behaviors.line_return import LineReturnBehavior
 from ai.controller import Controller
-from utils.blackboard import BlackBoard
+from params import setup_blackboard
 from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
 from sensors.ultrasonic import UltrasonicSensor
@@ -12,7 +12,7 @@ from sensors.ultrasonic import UltrasonicSensor
 
 def main():
     controller = Controller()
-    blackboard = BlackBoard()
+    blackboard = setup_blackboard()
 
     # Create sensors
     color_sensors = ColorSensors()

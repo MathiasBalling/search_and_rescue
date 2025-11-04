@@ -20,8 +20,9 @@ class CanDetectionBehavior(Behavior):
         self.ultrasonic_sensor = ultrasonic_sensor
 
     def update(self):
-        # TODO: Update self.weight
-        pass
+        last_time_line_seen = self.blackboard["last_time_line_seem"]
+
+        self.weight = 0.0
 
     def get_control_proposal(self):
         # TODO:

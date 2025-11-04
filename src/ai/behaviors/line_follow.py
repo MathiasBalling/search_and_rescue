@@ -1,6 +1,12 @@
+import time
 from actuators import ActuatorsProposal
 from ai.behaviors.behavior import Behavior
-from params import LINE_FOLLOWING_PID_KD, LINE_FOLLOWING_PID_KI, LINE_FOLLOWING_PID_KP
+from params import (
+    LINE_FOLLOWING_PID_KD,
+    LINE_FOLLOWING_PID_KI,
+    LINE_FOLLOWING_PID_KP,
+    LINE_INTENSITY_THRESHOLD,
+)
 from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
 from utils.blackboard import BlackBoard
@@ -22,8 +28,11 @@ class LineFollowingBehavior(Behavior):
         )
 
     def update(self):
-        # TODO: Update self.weight
-        pass
+        l_val, r_val = self.color_sensors.get_value()
+        if l_val < LINE_INTENSITY_THRESHOLD or r_val < LINE_INTENSITY_THRESHOLD:
+            self.blackboard["last_time_line_seem"] = time.time()
+
+        self.weight = 0.0
 
     def get_control_proposal(self):
         # TODO:

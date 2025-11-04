@@ -1,4 +1,8 @@
 # General parameters
+import time
+from utils.blackboard import BlackBoard
+
+
 DT = 0.05
 
 MOTOR_OFF = 0
@@ -28,3 +32,10 @@ CAN_PICKUP_BASE_SPEED = 15
 # Parameters for ramps
 RAMP_DETECTION_DISTANCE_THRESHOLD = 20
 RAMP_DETECTION_SPEED = 30
+
+
+def setup_blackboard() -> BlackBoard:
+    blackboard = BlackBoard()
+    blackboard["last_time_line_seem"] = time.time()
+
+    return blackboard

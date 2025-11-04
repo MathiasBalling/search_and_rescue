@@ -5,8 +5,9 @@ from utils.blackboard import BlackBoard
 
 
 class Behavior:
-    def __init__(self, blackboard: BlackBoard, weight: float = 0.0):
+    def __init__(self, blackboard: BlackBoard, weight: float = 0.0, priority=1.0):
         self.blackboard = blackboard
+        self.priority = priority
         self.weight = weight
 
     @abstractmethod
@@ -28,7 +29,7 @@ class Behavior:
         Weight of the behavior.
         Returns the weight that determines if the behavior should be chosen.
         """
-        return self.weight
+        return self.weight * self.priority
 
     def __str__(self):
         return self.__class__.__name__
