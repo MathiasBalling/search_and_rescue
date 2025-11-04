@@ -20,10 +20,14 @@ class CanDetectionBehavior(Behavior):
         self.ultrasonic_sensor = ultrasonic_sensor
 
     def update(self):
+        if self.blackboard["can_picked_up"]:
+            self.weight = 0.0
+            return
+
         last_time_line_seen = self.blackboard["last_time_line_seem"]
 
         self.weight = 0.0
 
-    def get_control_proposal(self):
+    def actuators_proposal(self):
         # TODO:
         return ActuatorsProposal(0, 0, False)

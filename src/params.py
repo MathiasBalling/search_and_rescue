@@ -37,5 +37,6 @@ RAMP_DETECTION_SPEED = 30
 def setup_blackboard() -> BlackBoard:
     blackboard = BlackBoard()
     blackboard["last_time_line_seem"] = time.time()
+    blackboard["can_picked_up"] = False
 
     return blackboard

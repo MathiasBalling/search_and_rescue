@@ -17,6 +17,6 @@ class LineReturnBehavior(Behavior):
         # TODO: Update self.weight
         pass
 
-    def get_control_proposal(self):
+    def actuators_proposal(self):
         # TODO:
         return ActuatorsProposal(0, 0, False)
