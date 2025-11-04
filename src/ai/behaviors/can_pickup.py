@@ -22,8 +22,15 @@ class CanPickupBehavior(Behavior):
 
     def update(self):
         last_time_line_seen = self.blackboard["last_time_line_seem"]
-        if time.time() - last_time_line_seen < 2.0:
+        ultra_value = self.ultrasonic_sensor.get_value()
+        if time.time() - last_time_line_seen < 1.0:
             self.weight = 0.0
+            return
+        else:
+            self.weight = 0.5
+
+        if ultra_value < self.CAN_DETECTION_DISTANCE_THRESHOLD:
+            self.weight += 1
             return
 
     def get_control_proposal(self):
