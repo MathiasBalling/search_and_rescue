@@ -14,7 +14,7 @@ class LineReturnBehavior(Behavior):
         self.color_sensors = color_sensors
 
     def update(self):
-        # TODO: Update self.weight
+        # TODO: Update self.weight and blackboard[returned_to_line]
         pass
 
     def actuators_proposal(self):
@@ -22,3 +22,6 @@ class LineReturnBehavior(Behavior):
         proposal = ActuatorsProposal(WheelCommand(0, 0))
 
         return proposal
+
+    def line_return(self):
+        return WheelCommand(0, 0)
