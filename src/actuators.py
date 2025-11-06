@@ -57,13 +57,19 @@ class ActuatorsProposal:
 
     def __str__(self):
         if isinstance(self.command, WheelCommand):
-            return f"left_motor: {self.command.left_speed}, right_motor: {self.command.right_speed}"
+            return "left_motor: {}, right_motor: {}".format(
+                self.command.left_speed, self.command.right_speed
+            )
         elif isinstance(self.command, GripperCommand):
             return "grip"
         elif isinstance(self.command, WheelGripperCommand):
-            return f"left_motor: {self.command.left_speed}, right_motor: {self.command.right_speed}, grip"
+            return "left_motor: {}, right_motor: {}, grip".format(
+                self.command.left_speed, self.command.right_speed
+            )
         elif isinstance(self.command, TurnCommand):
-            return f"turn_deg: {self.command.deg}, turn_ccw: {self.command.ccw}"
+            return "turn_deg: {}, turn_ccw: {}".format(
+                self.command.deg, self.command.ccw
+            )
         else:
             return "Unknown command"
 
