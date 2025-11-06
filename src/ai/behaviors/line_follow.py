@@ -54,8 +54,8 @@ class LineFollowingBehavior(Behavior):
         self.weight = 0.0
 
     def actuators_proposal(self):
-        # TODO:
-        return ActuatorsProposal(WheelCommand(0, 0))
+        cmd = self.follow_line()
+        return ActuatorsProposal(cmd)
 
     # Other methods
     def set_limits(self, limit):
@@ -112,16 +112,8 @@ class LineFollowingBehavior(Behavior):
 
     def follow_line(self):
         current_time = time.time()
-        if current_time - self.blackboard["last_time_line_seen"] > 2.0:
-            # TODO: put weights and stop line following
-            return ActuatorsProposal(WheelCommand(left_speed=0, right_speed=0))
 
         left_color, right_color = self.color_sensors.get_value()
-        if (
-            left_color < LINE_INTENSITY_THRESHOLD
-            and right_color < LINE_INTENSITY_THRESHOLD
-        ):
-            self.blackboard["last_time_line_seen"] = current_time
 
         self.update_mode()
 
@@ -145,14 +137,6 @@ class LineFollowingBehavior(Behavior):
         #     self.robot.set_wheel_duty_cycles(left=-50, right=right_control)
         #     print("Sharp left turn ", left_color, right_color)
 
-        if abs((left_color - right_color)) <= 15:
-            ActuatorsProposal(
-                WheelCommand(left_speed=self.base_speed, right_speed=self.base_speed)
-            )
-        else:
-            ActuatorsProposal(
-                WheelCommand(left_speed=left_control, right_speed=right_control)
-            )
         print(
             # "PID control",
             # control,
@@ -162,3 +146,8 @@ class LineFollowingBehavior(Behavior):
             # left_color,
             # right_color,
         )
+
+        if abs((left_color - right_color)) <= 15:
+            return WheelCommand(left_speed=self.base_speed, right_speed=self.base_speed)
+        else:
+            return WheelCommand(left_speed=left_control, right_speed=right_control)
