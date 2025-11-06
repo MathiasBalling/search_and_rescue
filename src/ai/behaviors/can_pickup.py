@@ -1,7 +1,11 @@
 import time
 from actuators import ActuatorsProposal, GripperCommand, WheelCommand
 from ai.behaviors.behavior import Behavior
-from params import CAN_DETECTION_DISTANCE_THRESHOLD
+from params import (
+    CAN_DETECTION_DISTANCE_THRESHOLD,
+    CAN_PICKUP_BASE_SPEED,
+    CAN_PICKUP_MAX_DISTANCE,
+)
 from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
 from sensors.ultrasonic import UltrasonicSensor
@@ -37,9 +41,14 @@ class CanPickupBehavior(Behavior):
         if ultra_value < CAN_DETECTION_DISTANCE_THRESHOLD:
             self.weight += 1
 
+        if ultra_value < CAN_PICKUP_MAX_DISTANCE:
+            self.weight += 1
+
     def actuators_proposal(self):
-        if self.ultrasonic_sensor.get_value() < 6:
+        if self.ultrasonic_sensor.get_value() < CAN_PICKUP_MAX_DISTANCE:
             self.blackboard["can_picked_up"] = True
             return ActuatorsProposal(GripperCommand())
 
-        return ActuatorsProposal(WheelCommand(20, 20))
+        return ActuatorsProposal(
+            WheelCommand(CAN_PICKUP_BASE_SPEED, CAN_PICKUP_BASE_SPEED)
+        )

@@ -76,6 +76,7 @@ class LineFollowingBehavior(Behavior):
     def set_controller_uphill(self):
         if self.controller_mode == MODE_UPHILL:
             return
+        # TODO: Update these
         self.pid.kp = 5
         self.pid.ki = 0
         self.pid.kd = 0
@@ -87,6 +88,7 @@ class LineFollowingBehavior(Behavior):
     def set_controller_downhill(self):
         if self.controller_mode == MODE_DOWNHILL:
             return
+        # TODO: Update these
         self.pid.kp = 1
         self.pid.ki = 0
         self.pid.kd = 0
@@ -138,16 +140,16 @@ class LineFollowingBehavior(Behavior):
         #     print("Sharp left turn ", left_color, right_color)
 
         print(
-            # "PID control",
-            # control,
-            # left_control,
-            # right_control,
-            # "Colors:",
-            # left_color,
-            # right_color,
+            "PID control",
+            control,
+            left_control,
+            right_control,
+            "Colors:",
+            left_color,
+            right_color,
         )
 
-        if abs((left_color - right_color)) <= 15:
+        if abs((left_color - right_color)) <= 10:
             return WheelCommand(left_speed=self.base_speed, right_speed=self.base_speed)
         else:
             return WheelCommand(left_speed=left_control, right_speed=right_control)
