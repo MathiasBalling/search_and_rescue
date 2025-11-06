@@ -150,7 +150,7 @@ class LineFollowingBehavior(Behavior):
         ):  # TURN LEFT SHARP
             self.last_sensor_seen = "left"
             return WheelCommand(
-                left_speed=-LINE_FOLLOWING_SHARP_TURN_SPEED + 20,
+                left_speed=-LINE_FOLLOWING_SHARP_TURN_SPEED,
                 right_speed=LINE_FOLLOWING_SHARP_TURN_SPEED,
             )
         elif (
@@ -160,7 +160,7 @@ class LineFollowingBehavior(Behavior):
             self.last_sensor_seen = "right"
             return WheelCommand(
                 left_speed=LINE_FOLLOWING_SHARP_TURN_SPEED,
-                right_speed=-LINE_FOLLOWING_SHARP_TURN_SPEED + 20,
+                right_speed=-LINE_FOLLOWING_SHARP_TURN_SPEED,
             )
         elif (
             left_color <= LINE_INTENSITY_BLACK_THRESHOLD
@@ -168,13 +168,13 @@ class LineFollowingBehavior(Behavior):
         ):  # SE BOTH BLACK
             if self.last_sensor_seen == "left":
                 return WheelCommand(
-                    left_speed=-LINE_FOLLOWING_SHARP_TURN_SPEED + 20,
+                    left_speed=-LINE_FOLLOWING_SHARP_TURN_SPEED,
                     right_speed=LINE_FOLLOWING_SHARP_TURN_SPEED,
                 )
             else:
                 return WheelCommand(
                     left_speed=LINE_FOLLOWING_SHARP_TURN_SPEED,
-                    right_speed=-LINE_FOLLOWING_SHARP_TURN_SPEED + 20,
+                    right_speed=-LINE_FOLLOWING_SHARP_TURN_SPEED,
                 )
 
         return WheelCommand(left_speed=left_control, right_speed=right_control)
