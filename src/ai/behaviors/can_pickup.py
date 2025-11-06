@@ -1,5 +1,5 @@
 import time
-from actuators import ActuatorsProposal,GripperCommand, WheelCommand
+from actuators import ActuatorsProposal, GripperCommand, WheelCommand
 from ai.behaviors.behavior import Behavior
 from params import CAN_DETECTION_DISTANCE_THRESHOLD
 from sensors.colors import ColorSensors
@@ -26,7 +26,7 @@ class CanPickupBehavior(Behavior):
             self.weight = 0.0
             return
 
-        last_time_line_seen = self.blackboard["last_time_line_seem"]
+        last_time_line_seen = self.blackboard["last_time_line_seen"]
         if time.time() - last_time_line_seen < 1.0:
             self.weight = 0.0
             return
@@ -42,4 +42,4 @@ class CanPickupBehavior(Behavior):
             self.blackboard["can_picked_up"] = True
             return ActuatorsProposal(GripperCommand())
 
-        return ActuatorsProposal(WheelCommand(20,20))
+        return ActuatorsProposal(WheelCommand(20, 20))

@@ -25,7 +25,7 @@ class CanDetectionBehavior(Behavior):
             self.weight = 0.0
             return
 
-        last_time_line_seen = self.blackboard["last_time_line_seem"]
+        last_time_line_seen = self.blackboard["last_time_line_seen"]
         if time.time() - last_time_line_seen < 1.0:
             self.weight = 0.0
             return
