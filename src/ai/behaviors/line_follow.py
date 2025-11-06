@@ -9,8 +9,6 @@ from sensors.gyro import GyroSensor
 from utils.blackboard import BlackBoard
 from utils.pid_controller import PIDController
 
-from actuators import WheelCommand
-
 
 from params import (
     LINE_FOLLOWING_BASE_SPEED,
@@ -39,6 +37,7 @@ class LineFollowingBehavior(Behavior):
             LINE_FOLLOWING_PID_KD,
             (-100, 100),
         )
+        self.controller_mode = MODE_STRAIGHT
         self.limits = (-100, 100)
         self.base_speed = LINE_FOLLOWING_BASE_SPEED
 

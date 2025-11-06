@@ -10,8 +10,8 @@ import time
 
 class Controller:
     def __init__(self):
-        self.sensors: List[Sensor] = []
-        self.behaviors: List[Behavior] = []
+        self.sensors = []
+        self.behaviors = []
         self.actuators = Actuators()
         self.arbitrator = Arbitrator(self)
 
