@@ -12,10 +12,12 @@ from utils.pid_controller import PIDController
 
 from params import (
     LINE_FOLLOWING_BASE_SPEED,
-    LINE_INTENSITY_THRESHOLD,
+    LINE_INTENSITY_WHITE_THRESHOLD,
+    LINE_INTENSITY_BLACK_THRESHOLD,
     LINE_FOLLOWING_PID_KP,
     LINE_FOLLOWING_PID_KD,
     LINE_FOLLOWING_PID_KI,
+    LINE_FOLLOWING_SHARP_TURN_SPEED,
 )
 
 MODE_STRAIGHT = 0
@@ -41,11 +43,15 @@ class LineFollowingBehavior(Behavior):
         self.controller_mode = MODE_STRAIGHT
         self.limits = (-100, 100)
         self.base_speed = LINE_FOLLOWING_BASE_SPEED
+        self.last_sensor_seen = "left"
 
     def update(self):
         l_val, r_val = self.color_sensors.get_value()
         now = time.time()
-        if l_val < LINE_INTENSITY_THRESHOLD or r_val < LINE_INTENSITY_THRESHOLD:
+        if (
+            l_val < LINE_INTENSITY_WHITE_THRESHOLD
+            or r_val < LINE_INTENSITY_WHITE_THRESHOLD
+        ):
             self.blackboard["last_time_line_seen"] = now
 
         if now - self.blackboard["last_time_line_seen"] > 2.0:
@@ -117,39 +123,58 @@ class LineFollowingBehavior(Behavior):
 
         left_color, right_color = self.color_sensors.get_value()
 
-        self.update_mode()
+        # self.update_mode()
 
         diff = left_color - right_color
 
         control = self.pid.compute(diff, current_time)
 
-        left_control = self.base_speed + control
-        right_control = self.base_speed - control
+        left_control = self.base_speed - control
+        right_control = self.base_speed + control
 
         left_control = round(min(max(self.limits[0], left_control), self.limits[1]))
         right_control = round(min(max(self.limits[0], right_control), self.limits[1]))
-
-        # if left_color > 27:
-        #     left_control = 100
-        #     self.robot.set_wheel_duty_cycles(left=left_control, right=-50)
-        #     # print("Sharp right turn ", left_color, right_color)
-
-        # elif right_color > 27:
-        #     right_control = 100
-        #     self.robot.set_wheel_duty_cycles(left=-50, right=right_control)
-        #     print("Sharp left turn ", left_color, right_color)
-
         print(
-            "PID control",
-            control,
-            left_control,
-            right_control,
+            # "PID control",
+            # control,
+            # left_control,
+            # right_control,
             "Colors:",
             left_color,
             right_color,
         )
 
-        if abs((left_color - right_color)) <= 10:
-            return WheelCommand(left_speed=self.base_speed, right_speed=self.base_speed)
-        else:
-            return WheelCommand(left_speed=left_control, right_speed=right_control)
+        if (
+            left_color <= LINE_INTENSITY_BLACK_THRESHOLD
+            and right_color >= LINE_INTENSITY_WHITE_THRESHOLD
+        ):  # TURN LEFT SHARP
+            self.last_sensor_seen = "left"
+            return WheelCommand(
+                left_speed=-LINE_FOLLOWING_SHARP_TURN_SPEED + 20,
+                right_speed=LINE_FOLLOWING_SHARP_TURN_SPEED,
+            )
+        elif (
+            right_color <= LINE_INTENSITY_BLACK_THRESHOLD
+            and left_color >= LINE_INTENSITY_WHITE_THRESHOLD
+        ):  # TURN RIGHT SHARP
+            self.last_sensor_seen = "right"
+            return WheelCommand(
+                left_speed=LINE_FOLLOWING_SHARP_TURN_SPEED,
+                right_speed=-LINE_FOLLOWING_SHARP_TURN_SPEED + 20,
+            )
+        elif (
+            left_color <= LINE_INTENSITY_BLACK_THRESHOLD
+            and right_color <= LINE_INTENSITY_BLACK_THRESHOLD
+        ):  # SE BOTH BLACK
+            if self.last_sensor_seen == "left":
+                return WheelCommand(
+                    left_speed=-LINE_FOLLOWING_SHARP_TURN_SPEED + 20,
+                    right_speed=LINE_FOLLOWING_SHARP_TURN_SPEED,
+                )
+            else:
+                return WheelCommand(
+                    left_speed=LINE_FOLLOWING_SHARP_TURN_SPEED,
+                    right_speed=-LINE_FOLLOWING_SHARP_TURN_SPEED + 20,
+                )
+
+        return WheelCommand(left_speed=left_control, right_speed=right_control)
