@@ -31,11 +31,12 @@ class LineFollowingBehavior(Behavior):
         super().__init__(blackboard, 1.0)  # 1.0 because we start on the line
         self.color_sensors = color_sensors
         self.gyro = gyro
+        self.limits = (-100, 100)
         self.pid = PIDController(
             LINE_FOLLOWING_PID_KP,
             LINE_FOLLOWING_PID_KI,
             LINE_FOLLOWING_PID_KD,
-            (-100, 100),
+            self.limits,
         )
         self.controller_mode = MODE_STRAIGHT
         self.limits = (-100, 100)
