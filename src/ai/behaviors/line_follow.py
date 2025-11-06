@@ -9,6 +9,8 @@ from sensors.gyro import GyroSensor
 from utils.blackboard import BlackBoard
 from utils.pid_controller import PIDController
 
+from actuators import WheelCommand
+
 
 from params import (
     LINE_FOLLOWING_BASE_SPEED,
@@ -44,9 +46,9 @@ class LineFollowingBehavior(Behavior):
         l_val, r_val = self.color_sensors.get_value()
         now = time.time()
         if l_val < LINE_INTENSITY_THRESHOLD or r_val < LINE_INTENSITY_THRESHOLD:
-            self.blackboard["last_time_line_seem"] = now
+            self.blackboard["last_time_line_seen"] = now
 
-        if now - self.blackboard["last_time_line_seem"] > 2.0:
+        if now - self.blackboard["last_time_line_seen"] > 2.0:
             self.weight = 0.0
 
         self.weight = 0.0
@@ -107,3 +109,56 @@ class LineFollowingBehavior(Behavior):
             elif self.controller_mode == MODE_UPHILL:
                 self.set_controller_straight()
         print("Angle:", rate, "Mode:", self.controller_mode)
+
+    def follow_line(self):
+        current_time = time.time()
+        if current_time - self.blackboard["last_time_line_seen"] > 2.0:
+            # TODO: put weights and stop line following
+            return ActuatorsProposal(WheelCommand(left_speed=0, right_speed=0))
+
+        left_color, right_color = self.color_sensors.get_value()
+        if (
+            left_color < LINE_INTENSITY_THRESHOLD
+            and right_color < LINE_INTENSITY_THRESHOLD
+        ):
+            self.blackboard["last_time_line_seen"] = current_time
+
+        self.update_mode()
+
+        diff = left_color - right_color
+
+        control = self.pid.compute(diff, current_time)
+
+        left_control = self.base_speed + control
+        right_control = self.base_speed - control
+
+        left_control = round(min(max(self.limits[0], left_control), self.limits[1]))
+        right_control = round(min(max(self.limits[0], right_control), self.limits[1]))
+
+        # if left_color > 27:
+        #     left_control = 100
+        #     self.robot.set_wheel_duty_cycles(left=left_control, right=-50)
+        #     # print("Sharp right turn ", left_color, right_color)
+
+        # elif right_color > 27:
+        #     right_control = 100
+        #     self.robot.set_wheel_duty_cycles(left=-50, right=right_control)
+        #     print("Sharp left turn ", left_color, right_color)
+
+        if abs((left_color - right_color)) <= 15:
+            ActuatorsProposal(
+                WheelCommand(left_speed=self.base_speed, right_speed=self.base_speed)
+            )
+        else:
+            ActuatorsProposal(
+                WheelCommand(left_speed=left_control, right_speed=right_control)
+            )
+        print(
+            # "PID control",
+            # control,
+            # left_control,
+            # right_control,
+            # "Colors:",
+            # left_color,
+            # right_color,
+        )
