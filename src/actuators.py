@@ -1,22 +1,22 @@
 import ev3dev.ev3 as ev3
 import time
 
-from dataclasses import dataclass
-
 from params import GRIPPER_SPEED, MOTOR_OFF, TURN_TIME_PER_DEGREE
 
 
-@dataclass
+from typing import Union
+
+
 class WheelCommand:
     """
     Set the wheel speeds.
     """
 
-    left_speed: int
-    right_speed: int
+    def __init__(self, left_speed, right_speed):
+        self.left_speed = left_speed
+        self.right_speed = right_speed
 
 
-@dataclass
 class GripperCommand:
     """
     Does the gripping.
@@ -25,33 +25,33 @@ class GripperCommand:
     pass
 
 
-@dataclass
 class WheelGripperCommand:
     """
     Does the gripping and sets the wheel speeds.
     """
 
-    left_speed: int
-    right_speed: int
+    def __init__(self, left_speed, right_speed):
+        self.left_speed = left_speed
+        self.right_speed = right_speed
 
 
-@dataclass
 class TurnCommand:
     """
     Turns the robot the specified number of degrees.
     """
 
-    ccw: bool
-    deg: float
+    def __init__(self, ccw, deg):
+        self.ccw = ccw
+        self.deg = deg
 
 
-Command = WheelCommand | GripperCommand | WheelGripperCommand | TurnCommand
+Command = Union[WheelCommand, GripperCommand, WheelGripperCommand, TurnCommand]
 
 
 class ActuatorsProposal:
     def __init__(
         self,
-        command: Command,
+        command,
     ):
         self.command = command
 
