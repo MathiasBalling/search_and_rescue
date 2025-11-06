@@ -1,4 +1,4 @@
-from actuators import ActuatorsProposal
+from actuators import ActuatorsProposal, WheelCommand
 from ai.behaviors.behavior import Behavior
 from sensors.colors import ColorSensors
 from utils.blackboard import BlackBoard
@@ -19,6 +19,6 @@ class LineReturnBehavior(Behavior):
 
     def actuators_proposal(self):
         # TODO:
-        proposal = ActuatorsProposal(0, 0, False)
+        proposal = ActuatorsProposal(WheelCommand(0, 0))
 
         return proposal

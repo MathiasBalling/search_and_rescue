@@ -1,5 +1,5 @@
 import time
-from actuators import ActuatorsProposal
+from actuators import ActuatorsProposal, WheelCommand
 from ai.behaviors.behavior import Behavior
 from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
@@ -24,7 +24,7 @@ class CanDetectionBehavior(Behavior):
         if self.blackboard["can_picked_up"]:
             self.weight = 0.0
             return
-        
+
         last_time_line_seen = self.blackboard["last_time_line_seem"]
         if time.time() - last_time_line_seen < 1.0:
             self.weight = 0.0
@@ -32,7 +32,5 @@ class CanDetectionBehavior(Behavior):
         else:
             self.weight = 1
 
-
     def actuators_proposal(self):
-        # TODO:
-        return ActuatorsProposal(0, 0, False)
+        return ActuatorsProposal(WheelCommand(0, 0))

@@ -8,22 +8,44 @@ from params import GRIPPER_SPEED, MOTOR_OFF, TURN_TIME_PER_DEGREE
 
 @dataclass
 class WheelCommand:
+    """
+    Set the wheel speeds.
+    """
+
     left_speed: int
     right_speed: int
 
 
 @dataclass
 class GripperCommand:
+    """
+    Does the gripping.
+    """
+
     pass
 
 
 @dataclass
+class WheelGripperCommand:
+    """
+    Does the gripping and sets the wheel speeds.
+    """
+
+    left_speed: int
+    right_speed: int
+
+
+@dataclass
 class TurnCommand:
+    """
+    Turns the robot the specified number of degrees.
+    """
+
     ccw: bool
     deg: float
 
 
-Command = WheelCommand | GripperCommand | TurnCommand
+Command = WheelCommand | GripperCommand | WheelGripperCommand | TurnCommand
 
 
 class ActuatorsProposal:
@@ -56,6 +78,12 @@ class Actuators:
             self.left_motor.duty_cycle_sp = cmd.left_speed
             self.right_motor.duty_cycle_sp = cmd.right_speed
         elif isinstance(cmd, GripperCommand):
+            self.left_motor.duty_cycle_sp = MOTOR_OFF
+            self.right_motor.duty_cycle_sp = MOTOR_OFF
+            self.grip_object()
+        elif isinstance(cmd, WheelGripperCommand):
+            self.left_motor.duty_cycle_sp = cmd.left_speed
+            self.right_motor.duty_cycle_sp = cmd.right_speed
             self.grip_object()
         elif isinstance(cmd, TurnCommand):
             self.turn_deg(cmd.deg, cmd.ccw)

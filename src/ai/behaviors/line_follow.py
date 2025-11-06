@@ -1,7 +1,7 @@
 import time
 
 from ai.behaviors.behavior import Behavior
-from actuators import ActuatorsProposal
+from actuators import ActuatorsProposal, WheelCommand
 
 from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
@@ -53,7 +53,7 @@ class LineFollowingBehavior(Behavior):
 
     def actuators_proposal(self):
         # TODO:
-        return ActuatorsProposal(0, 0, False)
+        return ActuatorsProposal(WheelCommand(0, 0))
 
     # Other methods
     def set_limits(self, limit):

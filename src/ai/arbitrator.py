@@ -1,4 +1,4 @@
-from actuators import ActuatorsProposal
+from actuators import ActuatorsProposal, WheelCommand
 
 
 class Arbitrator:
@@ -14,4 +14,4 @@ class Arbitrator:
 
     def choose_proposal_cooperative(self) -> ActuatorsProposal:
         # TODO: Make if it makes sense to have more than one behavior
-        return ActuatorsProposal(0, 0, False)
+        return ActuatorsProposal(WheelCommand(0, 0))
