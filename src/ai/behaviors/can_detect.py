@@ -36,7 +36,7 @@ class CanDetectionBehavior(Behavior):
             self.weight = 0.0
             return
     
-        if self.ultrasonic_sensor.get_value() < CAN_DETECTION_BASE_SPEED:
+        if self.ultrasonic_sensor.get_value() < CAN_DETECTION_DISTANCE_THRESHOLD:
             self.weight = 0.0
             return
 
