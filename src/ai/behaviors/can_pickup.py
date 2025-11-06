@@ -1,5 +1,5 @@
 import time
-from actuators import ActuatorsProposal
+from actuators import ActuatorsProposal,GripperCommand, WheelCommand
 from ai.behaviors.behavior import Behavior
 from params import CAN_DETECTION_DISTANCE_THRESHOLD
 from sensors.colors import ColorSensors
@@ -40,6 +40,6 @@ class CanPickupBehavior(Behavior):
     def actuators_proposal(self):
         if self.ultrasonic_sensor.get_value() < 6:
             self.blackboard["can_picked_up"] = True
-            return ActuatorsProposal(0, 0, True)
+            return ActuatorsProposal(GripperCommand())
 
-        return ActuatorsProposal(20, 20, False)
+        return ActuatorsProposal(WheelCommand(20,20))
