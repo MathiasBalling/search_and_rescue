@@ -40,9 +40,9 @@ class TurnCommand:
     Turns the robot the specified number of degrees.
     """
 
-    def __init__(self, ccw, deg):
-        self.ccw = ccw
+    def __init__(self, deg, ccw):
         self.deg = deg
+        self.ccw = ccw
 
 
 Command = Union[WheelCommand, GripperCommand, WheelGripperCommand, TurnCommand]

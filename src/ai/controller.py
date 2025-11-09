@@ -1,4 +1,3 @@
-from typing import List
 from actuators import Actuators
 from ai.arbitrator import Arbitrator
 from ai.behaviors.behavior import Behavior

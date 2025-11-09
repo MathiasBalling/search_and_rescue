@@ -34,9 +34,16 @@ CAN_PICKUP_MAX_DISTANCE = 6
 # Parameters for ramps
 
 
+# Blackboard keys
+LAST_TIME_LINE_SEEN = "last_time_line_seen"
+CAN_PICKED_UP = "can_picked_up"
+RETURNED_TO_LINE = "returned_to_line"
+
+
 def setup_blackboard() -> BlackBoard:
     blackboard = BlackBoard()
-    blackboard["last_time_line_seen"] = time.time()
-    blackboard["can_picked_up"] = False
+    blackboard[LAST_TIME_LINE_SEEN] = time.time()
+    blackboard[CAN_PICKED_UP] = False
+    blackboard[RETURNED_TO_LINE] = False
 
     return blackboard

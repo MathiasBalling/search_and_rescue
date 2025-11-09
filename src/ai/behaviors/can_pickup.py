@@ -1,10 +1,17 @@
 import time
-from actuators import ActuatorsProposal, GripperCommand, WheelCommand
+from actuators import (
+    ActuatorsProposal,
+    GripperCommand,
+    WheelCommand,
+    WheelGripperCommand,
+)
 from ai.behaviors.behavior import Behavior
 from params import (
     CAN_DETECTION_DISTANCE_THRESHOLD,
+    CAN_PICKED_UP,
     CAN_PICKUP_BASE_SPEED,
     CAN_PICKUP_MAX_DISTANCE,
+    LAST_TIME_LINE_SEEN,
 )
 from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
@@ -26,16 +33,16 @@ class CanPickupBehavior(Behavior):
         self.ultrasonic_sensor = ultrasonic_sensor
 
     def update(self):
-        if self.blackboard["can_picked_up"]:
+        if self.blackboard[CAN_PICKED_UP]:
             self.weight = 0.0
             return
 
-        last_time_line_seen = self.blackboard["last_time_line_seen"]
+        last_time_line_seen = self.blackboard[LAST_TIME_LINE_SEEN]
         if time.time() - last_time_line_seen < 1.0:
             self.weight = 0.0
             return
-        else:
-            self.weight = 0.5
+
+        self.weight = 0.5
 
         ultra_value = self.ultrasonic_sensor.get_value()
         if ultra_value < CAN_DETECTION_DISTANCE_THRESHOLD:
@@ -46,9 +53,15 @@ class CanPickupBehavior(Behavior):
 
     def actuators_proposal(self):
         if self.ultrasonic_sensor.get_value() < CAN_PICKUP_MAX_DISTANCE:
-            self.blackboard["can_picked_up"] = True
+            self.blackboard[CAN_PICKED_UP] = True
             return ActuatorsProposal(GripperCommand())
+            # Do this if we don't hit the can with the gripper
+            # return ActuatorsProposal(WheelGripperCommand(10, 10))
 
-        return ActuatorsProposal(
-            WheelCommand(CAN_PICKUP_BASE_SPEED, CAN_PICKUP_BASE_SPEED)
-        )
+        if self.ultrasonic_sensor.get_value() < CAN_DETECTION_DISTANCE_THRESHOLD:
+            return ActuatorsProposal(
+                WheelCommand(CAN_PICKUP_BASE_SPEED, CAN_PICKUP_BASE_SPEED)
+            )
+
+        # Something must be wrong in can detection
+        return ActuatorsProposal(WheelCommand(0, 0))

@@ -1,13 +1,20 @@
 import time
-from actuators import ActuatorsProposal, WheelCommand, TurnCommand
+from actuators import ActuatorsProposal, WheelCommand
 from ai.behaviors.behavior import Behavior
 from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
 from sensors.ultrasonic import UltrasonicSensor
 from utils.blackboard import BlackBoard
-from params import CAN_DETECTION_DISTANCE_THRESHOLD, TURN_TIME_PER_DEGREE,CAN_DETECTION_BASE_SPEED
+from params import (
+    CAN_DETECTION_DISTANCE_THRESHOLD,
+    CAN_PICKED_UP,
+    LAST_TIME_LINE_SEEN,
+    TURN_TIME_PER_DEGREE,
+    CAN_DETECTION_BASE_SPEED,
+)
 
-
+TURN_LEFT = WheelCommand(-CAN_DETECTION_BASE_SPEED, CAN_DETECTION_BASE_SPEED)
+TURN_RIGHT = WheelCommand(CAN_DETECTION_BASE_SPEED, -CAN_DETECTION_BASE_SPEED)
 
 
 class CanDetectionBehavior(Behavior):
@@ -29,43 +36,45 @@ class CanDetectionBehavior(Behavior):
             (False, 60.0),
         ]
         self.scan_index = 0
-        self.segment_start_monotonic = None
+        self.turn_segment_start = None
 
     def update(self):
-        if self.blackboard["can_picked_up"]:
+        if self.blackboard[CAN_PICKED_UP]:
             self.weight = 0.0
             return
-    
+
         if self.ultrasonic_sensor.get_value() < CAN_DETECTION_DISTANCE_THRESHOLD:
             self.weight = 0.0
             return
 
-        last_time_line_seen = self.blackboard["last_time_line_seen"]
+        last_time_line_seen = self.blackboard[LAST_TIME_LINE_SEEN]
         if time.time() - last_time_line_seen < 1.0:
             self.weight = 0.0
             return
-        else:
-            self.weight = 1
+
+        self.weight = 1
 
     def actuators_proposal(self):
-        current_time = time.monotonic()
-        if self.segment_start_monotonic is None:
-            self.segment_start_monotonic = current_time
+        current_time = time.monotonic()  # FIX: monotonic?????
+        if self.turn_segment_start is None:
+            self.turn_segment_start = current_time
 
         ccw, deg = self.scan_steps[self.scan_index]
-        duration = TURN_TIME_PER_DEGREE * deg
-        elapsed_time = current_time - self.segment_start_monotonic
+        turn_duration = TURN_TIME_PER_DEGREE * deg
+        elapsed_time = current_time - self.turn_segment_start
 
-        if elapsed_time < duration:
+        if elapsed_time < turn_duration:
             if ccw:
-                return ActuatorsProposal(WheelCommand(-CAN_DETECTION_BASE_SPEED, CAN_DETECTION_BASE_SPEED))
+                return ActuatorsProposal(TURN_LEFT)
             else:
-                return ActuatorsProposal(WheelCommand(CAN_DETECTION_BASE_SPEED, -CAN_DETECTION_BASE_SPEED))
+                return ActuatorsProposal(TURN_RIGHT)
         else:
             self.scan_index = (self.scan_index + 1) % len(self.scan_steps)
-            self.segment_start_monotonic = current_time
-            next_ccw,_ = self.scan_steps[self.scan_index]
+            self.turn_segment_start = current_time
+            next_ccw, _ = self.scan_steps[self.scan_index]
+
             if next_ccw:
-                return ActuatorsProposal(WheelCommand(-CAN_DETECTION_BASE_SPEED, CAN_DETECTION_BASE_SPEED))
+                return ActuatorsProposal(TURN_LEFT)
             else:
-                return ActuatorsProposal(WheelCommand(CAN_DETECTION_BASE_SPEED, -CAN_DETECTION_BASE_SPEED))
+                return ActuatorsProposal(TURN_RIGHT)
+
