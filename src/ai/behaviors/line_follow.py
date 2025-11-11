@@ -86,8 +86,7 @@ class LineFollowingBehavior(Behavior):
 
         self.update_line_seen()
 
-        # TODO: Uncomment this when gyro is working
-        # self.update_mode()
+        self.update_mode()
 
         diff = left_intensity - right_intensity
 
@@ -192,7 +191,7 @@ class LineFollowingBehavior(Behavior):
         self.pid.ki = 0
         self.pid.kd = 0
         self.controller_mode = MODE_UPHILL
-        self.set_limits((-100, 100))
+        self.set_limits((0, 100))
         self.base_speed = 70
         self.pid.reset()
 
