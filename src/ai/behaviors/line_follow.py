@@ -28,10 +28,10 @@ MODE_DOWNHILL = 2
 
 
 SHARP_RIGHT_TURN = WheelCommand(
-    LINE_FOLLOWING_SHARP_TURN_SPEED, -LINE_FOLLOWING_SHARP_TURN_SPEED_BACK
+    LINE_FOLLOWING_SHARP_TURN_SPEED, LINE_FOLLOWING_SHARP_TURN_SPEED_BACK
 )
 SHARP_LEFT_TURN = WheelCommand(
-    -LINE_FOLLOWING_SHARP_TURN_SPEED_BACK, LINE_FOLLOWING_SHARP_TURN_SPEED
+    LINE_FOLLOWING_SHARP_TURN_SPEED_BACK, LINE_FOLLOWING_SHARP_TURN_SPEED
 )
 
 
@@ -99,57 +99,64 @@ class LineFollowingBehavior(Behavior):
         left_control = round(min(max(self.limits[0], left_control), self.limits[1]))
         right_control = round(min(max(self.limits[0], right_control), self.limits[1]))
 
-        print(
-            # "PID control",
-            # control,
-            # left_control,
-            # right_control,
-            "Colors:",
-            left_intensity,
-            right_intensity,
-        )
+        # print(
+        #     # "PID control",
+        #     # control,
+        #     # left_control,
+        #     # right_control,
+        #     # "Colors:",
+        #     # left_intensity,
+        #     # right_intensity,
+        # )
 
         # Hanlde sharp turn PID control can't handle
+        # if (
+        #     left_intensity <= LINE_INTENSITY_BLACK_THRESHOLD
+        #     and right_intensity >= LINE_INTENSITY_WHITE_THRESHOLD
+        # ):
+        #     # Left sees full black and right sees full white
+        #     # TURN LEFT SHARP
+        #     print("black white")
+        #     return SHARP_LEFT_TURN
+        # elif (
+        #     right_intensity <= LINE_INTENSITY_BLACK_THRESHOLD
+        #     and left_intensity >= LINE_INTENSITY_WHITE_THRESHOLD
+        # ):
+        #     # Right sees full black and left sees full white
+        #     # TURN RIGHT SHARP
+        #     print("white black")
+
+        #     return SHARP_RIGHT_TURN
+        # if (
+        #     left_intensity <= LINE_INTENSITY_BLACK_THRESHOLD
+        #     and right_intensity <= LINE_INTENSITY_BLACK_THRESHOLD
+        # ):
+        #     # Both see full black
+        #     # TURN IN THE DIRECTION OF WHERE WE LAST SAW THE LINE
+        #     # print("black black")
+        #     if self.last_left_line_seen > self.last_right_line_seen:
+        #         return SHARP_LEFT_TURN
+        #     else:
+        #         return SHARP_RIGHT_TURN
         if (
-            left_intensity <= LINE_INTENSITY_BLACK_THRESHOLD
+            left_intensity >= LINE_INTENSITY_WHITE_THRESHOLD
             and right_intensity >= LINE_INTENSITY_WHITE_THRESHOLD
         ):
-            # Left sees full black and right sees full white
-            # TURN LEFT SHARP
-
-            return SHARP_LEFT_TURN
-        elif (
-            right_intensity <= LINE_INTENSITY_BLACK_THRESHOLD
-            and left_intensity >= LINE_INTENSITY_WHITE_THRESHOLD
-        ):
-            # Right sees full black and left sees full white
-            # TURN RIGHT SHARP
-
-            return SHARP_RIGHT_TURN
-        elif (
-            left_intensity <= LINE_INTENSITY_BLACK_THRESHOLD
-            and right_intensity <= LINE_INTENSITY_BLACK_THRESHOLD
-        ):
-            # Both see full black
-            # TURN IN THE DIRECTION OF WHERE WE LAST SAW THE LINE
-            if self.last_left_line_seen > self.last_right_line_seen:
-                return SHARP_LEFT_TURN
-            else:
-                return SHARP_RIGHT_TURN
-        elif (
-            left_intensity <= LINE_INTENSITY_WHITE_THRESHOLD
-            and right_intensity <= LINE_INTENSITY_WHITE_THRESHOLD
-        ):
+            # print("white white")
             now = time.time()
             turn_left = self.last_left_line_seen > self.last_right_line_seen
             if turn_left:
-                if now - self.last_left_line_seen < 0.5:
-                    return SHARP_LEFT_TURN
+                if 0.4 < (now - self.last_left_line_seen) < 1.0:
+                    print("HARD LEFT")
+                    return WheelCommand(-100, 100)
             else:
-                if now - self.last_right_line_seen < 0.5:
-                    return SHARP_RIGHT_TURN
+                if 0.4 < (now - self.last_right_line_seen) < 1.0:
+                    print("HARD RIGHT")
+
+                    return WheelCommand(100, -100)
 
         # If hard turn is not needed we use the PID control.
+        print("pid")
         return WheelCommand(left_speed=left_control, right_speed=right_control)
 
     ############################################################
