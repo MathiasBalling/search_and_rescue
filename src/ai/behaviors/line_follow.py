@@ -187,7 +187,7 @@ class LineFollowingBehavior(Behavior):
         if self.controller_mode == MODE_UPHILL:
             return
         # TODO: Update these or maybe only update base spped while same PID params for all
-        self.pid.kp = 1.5
+        self.pid.kp = 2.5
         self.pid.ki = 0
         self.pid.kd = 0
         self.controller_mode = MODE_UPHILL
@@ -198,8 +198,8 @@ class LineFollowingBehavior(Behavior):
     def update_mode(self):
         # FIX: Shifts to fast to new state
         angle = self.gyro.get_value()
-        if angle <= 10:
+        if angle <= 15:
             self.set_controller_straight()
-        elif angle > 10:
+        else:
             self.set_controller_uphill()
         print("Angle:", angle, "Mode:", self.controller_mode)
