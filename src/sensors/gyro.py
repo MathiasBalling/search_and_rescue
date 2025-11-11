@@ -13,10 +13,14 @@ class GyroSensor(Sensor):
         # self.sensor.mode = ev3.GyroSensor.MODE_GYRO_G_A
         # self.sensor.mode = ev3.GyroSensor.MODE_GYRO_RATE
         self.sensor.mode = ev3.GyroSensor.MODE_GYRO_ANG
+        self.offset = None
         self.value = 0
 
     def update(self):
-        self.value = self.sensor.value()
+        if self.offset is None:
+            # Assume we start on a straight surface.
+            self.offset = self.sensor.value()
+        self.value = self.sensor.value() - self.offset
 
     def get_value(self):
         return self.value
