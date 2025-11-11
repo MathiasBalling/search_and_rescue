@@ -9,8 +9,10 @@ class GyroSensor(Sensor):
         self.sensor = ev3.GyroSensor(ev3.INPUT_3)
         # FIX: Update this to angle or angle+rate instead of rate
         # Or use rate and calculate the angle ourselves
-        self.sensor.mode = ev3.GyroSensor.MODE_GYRO_G_A
-        self.sensor.mode = ev3.GyroSensor.MODE_GYRO_RATE
+
+        # self.sensor.mode = ev3.GyroSensor.MODE_GYRO_G_A
+        # self.sensor.mode = ev3.GyroSensor.MODE_GYRO_RATE
+        self.sensor.mode = ev3.GyroSensor.MODE_GYRO_ANG
         self.value = 0
 
     def update(self):

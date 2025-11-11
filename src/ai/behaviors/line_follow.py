@@ -22,9 +22,9 @@ from params import (
     LINE_FOLLOWING_SHARP_TURN_SPEED_BACK,
 )
 
-MODE_STRAIGHT = 0
-MODE_UPHILL = 1
-MODE_DOWNHILL = 2
+MODE_STRAIGHT = "straight"
+MODE_UPHILL = "uphill"
+MODE_DOWNHILL = "downhill"
 
 
 SHARP_RIGHT_TURN = WheelCommand(
@@ -196,29 +196,11 @@ class LineFollowingBehavior(Behavior):
         self.base_speed = 70
         self.pid.reset()
 
-    def set_controller_downhill(self):
-        if self.controller_mode == MODE_DOWNHILL:
-            return
-        # TODO: Update these or maybe only update base spped while same PID params for all
-        self.pid.kp = 1
-        self.pid.ki = 0
-        self.pid.kd = 0
-        self.controller_mode = MODE_DOWNHILL
-        self.set_limits((-10, 10))
-        self.base_speed = 100
-        self.pid.reset()
-
     def update_mode(self):
         # FIX: Shifts to fast to new state
-        rate = self.gyro.get_value()
-        if rate > 25:
-            if self.controller_mode == MODE_STRAIGHT:
-                self.set_controller_uphill()
-            elif self.controller_mode == MODE_DOWNHILL:
-                self.set_controller_straight()
-        elif rate < -25:
-            if self.controller_mode == MODE_STRAIGHT:
-                self.set_controller_downhill()
-            elif self.controller_mode == MODE_UPHILL:
-                self.set_controller_straight()
-        print("Angle:", rate, "Mode:", self.controller_mode)
+        angle = self.gyro.get_value()
+        if angle <= 10:
+            self.set_controller_straight()
+        elif angle > 10:
+            self.set_controller_uphill()
+        print("Angle:", angle, "Mode:", self.controller_mode)
