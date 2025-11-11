@@ -16,6 +16,7 @@ class LineReturnBehavior(Behavior):
         self.did_turn = False
 
     def update(self):
+        self.weight = 0.5
         if self.blackboard[RETURNED_TO_LINE]:
             self.weight = 0.0
             return
@@ -23,8 +24,9 @@ class LineReturnBehavior(Behavior):
         if not self.blackboard[CAN_PICKED_UP]:
             self.weight = 0.0
             return
+        else:
+            self.weight += 5.0
 
-        self.weight = 1.0
 
     def actuators_proposal(self):
         if not self.did_turn:

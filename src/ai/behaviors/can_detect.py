@@ -39,6 +39,7 @@ class CanDetectionBehavior(Behavior):
         self.turn_segment_start = None
 
     def update(self):
+        self.weight = 0.5
         if self.blackboard[CAN_PICKED_UP]:
             self.weight = 0.0
             return
@@ -51,8 +52,9 @@ class CanDetectionBehavior(Behavior):
         if time.time() - last_time_line_seen < 1.0:
             self.weight = 0.0
             return
+        else:
+            self.weight += 0.5
 
-        self.weight = 1
 
     def actuators_proposal(self):
         current_time = time.time()
