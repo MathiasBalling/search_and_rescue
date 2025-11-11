@@ -26,8 +26,6 @@ MODE_STRAIGHT = 0
 MODE_UPHILL = 1
 MODE_DOWNHILL = 2
 
-RIGHT_SIDE = "right"
-LEFT_SIDE = "left"
 
 SHARP_RIGHT_TURN = WheelCommand(
     LINE_FOLLOWING_SHARP_TURN_SPEED, -LINE_FOLLOWING_SHARP_TURN_SPEED_BACK
@@ -57,7 +55,9 @@ class LineFollowingBehavior(Behavior):
         self.controller_mode = MODE_STRAIGHT
         self.limits = (-100, 100)
         self.base_speed = LINE_FOLLOWING_BASE_SPEED
-        self.last_side_line_seen = LEFT_SIDE
+
+        self.last_left_line_seen = 0
+        self.last_right_line_seen = 0
 
     def update(self):
         l_val, r_val = self.color_sensors.get_value()
@@ -83,6 +83,8 @@ class LineFollowingBehavior(Behavior):
         current_time = time.time()
 
         left_intensity, right_intensity = self.color_sensors.get_value()
+
+        self.update_line_seen()
 
         # TODO: Uncomment this when gyro is working
         # self.update_mode()
@@ -114,7 +116,6 @@ class LineFollowingBehavior(Behavior):
         ):
             # Left sees full black and right sees full white
             # TURN LEFT SHARP
-            self.last_side_line_seen = LEFT_SIDE
 
             return SHARP_LEFT_TURN
         elif (
@@ -123,7 +124,6 @@ class LineFollowingBehavior(Behavior):
         ):
             # Right sees full black and left sees full white
             # TURN RIGHT SHARP
-            self.last_side_line_seen = RIGHT_SIDE
 
             return SHARP_RIGHT_TURN
         elif (
@@ -132,10 +132,22 @@ class LineFollowingBehavior(Behavior):
         ):
             # Both see full black
             # TURN IN THE DIRECTION OF WHERE WE LAST SAW THE LINE
-            if self.last_side_line_seen == LEFT_SIDE:
+            if self.last_left_line_seen > self.last_right_line_seen:
                 return SHARP_LEFT_TURN
             else:
                 return SHARP_RIGHT_TURN
+        elif (
+            left_intensity <= LINE_INTENSITY_WHITE_THRESHOLD
+            and right_intensity <= LINE_INTENSITY_WHITE_THRESHOLD
+        ):
+            now = time.time()
+            turn_left = self.last_left_line_seen > self.last_right_line_seen
+            if turn_left:
+                if now - self.last_left_line_seen < 0.5:
+                    return SHARP_LEFT_TURN
+            else:
+                if now - self.last_right_line_seen < 0.5:
+                    return SHARP_RIGHT_TURN
 
         # If hard turn is not needed we use the PID control.
         return WheelCommand(left_speed=left_control, right_speed=right_control)
@@ -143,6 +155,13 @@ class LineFollowingBehavior(Behavior):
     ############################################################
     # Other methods
     ############################################################
+    def update_line_seen(self):
+        left, right = self.color_sensors.get_value()
+        if left <= LINE_INTENSITY_BLACK_THRESHOLD:
+            self.last_left_line_seen = time.time()
+        if right <= LINE_INTENSITY_BLACK_THRESHOLD:
+            self.last_right_line_seen = time.time()
+
     def set_limits(self, limit):
         self.limits = limit
         self.pid.output_limits = limit
