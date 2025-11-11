@@ -55,7 +55,7 @@ class CanDetectionBehavior(Behavior):
         self.weight = 1
 
     def actuators_proposal(self):
-        current_time = time.monotonic()  # FIX: monotonic?????
+        current_time = time.time()
         if self.turn_segment_start is None:
             self.turn_segment_start = current_time
 
