@@ -53,7 +53,6 @@ class LineFollowingBehavior(Behavior):
             self.limits,
         )
         self.controller_mode = MODE_STRAIGHT
-        self.limits = (-100, 100)
         self.base_speed = LINE_FOLLOWING_BASE_SPEED
 
         self.last_left_line_seen = 0
@@ -168,10 +167,6 @@ class LineFollowingBehavior(Behavior):
         if right <= LINE_INTENSITY_BLACK_THRESHOLD:
             self.last_right_line_seen = time.time()
 
-    def set_limits(self, limit):
-        self.limits = limit
-        self.pid.output_limits = limit
-
     def set_controller_straight(self):
         if self.controller_mode == MODE_STRAIGHT:
             return
@@ -179,7 +174,6 @@ class LineFollowingBehavior(Behavior):
         self.pid.ki = LINE_FOLLOWING_PID_KI
         self.pid.kd = LINE_FOLLOWING_PID_KD
         self.controller_mode = MODE_STRAIGHT
-        self.set_limits((0, 100))
         self.base_speed = LINE_FOLLOWING_BASE_SPEED
         self.pid.reset()
 
@@ -191,7 +185,6 @@ class LineFollowingBehavior(Behavior):
         self.pid.ki = 0
         self.pid.kd = 0
         self.controller_mode = MODE_UPHILL
-        self.set_limits((0, 100))
         self.base_speed = 70
         self.pid.reset()
 
