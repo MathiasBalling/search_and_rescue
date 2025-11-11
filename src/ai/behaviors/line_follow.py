@@ -188,12 +188,12 @@ class LineFollowingBehavior(Behavior):
         if self.controller_mode == MODE_UPHILL:
             return
         # TODO: Update these or maybe only update base spped while same PID params for all
-        self.pid.kp = 5
+        self.pid.kp = 1.5
         self.pid.ki = 0
         self.pid.kd = 0
         self.controller_mode = MODE_UPHILL
         self.set_limits((-100, 100))
-        self.base_speed = 100
+        self.base_speed = 70
         self.pid.reset()
 
     def set_controller_downhill(self):
