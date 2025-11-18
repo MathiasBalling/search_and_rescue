@@ -56,7 +56,7 @@ class Logging(Behavior):
         slope_angle = self.gyro.get_value()
 
         self.log_file.write(
-            "{}{}{}{}{}{}{}{}{}{}\n".format(
+            "{},{},{},{},{},{},{},{},{},{}\n".format(
                 now,
                 voltage,
                 current,
