@@ -37,8 +37,6 @@ class LineReturnBehavior(Behavior):
         # We did turn around after finding the can, now use search until we find the line
         # TODO: Maybe use the ultrasonic sensor to aboid colisions until the line is found.
 
-        proposal = ActuatorsProposal(
-            WheelCommand(RETURN_TO_LINE_BASE_SPEED, RETURN_TO_LINE_BASE_SPEED)
-        )
+        
+        return WheelCommand(RETURN_TO_LINE_BASE_SPEED, RETURN_TO_LINE_BASE_SPEED)
 
-        return proposal
