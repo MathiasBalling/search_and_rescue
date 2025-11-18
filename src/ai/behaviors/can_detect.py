@@ -30,13 +30,13 @@ class CanDetectionBehavior(Behavior):
         self.gyro = gyro
         self.ultrasonic_sensor = ultrasonic_sensor
         self.scan_steps = [
-            (False, 60.0),
-            (True, 60.0),
+            (False, 40.0),
+            (True, 40.0),
         ]
         self.scan_sequence_index = 0
         self.turn_segment_start = None
         self.first_turn_done = False
-        self.deg = 30
+        self.deg = 20
         self.ccw = True
 
     def update(self):

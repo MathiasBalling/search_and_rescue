@@ -67,6 +67,10 @@ class LineFollowingBehavior(Behavior):
             or r_val < LINE_INTENSITY_WHITE_THRESHOLD
         ):
             self.blackboard[LAST_TIME_LINE_SEEN] = now
+        # print(
+        #     "Last time line seen: {}, {},{}".format(
+        #         now - self.blackboard[LAST_TIME_LINE_SEEN], l_val, r_val
+        # )
 
         if now - self.blackboard[LAST_TIME_LINE_SEEN] > 1.0:
             self.weight = 0.0
@@ -145,16 +149,14 @@ class LineFollowingBehavior(Behavior):
             turn_left = self.last_left_line_seen > self.last_right_line_seen
             if turn_left:
                 if 0.4 < (now - self.last_left_line_seen) < 1.0:
-                    print("HARD LEFT")
-                    return WheelCommand(-100, 100)
+                    # print("HARD LEFT")
+                    return WheelCommand(-80, 80)
             else:
                 if 0.4 < (now - self.last_right_line_seen) < 1.0:
-                    print("HARD RIGHT")
-
-                    return WheelCommand(100, -100)
+                    # print("HARD RIGHT")
+                    return WheelCommand(80, -80)
 
         # If hard turn is not needed we use the PID control.
-        print("pid")
         return WheelCommand(left_speed=left_control, right_speed=right_control)
 
     ############################################################
