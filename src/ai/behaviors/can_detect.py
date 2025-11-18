@@ -30,13 +30,13 @@ class CanDetectionBehavior(Behavior):
         self.gyro = gyro
         self.ultrasonic_sensor = ultrasonic_sensor
         self.scan_steps = [
-            (True, 30.0),
             (False, 60.0),
             (True, 60.0),
             (False, 60.0),
         ]
         self.scan_sequence_index = 0
         self.turn_segment_start = None
+        self.skip_first_after_init = False
 
     def update(self):
         self.weight = 0.5
@@ -60,23 +60,53 @@ class CanDetectionBehavior(Behavior):
         current_time = time.time()
         if self.turn_segment_start is None:
             self.turn_segment_start = current_time
+        
+        if self.skip_first_after_init:
+            ccw, deg = self.scan_steps[self.scan_sequence_index]
+            turn_duration = TURN_TIME_PER_DEGREE * deg
+            elapsed_time = current_time - self.turn_segment_start
+            if elapsed_time < turn_duration:
+                self.scan_sequence_index + 1
+                self.scan_sequence_index %= 3
+                if ccw:
+                    return ActuatorsProposal(TURN_LEFT)
+                else:
+                    return ActuatorsProposal(TURN_RIGHT)
 
-        ccw, deg = self.scan_steps[self.scan_sequence_index]
+
+        deg = 30
+        ccw = True
         turn_duration = TURN_TIME_PER_DEGREE * deg
         elapsed_time = current_time - self.turn_segment_start
+        self.skip_first_after_init = True
 
         if elapsed_time < turn_duration:
             if ccw:
                 return ActuatorsProposal(TURN_LEFT)
             else:
                 return ActuatorsProposal(TURN_RIGHT)
-        else:
-            self.scan_sequence_index = (self.scan_sequence_index + 1) % len(self.scan_steps)
-            self.turn_segment_start = current_time
-            next_ccw, _ = self.scan_steps[self.scan_sequence_index]
 
-            if next_ccw:
-                return ActuatorsProposal(TURN_LEFT)
-            else:
-                return ActuatorsProposal(TURN_RIGHT)
+        # current_time = time.time()
+        # self.skip_first_after_init
+        # if self.turn_segment_start is None:
+        #     self.turn_segment_start = current_time
+
+        # ccw, deg = self.scan_steps[self.scan_sequence_index]
+        # turn_duration = TURN_TIME_PER_DEGREE * deg
+        # elapsed_time = current_time - self.turn_segment_start
+
+        # if elapsed_time < turn_duration:
+        #     if ccw:
+        #         return ActuatorsProposal(TURN_LEFT)
+        #     else:
+        #         return ActuatorsProposal(TURN_RIGHT)
+        # else:
+        #     self.scan_sequence_index = (self.scan_sequence_index + 1) % len(self.scan_steps)
+        #     self.turn_segment_start = current_time
+        #     next_ccw, _ = self.scan_steps[self.scan_sequence_index]
+
+        #     if next_ccw:
+        #         return ActuatorsProposal(TURN_LEFT)
+        #     else:
+        #         return ActuatorsProposal(TURN_RIGHT)
 
