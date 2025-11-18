@@ -39,6 +39,8 @@ CAN_PICKUP_MAX_DISTANCE = 6
 LAST_TIME_LINE_SEEN = "last_time_line_seen"
 CAN_PICKED_UP = "can_picked_up"
 RETURNED_TO_LINE = "returned_to_line"
+PID_GAIN = "pid_gain"
+SPEED_POLICY = "speed_policy"
 
 
 def setup_blackboard() -> BlackBoard:
@@ -46,5 +48,7 @@ def setup_blackboard() -> BlackBoard:
     blackboard[LAST_TIME_LINE_SEEN] = time.time()
     blackboard[CAN_PICKED_UP] = False
     blackboard[RETURNED_TO_LINE] = False
+    blackboard[PID_GAIN] = "low"  # low, medium, high
+    blackboard[SPEED_POLICY] = "moderate"  # moderate, aggressive
 
     return blackboard

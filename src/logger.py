@@ -1,0 +1,70 @@
+import time
+from ai.behaviors.behavior import Behavior
+from params import LINE_INTENSITY_WHITE_THRESHOLD, PID_GAIN, SPEED_POLICY
+from sensors.colors import ColorSensors
+from sensors.gyro import GyroSensor
+from sensors.ultrasonic import UltrasonicSensor
+from utils.blackboard import BlackBoard
+
+from ev3dev2.power import PowerSupply
+
+from datetime import datetime
+import os
+
+
+class Logging(Behavior):
+    def __init__(
+        self,
+        blackboard: BlackBoard,
+        color_sensors: ColorSensors,
+        gyro: GyroSensor,
+        ultrasonic_sensor: UltrasonicSensor,
+    ):
+        super().__init__(blackboard, 0.0)
+        self.color_sensors = color_sensors
+        self.gyro = gyro
+        self.ultrasonic_sensor = ultrasonic_sensor
+        self.power = PowerSupply()
+
+        # Logging
+        log_dir = "/home/log"
+        os.makedirs(log_dir, exist_ok=True)
+        log_filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S.csv")
+        self.log_file = open(os.path.join(log_dir, log_filename), "w")
+
+        self.log_file.write(
+            "time,voltage,current,speed_policy,pid_gain,intensity_left,intensity_right,on_line,distance_front,slope_angle\n"
+        )
+
+    def update(self):
+        # Always 0
+        self.weight = 0.0
+        now = time.time()
+        voltage = self.power.measured_voltage
+        current = self.power.measured_current
+        speed_policy = self.blackboard[SPEED_POLICY]
+        pid_gain = self.blackboard[PID_GAIN]
+        intensity_left, intensity_right = self.color_sensors.get_value()
+        on_line = (
+            True
+            if intensity_left < LINE_INTENSITY_WHITE_THRESHOLD
+            or intensity_right < LINE_INTENSITY_WHITE_THRESHOLD
+            else False
+        )
+        distance_front = self.ultrasonic_sensor.get_value()
+        slope_angle = self.gyro.get_value()
+
+        self.log_file.write(
+            "{}{}{}{}{}{}{}{}{}{}\n".format(
+                now,
+                voltage,
+                current,
+                speed_policy,
+                pid_gain,
+                intensity_left,
+                intensity_right,
+                on_line,
+                distance_front,
+                slope_angle,
+            )
+        )
