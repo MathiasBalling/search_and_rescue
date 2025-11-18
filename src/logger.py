@@ -28,7 +28,7 @@ class Logging(Behavior):
         self.power = PowerSupply()
 
         # Logging
-        log_dir = "/home/log"
+        log_dir = "/home/robot/log"
         os.makedirs(log_dir, exist_ok=True)
         log_filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S.csv")
         self.log_file = open(os.path.join(log_dir, log_filename), "w")
@@ -36,6 +36,7 @@ class Logging(Behavior):
         self.log_file.write(
             "time,voltage,current,speed_policy,pid_gain,intensity_left,intensity_right,on_line,distance_front,slope_angle\n"
         )
+        print("Logging to {}".format(log_filename))
 
     def update(self):
         # Always 0
@@ -69,6 +70,7 @@ class Logging(Behavior):
                 slope_angle,
             )
         )
+        print("Logged data at time {}".format(now))
 
     def actuators_proposal(self) -> ActuatorsProposal:
         return ActuatorsProposal(WheelCommand(0, 0))
