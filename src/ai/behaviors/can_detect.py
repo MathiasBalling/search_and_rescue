@@ -32,13 +32,12 @@ class CanDetectionBehavior(Behavior):
         self.scan_steps = [
             (False, 60.0),
             (True, 60.0),
-            (False, 60.0),
         ]
         self.scan_sequence_index = 0
         self.turn_segment_start = None
-        self.skip_first_after_init = False
+        self.first_turn_done = False
         self.deg = 30
-    
+        self.ccw = True
 
     def update(self):
         self.weight = 0.5
@@ -57,7 +56,6 @@ class CanDetectionBehavior(Behavior):
         else:
             self.weight += 0.5
 
-
     def actuators_proposal(self):
         current_time = time.time()
         if self.turn_segment_start is None:
@@ -66,8 +64,23 @@ class CanDetectionBehavior(Behavior):
         turn_duration = TURN_TIME_PER_DEGREE * self.deg
         elapsed_time = current_time - self.turn_segment_start
 
+        if elapsed_time >= turn_duration:
+            if not self.first_turn_done:
+                self.first_turn_done = True
+                self.ccw, self.deg = self.scan_steps[self.scan_sequence_index]
+                self.turn_segment_start = current_time
+            else:
+                self.scan_sequence_index = (self.scan_sequence_index + 1) % 2
+                self.ccw, self.deg = self.scan_steps[self.scan_sequence_index]
+                self.turn_segment_start = current_time
+
+        if self.ccw:
+            return ActuatorsProposal(TURN_LEFT)
+        else:
+            return ActuatorsProposal(TURN_RIGHT)
+
         if elapsed_time < turn_duration:
-            if self.skip_first_after_init:
+            if self.first_turn_done:
                 ccw, self.deg = self.scan_steps[self.scan_sequence_index]
                 self.turn_segment_start = current_time
                 self.scan_sequence_index + 1
@@ -76,12 +89,11 @@ class CanDetectionBehavior(Behavior):
                     return ActuatorsProposal(TURN_LEFT)
                 else:
                     return ActuatorsProposal(TURN_RIGHT)
-                
-            self.skip_first_after_init = True
+
+            self.first_turn_done = True
             return ActuatorsProposal(TURN_LEFT)
 
-        
-        
+        return
 
         # current_time = time.time()
         # self.skip_first_after_init
@@ -106,4 +118,3 @@ class CanDetectionBehavior(Behavior):
         #         return ActuatorsProposal(TURN_LEFT)
         #     else:
         #         return ActuatorsProposal(TURN_RIGHT)
-
