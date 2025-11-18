@@ -1,4 +1,5 @@
 import time
+from actuators import ActuatorsProposal, WheelCommand
 from ai.behaviors.behavior import Behavior
 from params import LINE_INTENSITY_WHITE_THRESHOLD, PID_GAIN, SPEED_POLICY
 from sensors.colors import ColorSensors
@@ -68,3 +69,6 @@ class Logging(Behavior):
                 slope_angle,
             )
         )
+
+    def actuators_proposal(self) -> ActuatorsProposal:
+        return ActuatorsProposal(WheelCommand(0, 0))
