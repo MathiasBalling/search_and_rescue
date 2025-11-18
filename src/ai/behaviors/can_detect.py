@@ -38,7 +38,7 @@ class CanDetectionBehavior(Behavior):
         self.turn_segment_start = None
         self.skip_first_after_init = False
         self.deg = 30
-        self.ccw = True
+    
 
     def update(self):
         self.weight = 0.5
@@ -63,12 +63,12 @@ class CanDetectionBehavior(Behavior):
         if self.turn_segment_start is None:
             self.turn_segment_start = current_time
 
-        turn_duration = TURN_TIME_PER_DEGREE * deg
+        turn_duration = TURN_TIME_PER_DEGREE * self.deg
         elapsed_time = current_time - self.turn_segment_start
 
         if elapsed_time < turn_duration:
             if self.skip_first_after_init:
-                ccw, deg = self.scan_steps[self.scan_sequence_index]
+                ccw, self.deg = self.scan_steps[self.scan_sequence_index]
                 self.turn_segment_start = current_time
                 self.scan_sequence_index + 1
                 self.scan_sequence_index %= 3
@@ -78,10 +78,8 @@ class CanDetectionBehavior(Behavior):
                     return ActuatorsProposal(TURN_RIGHT)
                 
             self.skip_first_after_init = True
-            if ccw:
-                return ActuatorsProposal(TURN_LEFT)
-            else:
-                return ActuatorsProposal(TURN_RIGHT)
+            return ActuatorsProposal(TURN_LEFT)
+
         
         
 
