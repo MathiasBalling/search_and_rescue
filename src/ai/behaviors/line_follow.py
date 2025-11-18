@@ -68,7 +68,7 @@ class LineFollowingBehavior(Behavior):
         ):
             self.blackboard[LAST_TIME_LINE_SEEN] = now
 
-        if now - self.blackboard[LAST_TIME_LINE_SEEN] > 2.0:
+        if now - self.blackboard[LAST_TIME_LINE_SEEN] > 1.0:
             self.weight = 0.0
             return
 

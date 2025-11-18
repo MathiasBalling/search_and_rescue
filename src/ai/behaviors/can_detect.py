@@ -40,7 +40,6 @@ class CanDetectionBehavior(Behavior):
         self.ccw = True
 
     def update(self):
-        self.weight = 0.5
         if self.blackboard[CAN_PICKED_UP]:
             self.weight = 0.0
             return
@@ -48,6 +47,8 @@ class CanDetectionBehavior(Behavior):
         if self.ultrasonic_sensor.get_value() < CAN_DETECTION_DISTANCE_THRESHOLD:
             self.weight = 0.0
             return
+
+        self.weight = 0.5
 
         last_time_line_seen = self.blackboard[LAST_TIME_LINE_SEEN]
         if time.time() - last_time_line_seen < 1.0:

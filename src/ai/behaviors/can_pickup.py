@@ -33,7 +33,6 @@ class CanPickupBehavior(Behavior):
         self.ultrasonic_sensor = ultrasonic_sensor
 
     def update(self):
-        self.weight = 0.5
         if self.blackboard[CAN_PICKED_UP]:
             self.weight = 0.0
             return
@@ -43,6 +42,7 @@ class CanPickupBehavior(Behavior):
             self.weight = 0.0
             return
 
+        self.weight = 0.4
 
         ultra_value = self.ultrasonic_sensor.get_value()
         if ultra_value < CAN_DETECTION_DISTANCE_THRESHOLD:
