@@ -101,10 +101,9 @@ class Actuators:
             self.turn_deg(cmd.deg, cmd.ccw)
 
     def grip_object(self):
-        # FIX: New timing for the new gripper
-        self.gripper_motor.duty_cycle_sp = GRIPPER_SPEED
-        time.sleep(4)
         self.gripper_motor.duty_cycle_sp = -GRIPPER_SPEED
+        time.sleep(4)
+        self.gripper_motor.duty_cycle_sp = GRIPPER_SPEED
         time.sleep(4)
         self.gripper_motor.duty_cycle_sp = MOTOR_OFF
 

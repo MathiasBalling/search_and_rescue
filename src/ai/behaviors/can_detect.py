@@ -58,6 +58,9 @@ class CanDetectionBehavior(Behavior):
             self.weight += 0.5
 
     def actuators_proposal(self):
+        if self.blackboard[CAN_PICKED_UP]:
+            return ActuatorsProposal(WheelCommand(0, 0))
+
         current_time = time.time()
         if self.turn_segment_start is None:
             self.turn_segment_start = current_time
