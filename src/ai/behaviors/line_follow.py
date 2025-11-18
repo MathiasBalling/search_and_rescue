@@ -89,7 +89,7 @@ class LineFollowingBehavior(Behavior):
 
         self.update_line_seen()
 
-        self.update_mode()
+        # self.update_mode()
 
         diff = left_intensity - right_intensity
 
@@ -111,35 +111,6 @@ class LineFollowingBehavior(Behavior):
         #     # right_intensity,
         # )
 
-        # Hanlde sharp turn PID control can't handle
-        # if (
-        #     left_intensity <= LINE_INTENSITY_BLACK_THRESHOLD
-        #     and right_intensity >= LINE_INTENSITY_WHITE_THRESHOLD
-        # ):
-        #     # Left sees full black and right sees full white
-        #     # TURN LEFT SHARP
-        #     print("black white")
-        #     return SHARP_LEFT_TURN
-        # elif (
-        #     right_intensity <= LINE_INTENSITY_BLACK_THRESHOLD
-        #     and left_intensity >= LINE_INTENSITY_WHITE_THRESHOLD
-        # ):
-        #     # Right sees full black and left sees full white
-        #     # TURN RIGHT SHARP
-        #     print("white black")
-
-        #     return SHARP_RIGHT_TURN
-        # if (
-        #     left_intensity <= LINE_INTENSITY_BLACK_THRESHOLD
-        #     and right_intensity <= LINE_INTENSITY_BLACK_THRESHOLD
-        # ):
-        #     # Both see full black
-        #     # TURN IN THE DIRECTION OF WHERE WE LAST SAW THE LINE
-        #     # print("black black")
-        #     if self.last_left_line_seen > self.last_right_line_seen:
-        #         return SHARP_LEFT_TURN
-        #     else:
-        #         return SHARP_RIGHT_TURN
         if (
             left_intensity >= LINE_INTENSITY_WHITE_THRESHOLD
             and right_intensity >= LINE_INTENSITY_WHITE_THRESHOLD

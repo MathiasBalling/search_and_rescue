@@ -1,7 +1,7 @@
 import time
 from actuators import ActuatorsProposal, WheelCommand
 from ai.behaviors.behavior import Behavior
-from params import LINE_INTENSITY_WHITE_THRESHOLD, PID_GAIN, SPEED_POLICY
+from params import LINE_INTENSITY_WHITE_THRESHOLD
 from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
 from sensors.ultrasonic import UltrasonicSensor
@@ -34,9 +34,9 @@ class Logging(Behavior):
         self.log_file = open(os.path.join(log_dir, log_filename), "w")
 
         self.log_file.write(
-            "time,voltage,current,speed_policy,pid_gain,intensity_left,intensity_right,on_line,distance_front,slope_angle\n"
+            "time,voltage,current,intensity_left,intensity_right,on_line,distance_front,slope_angle\n"
         )
-        print("Logging to {}".format(log_filename))
+        # print("Logging to {}".format(log_filename))
 
     def update(self):
         # Always 0
@@ -44,8 +44,6 @@ class Logging(Behavior):
         now = time.time()
         voltage = self.power.measured_voltage
         current = self.power.measured_current
-        speed_policy = self.blackboard[SPEED_POLICY]
-        pid_gain = self.blackboard[PID_GAIN]
         intensity_left, intensity_right = self.color_sensors.get_value()
         on_line = (
             True
@@ -57,12 +55,10 @@ class Logging(Behavior):
         slope_angle = self.gyro.get_value()
 
         self.log_file.write(
-            "{},{},{},{},{},{},{},{},{},{}\n".format(
+            "{},{},{},{},{},{},{},{}\n".format(
                 now,
                 voltage,
                 current,
-                speed_policy,
-                pid_gain,
                 intensity_left,
                 intensity_right,
                 on_line,
@@ -70,7 +66,7 @@ class Logging(Behavior):
                 slope_angle,
             )
         )
-        print("Logged data at time {}".format(now))
+        # print("Logged data at time {}".format(now))
 
     def actuators_proposal(self) -> ActuatorsProposal:
         return ActuatorsProposal(WheelCommand(0, 0))
