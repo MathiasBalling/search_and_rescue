@@ -4,5 +4,12 @@ version = "0.1.0"
 description = "Search and rescue mission using the LEGO Mindstorms EV3 robot in Introduction to Embodied Artificial Intelligence course"
 readme = "README.md"
 authors = [{ name = "Mathias Balling", email = "math260r@gmail.com" }]
-requires-python = ">=3.5"
-dependencies = ["python-ev3dev>=1.2.0", "python-ev3dev2>=2.1.0.post1"]
+requires-python = ">=3.10"
+dependencies = [
+    "matplotlib>=3.10.7",
+    "numpy>=2.2.6",
+    "pandas>=2.3.3",
+    "python-ev3dev>=1.2.0",
+    "python-ev3dev2>=2.1.0.post1",
+    "statsmodels>=0.14.5",
+]
