@@ -6,8 +6,10 @@ from sensors.gyro import GyroSensor
 from sensors.ultrasonic import UltrasonicSensor
 from utils.blackboard import BlackBoard
 from params import (
+    CAN_DECTECTION_SCAN_DEGREES,
     CAN_DETECTION_DISTANCE_THRESHOLD,
     CAN_PICKED_UP,
+    CAN_SIDE_PICKUP,
     LAST_TIME_LINE_SEEN,
     TURN_TIME_PER_DEGREE,
     CAN_DETECTION_BASE_SPEED,
@@ -31,13 +33,13 @@ class CanDetectionBehavior(Behavior):
         self.gyro = gyro
         self.ultrasonic_sensor = ultrasonic_sensor
         self.scan_steps = [
-            (False, 40.0),
-            (True, 40.0),
+            (False, CAN_DECTECTION_SCAN_DEGREES * 2),
+            (True, CAN_DECTECTION_SCAN_DEGREES * 2),
         ]
         self.scan_sequence_index = 0
         self.turn_segment_start = None
         self.first_turn_done = False
-        self.deg = 20
+        self.deg = CAN_DECTECTION_SCAN_DEGREES
         self.ccw = True
 
     def update(self):
@@ -72,6 +74,19 @@ class CanDetectionBehavior(Behavior):
 
         turn_duration = TURN_TIME_PER_DEGREE * self.deg
         elapsed_time = current_time - self.turn_segment_start
+        if self.deg == CAN_DECTECTION_SCAN_DEGREES:
+            current_deg = elapsed_time / TURN_TIME_PER_DEGREE
+            self.blackboard[CAN_SIDE_PICKUP] = (current_deg, True)
+        elif self.ccw:
+            current_deg = CAN_DECTECTION_SCAN_DEGREES - (
+                elapsed_time / TURN_TIME_PER_DEGREE
+            )
+            self.blackboard[CAN_SIDE_PICKUP] = (current_deg, True)
+        else:
+            current_deg = CAN_DECTECTION_SCAN_DEGREES - (
+                elapsed_time / TURN_TIME_PER_DEGREE
+            )
+            self.blackboard[CAN_SIDE_PICKUP] = (current_deg, False)
 
         if elapsed_time >= turn_duration:
             if not self.first_turn_done:

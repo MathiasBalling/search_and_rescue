@@ -27,6 +27,7 @@ RETURN_TO_LINE_BASE_SPEED = 50
 # Parameters for the can detection
 CAN_DETECTION_BASE_SPEED = 25
 CAN_DETECTION_DISTANCE_THRESHOLD = 20
+CAN_DECTECTION_SCAN_DEGREES = 20
 
 # Parameters for the can pickup
 CAN_PICKUP_BASE_SPEED = 20
@@ -38,6 +39,7 @@ CAN_PICKUP_MAX_DISTANCE = 6
 LAST_TIME_LINE_SEEN = "last_time_line_seen"
 CAN_PICKED_UP = "can_picked_up"
 RETURNED_TO_LINE = "returned_to_line"
+CAN_SIDE_PICKUP = "can_side_pickup"
 
 
 def setup_blackboard() -> BlackBoard:
@@ -45,5 +47,6 @@ def setup_blackboard() -> BlackBoard:
     blackboard[LAST_TIME_LINE_SEEN] = time.time()
     blackboard[CAN_PICKED_UP] = False
     blackboard[RETURNED_TO_LINE] = False
+    blackboard[CAN_SIDE_PICKUP] = (0, True)
 
     return blackboard

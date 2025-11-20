@@ -45,7 +45,18 @@ class TurnCommand:
         self.ccw = ccw
 
 
-Command = Union[WheelCommand, GripperCommand, WheelGripperCommand, TurnCommand]
+class NoCommand:
+    """
+    Turns the robot the specified number of degrees.
+    """
+
+    def __init__(self):
+        pass
+
+
+Command = Union[
+    WheelCommand, GripperCommand, WheelGripperCommand, TurnCommand, NoCommand
+]
 
 
 class ActuatorsProposal:
@@ -83,6 +94,7 @@ class Actuators:
         self.left_motor.run_direct()
         self.right_motor.run_direct()
         self.gripper_motor.run_direct()
+        self.gripper_motor.COMMAND_RESET
 
     def do_proposal(self, proposal: ActuatorsProposal):
         cmd = proposal.command
