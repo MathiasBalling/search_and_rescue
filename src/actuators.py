@@ -125,7 +125,7 @@ class Actuators:
         else:
             self.set_wheel_duty_cycles(left=40, right=-40)
 
-        sleep_time = 0.02222 * deg
+        sleep_time = 0.01333 * deg
         time.sleep(sleep_time)
         self.set_wheel_duty_cycles(left=MOTOR_OFF, right=MOTOR_OFF)
 

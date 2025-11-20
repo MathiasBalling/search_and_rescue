@@ -41,14 +41,14 @@ class LineReturnBehavior(Behavior):
             can_degree, ccw = self.blackboard[CAN_SIDE_PICKUP]
             if ccw:
                 if can_degree > 0:
-                    return ActuatorsProposal(TurnCommand(180 + can_degree * 2, True))
+                    return ActuatorsProposal(TurnCommand(180 + can_degree, True))
                 else:
-                    return ActuatorsProposal(TurnCommand(180 + can_degree * 2, False))
+                    return ActuatorsProposal(TurnCommand(180 + can_degree, False))
             else:
                 if can_degree > 0:
-                    return ActuatorsProposal(TurnCommand(180 + can_degree * 2, False))
+                    return ActuatorsProposal(TurnCommand(180 + can_degree, False))
                 else:
-                    return ActuatorsProposal(TurnCommand(180 + can_degree * 2, True))
+                    return ActuatorsProposal(TurnCommand(180 + can_degree, True))
 
         # We did turn around after finding the can, now use search until we find the line
         # TODO: Maybe keep track of where the can was relative to the line for a more accurate turn around

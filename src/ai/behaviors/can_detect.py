@@ -87,7 +87,7 @@ class CanDetectionBehavior(Behavior):
             self.scan_sequence_index = (self.scan_sequence_index + 1) % 2
             self.ccw, self.deg = self.scan_steps[self.scan_sequence_index]
             self.turn_segment_start = current_time
-
+        # print("deg:", self.deg, "ccw:", self.ccw)
         if self.ccw:
             return ActuatorsProposal(TURN_LEFT)
         else:
