@@ -41,11 +41,16 @@ def main():
         ultrasonic_sensor=ultrasonic_sensor,
     )
 
+    line_return_behavior = LineReturnBehavior(
+        blackboard=blackboard, color_sensors=color_sensors
+    )
+
     # logging = Logging(blackboard, color_sensors, gyro_sensor, ultrasonic_sensor)
 
     # Add behaviors to the controller
     controller.add_behavior(can_detect_behavior)
     controller.add_behavior(can_pickup_behavior)
+    controller.add_behavior(line_return_behavior)
 
     # Run the controller forever
     controller.run()

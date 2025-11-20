@@ -47,11 +47,7 @@ class CanDetectionBehavior(Behavior):
             self.weight = 0.0
             return
 
-        if (
-            CAN_PICKUP_MAX_DISTANCE
-            < self.ultrasonic_sensor.get_value()
-            < CAN_DETECTION_DISTANCE_THRESHOLD
-        ):
+        if self.ultrasonic_sensor.get_value() < CAN_DETECTION_DISTANCE_THRESHOLD:
             self.weight = 0.0
             return
 

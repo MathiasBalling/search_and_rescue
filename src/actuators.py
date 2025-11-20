@@ -120,12 +120,13 @@ class Actuators:
         self.gripper_motor.duty_cycle_sp = MOTOR_OFF
 
     def turn_deg(self, deg, ccw):
+        print(deg)
         if ccw:
             self.set_wheel_duty_cycles(left=-40, right=40)
         else:
             self.set_wheel_duty_cycles(left=40, right=-40)
 
-        sleep_time = TURN_TIME_PER_DEGREE * deg
+        sleep_time = 0.02222 * deg
         time.sleep(sleep_time)
         self.set_wheel_duty_cycles(left=MOTOR_OFF, right=MOTOR_OFF)
 

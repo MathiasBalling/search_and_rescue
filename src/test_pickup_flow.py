@@ -30,9 +30,9 @@ def main():
         blackboard=blackboard, color_sensors=color_sensors, gyro=gyro_sensor
     )
 
-    # line_return_behavior = LineReturnBehavior(
-    #     blackboard=blackboard, color_sensors=color_sensors
-    # )
+    line_return_behavior = LineReturnBehavior(
+        blackboard=blackboard, color_sensors=color_sensors
+    )
 
     can_detect_behavior = CanDetectionBehavior(
         blackboard=blackboard,
@@ -52,7 +52,7 @@ def main():
 
     # Add behaviors to the controller
     controller.add_behavior(line_following_behavior)
-    # controller.add_behavior(line_return_behavior)
+    controller.add_behavior(line_return_behavior)
     controller.add_behavior(can_detect_behavior)
     controller.add_behavior(can_pickup_behavior)
     # controller.add_behavior(logging)

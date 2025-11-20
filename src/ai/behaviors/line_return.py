@@ -3,6 +3,8 @@ from ai.behaviors.behavior import Behavior
 from params import (
     CAN_PICKED_UP,
     CAN_SIDE_PICKUP,
+    LINE_INTENSITY_BLACK_THRESHOLD,
+    LINE_INTENSITY_WHITE_THRESHOLD,
     RETURN_TO_LINE_BASE_SPEED,
     RETURNED_TO_LINE,
 )
@@ -39,17 +41,24 @@ class LineReturnBehavior(Behavior):
             can_degree, ccw = self.blackboard[CAN_SIDE_PICKUP]
             if ccw:
                 if can_degree > 0:
-                    return ActuatorsProposal(TurnCommand(180 + can_degree, True))
+                    return ActuatorsProposal(TurnCommand(180 + can_degree * 2, True))
                 else:
-                    return ActuatorsProposal(TurnCommand(180 + can_degree, False))
+                    return ActuatorsProposal(TurnCommand(180 + can_degree * 2, False))
             else:
                 if can_degree > 0:
-                    return ActuatorsProposal(TurnCommand(180 + can_degree, False))
+                    return ActuatorsProposal(TurnCommand(180 + can_degree * 2, False))
                 else:
-                    return ActuatorsProposal(TurnCommand(180 + can_degree, True))
+                    return ActuatorsProposal(TurnCommand(180 + can_degree * 2, True))
 
         # We did turn around after finding the can, now use search until we find the line
         # TODO: Maybe keep track of where the can was relative to the line for a more accurate turn around
+        left_value, right_value = self.color_sensors.get_value()
+        if (
+            left_value < LINE_INTENSITY_BLACK_THRESHOLD
+            or right_value < LINE_INTENSITY_BLACK_THRESHOLD
+        ):
+            self.blackboard[RETURNED_TO_LINE] = True
+            return ActuatorsProposal(WheelCommand(0, 0))
 
         return ActuatorsProposal(
             WheelCommand(RETURN_TO_LINE_BASE_SPEED, RETURN_TO_LINE_BASE_SPEED)
