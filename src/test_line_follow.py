@@ -27,11 +27,11 @@ def main():
         blackboard=blackboard, color_sensors=color_sensors, gyro=gyro_sensor
     )
 
-    logger = Logging(blackboard, color_sensors, gyro_sensor, ultrasonic_sensor)
+    # logger = Logging(blackboard, color_sensors, gyro_sensor, ultrasonic_sensor)
 
     # Add behaviors to the controller
     controller.add_behavior(line_following_behavior)
-    controller.add_behavior(logger)
+    # controller.add_behavior(logger)
 
     # Run the controller forever
     controller.run()
