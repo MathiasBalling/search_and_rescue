@@ -11,6 +11,7 @@ from params import (
     LAST_TIME_LINE_SEEN,
     TURN_TIME_PER_DEGREE,
     CAN_DETECTION_BASE_SPEED,
+    CAN_PICKUP_MAX_DISTANCE,
 )
 
 TURN_LEFT = WheelCommand(-CAN_DETECTION_BASE_SPEED, CAN_DETECTION_BASE_SPEED)
@@ -44,7 +45,11 @@ class CanDetectionBehavior(Behavior):
             self.weight = 0.0
             return
 
-        if self.ultrasonic_sensor.get_value() < CAN_DETECTION_DISTANCE_THRESHOLD:
+        if (
+            CAN_PICKUP_MAX_DISTANCE
+            < self.ultrasonic_sensor.get_value()
+            < CAN_DETECTION_DISTANCE_THRESHOLD
+        ):
             self.weight = 0.0
             return
 
