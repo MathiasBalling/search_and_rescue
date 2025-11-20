@@ -79,6 +79,7 @@ class LineFollowingBehavior(Behavior):
         self.weight = 1.0
 
     def actuators_proposal(self):
+        # TODO: PID scale output with curve
         cmd = self.follow_line()
         return ActuatorsProposal(cmd)
 

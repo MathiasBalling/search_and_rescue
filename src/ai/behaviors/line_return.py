@@ -35,6 +35,7 @@ class LineReturnBehavior(Behavior):
             self.weight += 5.0
 
     def actuators_proposal(self):
+        # TODO: Back up and turn in here
         if not self.did_turn:
             self.did_turn = True
 
@@ -51,7 +52,6 @@ class LineReturnBehavior(Behavior):
                     return ActuatorsProposal(TurnCommand(180 + can_degree, True))
 
         # We did turn around after finding the can, now use search until we find the line
-        # TODO: Maybe keep track of where the can was relative to the line for a more accurate turn around
         left_value, right_value = self.color_sensors.get_value()
         if (
             left_value < LINE_INTENSITY_BLACK_THRESHOLD
