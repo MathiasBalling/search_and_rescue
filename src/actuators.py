@@ -94,7 +94,6 @@ class Actuators:
         self.left_motor.run_direct()
         self.right_motor.run_direct()
         self.gripper_motor.run_direct()
-        self.gripper_motor.COMMAND_RESET
 
     def do_proposal(self, proposal: ActuatorsProposal):
         cmd = proposal.command

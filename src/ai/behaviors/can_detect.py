@@ -13,7 +13,6 @@ from params import (
     LAST_TIME_LINE_SEEN,
     TURN_TIME_PER_DEGREE,
     CAN_DETECTION_BASE_SPEED,
-    CAN_PICKUP_MAX_DISTANCE,
 )
 
 TURN_LEFT = WheelCommand(-CAN_DETECTION_BASE_SPEED, CAN_DETECTION_BASE_SPEED)
@@ -33,12 +32,11 @@ class CanDetectionBehavior(Behavior):
         self.gyro = gyro
         self.ultrasonic_sensor = ultrasonic_sensor
         self.scan_steps = [
-            (False, CAN_DECTECTION_SCAN_DEGREES * 2),
             (True, CAN_DECTECTION_SCAN_DEGREES * 2),
+            (False, CAN_DECTECTION_SCAN_DEGREES * 2),
         ]
         self.scan_sequence_index = 0
         self.turn_segment_start = None
-        self.first_turn_done = False
         self.deg = CAN_DECTECTION_SCAN_DEGREES
         self.ccw = True
 
@@ -70,6 +68,7 @@ class CanDetectionBehavior(Behavior):
 
         turn_duration = TURN_TIME_PER_DEGREE * self.deg
         elapsed_time = current_time - self.turn_segment_start
+
         if self.deg == CAN_DECTECTION_SCAN_DEGREES:
             current_deg = elapsed_time / TURN_TIME_PER_DEGREE
             self.blackboard[CAN_SIDE_PICKUP] = (current_deg, True)
@@ -85,14 +84,9 @@ class CanDetectionBehavior(Behavior):
             self.blackboard[CAN_SIDE_PICKUP] = (current_deg, False)
 
         if elapsed_time >= turn_duration:
-            if not self.first_turn_done:
-                self.first_turn_done = True
-                self.ccw, self.deg = self.scan_steps[self.scan_sequence_index]
-                self.turn_segment_start = current_time
-            else:
-                self.scan_sequence_index = (self.scan_sequence_index + 1) % 2
-                self.ccw, self.deg = self.scan_steps[self.scan_sequence_index]
-                self.turn_segment_start = current_time
+            self.scan_sequence_index = (self.scan_sequence_index + 1) % 2
+            self.ccw, self.deg = self.scan_steps[self.scan_sequence_index]
+            self.turn_segment_start = current_time
 
         if self.ccw:
             return ActuatorsProposal(TURN_LEFT)
