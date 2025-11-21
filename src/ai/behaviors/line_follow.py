@@ -11,28 +11,34 @@ from utils.pid_controller import PIDController
 
 
 from params import (
+    INTENSITY_LINE_THRESHOLD,
     LAST_TIME_LINE_SEEN,
     LINE_FOLLOWING_BASE_SPEED,
+    LINE_FOLLOWING_SHARP_TURN_SPEED_BACK,
     LINE_FOLLOWING_TURN_SPEED_GAIN,
-    LINE_INTENSITY_WHITE_THRESHOLD,
-    LINE_INTENSITY_BLACK_THRESHOLD,
+    INTENSITY_FLOOR_THRESHOLD,
+    INTENSITY_PART_LINE_THRESHOLD,
     LINE_FOLLOWING_PID_KP,
     LINE_FOLLOWING_PID_KD,
     LINE_FOLLOWING_PID_KI,
     LINE_FOLLOWING_SHARP_TURN_SPEED,
-    LINE_FOLLOWING_SHARP_TURN_SPEED_BACK,
 )
 
 MODE_STRAIGHT = "straight"
 MODE_UPHILL = "uphill"
 MODE_DOWNHILL = "downhill"
 
+STATE_FOLLOW = "follow"
+STATE_TURN = "turn"
 
-SHARP_RIGHT_TURN = WheelCommand(
-    LINE_FOLLOWING_SHARP_TURN_SPEED, LINE_FOLLOWING_SHARP_TURN_SPEED_BACK
-)
+
 SHARP_LEFT_TURN = WheelCommand(
-    LINE_FOLLOWING_SHARP_TURN_SPEED_BACK, LINE_FOLLOWING_SHARP_TURN_SPEED
+    left_speed=LINE_FOLLOWING_SHARP_TURN_SPEED_BACK,
+    right_speed=LINE_FOLLOWING_SHARP_TURN_SPEED,
+)
+SHARP_RIGHT_TURN = WheelCommand(
+    left_speed=LINE_FOLLOWING_SHARP_TURN_SPEED,
+    right_speed=LINE_FOLLOWING_SHARP_TURN_SPEED_BACK,
 )
 
 
@@ -54,6 +60,7 @@ class LineFollowingBehavior(Behavior):
             self.limits,
         )
         self.controller_mode = MODE_STRAIGHT
+        self.state = STATE_FOLLOW
         self.base_speed = LINE_FOLLOWING_BASE_SPEED
 
         self.last_left_line_seen = 0
@@ -64,8 +71,8 @@ class LineFollowingBehavior(Behavior):
         now = time.time()
 
         if (
-            l_val < LINE_INTENSITY_BLACK_THRESHOLD
-            or r_val < LINE_INTENSITY_BLACK_THRESHOLD
+            l_val < INTENSITY_PART_LINE_THRESHOLD
+            or r_val < INTENSITY_PART_LINE_THRESHOLD
         ):
             self.blackboard[LAST_TIME_LINE_SEEN] = now
         # print(
@@ -99,7 +106,7 @@ class LineFollowingBehavior(Behavior):
 
         base_speed = (
             self.base_speed
-            if abs(diff) < 0.5
+            if abs(diff) < 0.3
             else self.base_speed * LINE_FOLLOWING_TURN_SPEED_GAIN
         )
 
@@ -119,21 +126,48 @@ class LineFollowingBehavior(Behavior):
         #     # right_intensity,
         # )
 
-        if (
-            left_intensity >= LINE_INTENSITY_WHITE_THRESHOLD
-            and right_intensity >= LINE_INTENSITY_WHITE_THRESHOLD
-        ):
-            # print("white white")
-            now = time.time()
-            turn_left = self.last_left_line_seen > self.last_right_line_seen
-            if turn_left:
-                if 0.4 < (now - self.last_left_line_seen) < 1.0:
-                    # print("HARD LEFT")
-                    return WheelCommand(-80, 80)
+        last_left = current_time - self.last_left_line_seen
+        last_right = current_time - self.last_right_line_seen
+        print(
+            "time:",
+            current_time,
+            "left_intensity:",
+            left_intensity,
+            "right_intensity:",
+            right_intensity,
+        )
+
+        if self.state == STATE_FOLLOW:
+            if (
+                left_intensity <= INTENSITY_LINE_THRESHOLD
+                and right_intensity >= INTENSITY_FLOOR_THRESHOLD
+            ) or (
+                left_intensity >= INTENSITY_FLOOR_THRESHOLD
+                and right_intensity <= INTENSITY_LINE_THRESHOLD
+            ):
+                # Possible corner
+                self.state = STATE_TURN
+            # if (
+            #     left_intensity >= INTENSITY_FLOOR_THRESHOLD
+            #     and right_intensity >= INTENSITY_FLOOR_THRESHOLD
+            # ):
+            #     time_lost = last_left if last_left < last_right else last_right
+            #
+            #     if 0.5 < time_lost < 1.0:
+            #         # Possible corner
+            #         self.state = STATE_TURN
+
+        elif self.state == STATE_TURN:
+            if (
+                left_intensity <= INTENSITY_PART_LINE_THRESHOLD
+                or right_intensity <= INTENSITY_PART_LINE_THRESHOLD
+            ):
+                self.state = STATE_FOLLOW
             else:
-                if 0.4 < (now - self.last_right_line_seen) < 1.0:
-                    # print("HARD RIGHT")
-                    return WheelCommand(80, -80)
+                if last_left < last_right:
+                    return SHARP_LEFT_TURN
+                else:
+                    return SHARP_RIGHT_TURN
 
         # If hard turn is not needed we use the PID control.
         return WheelCommand(left_speed=left_control, right_speed=right_control)
@@ -143,9 +177,9 @@ class LineFollowingBehavior(Behavior):
     ############################################################
     def update_line_seen(self):
         left, right = self.color_sensors.get_value()
-        if left <= LINE_INTENSITY_BLACK_THRESHOLD:
+        if left <= INTENSITY_LINE_THRESHOLD:
             self.last_left_line_seen = time.time()
-        if right <= LINE_INTENSITY_BLACK_THRESHOLD:
+        if right <= INTENSITY_LINE_THRESHOLD:
             self.last_right_line_seen = time.time()
 
     def set_controller_straight(self):

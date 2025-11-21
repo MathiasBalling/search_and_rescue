@@ -3,8 +3,8 @@ from ai.behaviors.behavior import Behavior
 from params import (
     CAN_PICKED_UP,
     CAN_SIDE_PICKUP,
-    LINE_INTENSITY_BLACK_THRESHOLD,
-    LINE_INTENSITY_WHITE_THRESHOLD,
+    INTENSITY_PART_LINE_THRESHOLD,
+    INTENSITY_FLOOR_THRESHOLD,
     RETURN_TO_LINE_BASE_SPEED,
     RETURNED_TO_LINE,
 )
@@ -54,8 +54,8 @@ class LineReturnBehavior(Behavior):
         # We did turn around after finding the can, now use search until we find the line
         left_value, right_value = self.color_sensors.get_value()
         if (
-            left_value < LINE_INTENSITY_BLACK_THRESHOLD
-            or right_value < LINE_INTENSITY_BLACK_THRESHOLD
+            left_value < INTENSITY_PART_LINE_THRESHOLD
+            or right_value < INTENSITY_PART_LINE_THRESHOLD
         ):
             self.blackboard[RETURNED_TO_LINE] = True
             return ActuatorsProposal(WheelCommand(0, 0))
