@@ -3,7 +3,7 @@ import time
 from utils.blackboard import BlackBoard
 
 
-DT = 0.01
+DT = 0.02
 
 MOTOR_OFF = 0
 GRIPPER_SPEED = 100
