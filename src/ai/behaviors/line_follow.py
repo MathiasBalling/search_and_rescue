@@ -13,6 +13,7 @@ from utils.pid_controller import PIDController
 from params import (
     LAST_TIME_LINE_SEEN,
     LINE_FOLLOWING_BASE_SPEED,
+    LINE_FOLLOWING_TURN_SPEED_GAIN,
     LINE_INTENSITY_WHITE_THRESHOLD,
     LINE_INTENSITY_BLACK_THRESHOLD,
     LINE_FOLLOWING_PID_KP,
@@ -63,8 +64,8 @@ class LineFollowingBehavior(Behavior):
         now = time.time()
 
         if (
-            l_val < LINE_INTENSITY_WHITE_THRESHOLD
-            or r_val < LINE_INTENSITY_WHITE_THRESHOLD
+            l_val < LINE_INTENSITY_BLACK_THRESHOLD
+            or r_val < LINE_INTENSITY_BLACK_THRESHOLD
         ):
             self.blackboard[LAST_TIME_LINE_SEEN] = now
         # print(
@@ -96,8 +97,14 @@ class LineFollowingBehavior(Behavior):
 
         control = self.pid.compute(diff, current_time)
 
-        left_control = self.base_speed - control
-        right_control = self.base_speed + control
+        base_speed = (
+            self.base_speed
+            if abs(diff) < 0.5
+            else self.base_speed * LINE_FOLLOWING_TURN_SPEED_GAIN
+        )
+
+        left_control = base_speed - control
+        right_control = base_speed + control
 
         left_control = round(min(max(self.limits[0], left_control), self.limits[1]))
         right_control = round(min(max(self.limits[0], right_control), self.limits[1]))

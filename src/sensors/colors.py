@@ -27,7 +27,6 @@ class ColorSensors(Sensor):
             MAX_REFLECT - MIN_REFLECT
         )
         self.right_value = max(0.0, min(1.0, self.right_value))
-        print(self.left_value, self.right_value)
 
     def get_value(self):
         return (self.left_value, self.right_value)

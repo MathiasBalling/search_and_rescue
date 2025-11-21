@@ -1,5 +1,6 @@
 import ev3dev.ev3 as ev3
 import time
+import atexit
 
 from params import GRIPPER_SPEED, MOTOR_OFF, TURN_TIME_PER_DEGREE
 
@@ -85,6 +86,9 @@ class ActuatorsProposal:
             return "Unknown command"
 
 
+atexit.register(lambda: Actuators().stop_all_motors())
+
+
 class Actuators:
     def __init__(self):
         self.left_motor = ev3.LargeMotor(ev3.OUTPUT_A)
@@ -108,8 +112,8 @@ class Actuators:
             self.left_motor.duty_cycle_sp = cmd.left_speed
             self.right_motor.duty_cycle_sp = cmd.right_speed
             self.grip_object()
-        elif isinstance(cmd, TurnCommand):
-            self.turn_deg(cmd.deg, cmd.ccw)
+        # elif isinstance(cmd, TurnCommand):
+        #     self.turn_deg(cmd.deg, cmd.ccw)
 
     def grip_object(self):
         self.gripper_motor.duty_cycle_sp = -GRIPPER_SPEED
@@ -118,17 +122,22 @@ class Actuators:
         time.sleep(4)
         self.gripper_motor.duty_cycle_sp = MOTOR_OFF
 
-    def turn_deg(self, deg, ccw):
-        print(deg)
-        if ccw:
-            self.set_wheel_duty_cycles(left=-40, right=40)
-        else:
-            self.set_wheel_duty_cycles(left=40, right=-40)
-
-        sleep_time = 0.01333 * deg
-        time.sleep(sleep_time)
-        self.set_wheel_duty_cycles(left=MOTOR_OFF, right=MOTOR_OFF)
+    # def turn_deg(self, deg, ccw):
+    #     print(deg)
+    #     if ccw:
+    #         self.set_wheel_duty_cycles(left=-40, right=40)
+    #     else:
+    #         self.set_wheel_duty_cycles(left=40, right=-40)
+    #
+    #     sleep_time = 0.01333 * deg
+    #     time.sleep(sleep_time)
+    #     self.set_wheel_duty_cycles(left=MOTOR_OFF, right=MOTOR_OFF)
 
     def set_wheel_duty_cycles(self, left, right):
         self.left_motor.duty_cycle_sp = left
         self.right_motor.duty_cycle_sp = right
+
+    def stop_all_motors(self):
+        self.left_motor.duty_cycle_sp = MOTOR_OFF
+        self.right_motor.duty_cycle_sp = MOTOR_OFF
+        self.gripper_motor.duty_cycle_sp = MOTOR_OFF
