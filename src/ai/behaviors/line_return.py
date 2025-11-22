@@ -4,11 +4,11 @@ from params import (
     CAN_PICKED_UP,
     CAN_SIDE_PICKUP,
     INTENSITY_PART_LINE_THRESHOLD,
-    INTENSITY_FLOOR_THRESHOLD,
     RETURN_TO_LINE_BASE_SPEED,
     RETURNED_TO_LINE,
 )
 from sensors.colors import ColorSensors
+from sensors.pose import PoseSensor
 from utils.blackboard import BlackBoard
 
 
@@ -17,9 +17,11 @@ class LineReturnBehavior(Behavior):
         self,
         blackboard: BlackBoard,
         color_sensors: ColorSensors,
+        pose: PoseSensor,
     ):
         super().__init__(blackboard, 0.0)
         self.color_sensors = color_sensors
+        self.pose = pose
         self.did_turn = False
 
     def update(self):

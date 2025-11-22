@@ -2,7 +2,13 @@ import ev3dev.ev3 as ev3
 import time
 import atexit
 
-from params import GRIPPER_SPEED, MOTOR_OFF, TURN_TIME_PER_DEGREE
+from params import (
+    GRIPPER_SPEED,
+    MOTOR_OFF,
+    TURN_TIME_PER_DEGREE,
+    WHEEL_CIRCUMFERENCE,
+    WHEEL_SEPARATION,
+)
 
 
 from typing import Union
@@ -122,20 +128,12 @@ class Actuators:
         time.sleep(4)
         self.gripper_motor.duty_cycle_sp = MOTOR_OFF
 
-    # def turn_deg(self, deg, ccw):
-    #     print(deg)
-    #     if ccw:
-    #         self.set_wheel_duty_cycles(left=-40, right=40)
-    #     else:
-    #         self.set_wheel_duty_cycles(left=40, right=-40)
-    #
-    #     sleep_time = 0.01333 * deg
-    #     time.sleep(sleep_time)
-    #     self.set_wheel_duty_cycles(left=MOTOR_OFF, right=MOTOR_OFF)
-
     def set_wheel_duty_cycles(self, left, right):
         self.left_motor.duty_cycle_sp = left
         self.right_motor.duty_cycle_sp = right
+
+    def get_wheel_motors(self):
+        return self.left_motor, self.right_motor
 
     def stop_all_motors(self):
         self.left_motor.duty_cycle_sp = MOTOR_OFF

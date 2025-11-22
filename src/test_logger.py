@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from ai.behaviors.can_detect import CanDetectionBehavior
+from actuators import Actuators
 from ai.controller import Controller
 from logger import Logging
 from params import setup_blackboard
@@ -9,7 +9,8 @@ from sensors.ultrasonic import UltrasonicSensor
 
 
 def main():
-    controller = Controller()
+    actuators = Actuators()
+    controller = Controller(actuators)
     blackboard = setup_blackboard()
 
     # Create sensors

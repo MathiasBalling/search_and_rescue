@@ -3,6 +3,7 @@ from actuators import ActuatorsProposal, WheelCommand
 from ai.behaviors.behavior import Behavior
 from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
+from sensors.pose import PoseSensor
 from sensors.ultrasonic import UltrasonicSensor
 from utils.blackboard import BlackBoard
 from params import (
@@ -26,10 +27,12 @@ class CanDetectionBehavior(Behavior):
         color_sensors: ColorSensors,
         gyro: GyroSensor,
         ultrasonic_sensor: UltrasonicSensor,
+        pose: PoseSensor,
     ):
         super().__init__(blackboard, 0.0)
         self.color_sensors = color_sensors
         self.gyro = gyro
+        self.pose = pose
         self.ultrasonic_sensor = ultrasonic_sensor
         self.scan_steps = [
             (True, CAN_DECTECTION_SCAN_DEGREES * 2),
