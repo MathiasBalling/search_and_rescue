@@ -8,11 +8,13 @@ from sensors.gyro import GyroSensor
 
 from utils.blackboard import BlackBoard
 from utils.pid_controller import PIDController
+from collections import deque
 
 
 from params import (
     INTENSITY_LINE_THRESHOLD,
     LAST_TIME_LINE_SEEN,
+    LINE_END_THRESHOLD,
     LINE_FOLLOWING_BASE_SPEED,
     LINE_FOLLOWING_SHARP_TURN_SPEED_BACK,
     LINE_FOLLOWING_TURN_SPEED_GAIN,
@@ -22,6 +24,7 @@ from params import (
     LINE_FOLLOWING_PID_KD,
     LINE_FOLLOWING_PID_KI,
     LINE_FOLLOWING_SHARP_TURN_SPEED,
+    LINE_GAP_THRESHOLD,
 )
 
 MODE_STRAIGHT = "straight"
@@ -65,29 +68,32 @@ class LineFollowingBehavior(Behavior):
 
         self.last_left_line_seen = 0
         self.last_right_line_seen = 0
+        self.prev_intensities = deque(maxlen=20)
 
     def update(self):
         l_val, r_val = self.color_sensors.get_value()
         now = time.time()
+
+        self.prev_intensities.append((l_val, r_val))
 
         if (
             l_val < INTENSITY_PART_LINE_THRESHOLD
             or r_val < INTENSITY_PART_LINE_THRESHOLD
         ):
             self.blackboard[LAST_TIME_LINE_SEEN] = now
-        # print(
-        #     "Last time line seen: {}, {},{}".format(
-        #         now - self.blackboard[LAST_TIME_LINE_SEEN], l_val, r_val
-        # )
 
-        if now - self.blackboard[LAST_TIME_LINE_SEEN] > 1.0:
+        if self.state != STATE_FOLLOW:
+            # Very important we recover the line
+            self.weight = 5.0
+            return
+
+        if now - self.blackboard[LAST_TIME_LINE_SEEN] > LINE_END_THRESHOLD:
             self.weight = 0.0
             return
 
         self.weight = 1.0
 
     def actuators_proposal(self):
-        # TODO: PID scale output with curve
         cmd = self.follow_line()
         return ActuatorsProposal(cmd)
 
@@ -128,25 +134,30 @@ class LineFollowingBehavior(Behavior):
 
         last_left = current_time - self.last_left_line_seen
         last_right = current_time - self.last_right_line_seen
-        print(
-            "time:",
-            current_time,
-            "left_intensity:",
-            left_intensity,
-            "right_intensity:",
-            right_intensity,
-        )
+
+        left_on = left_intensity < INTENSITY_PART_LINE_THRESHOLD
+        right_on = right_intensity < INTENSITY_PART_LINE_THRESHOLD
+        # print(
+        #     "time:",
+        #     current_time,
+        #     "left_intensity:",
+        #     left_intensity,
+        #     "right_intensity:",
+        #     right_intensity,
+        # )
+
+        print(self.state)
 
         if self.state == STATE_FOLLOW:
-            if (
-                left_intensity <= INTENSITY_LINE_THRESHOLD
-                and right_intensity >= INTENSITY_FLOOR_THRESHOLD
-            ) or (
-                left_intensity >= INTENSITY_FLOOR_THRESHOLD
-                and right_intensity <= INTENSITY_LINE_THRESHOLD
-            ):
-                # Possible corner
-                self.state = STATE_TURN
+            # if (
+            #     left_intensity <= INTENSITY_LINE_THRESHOLD
+            #     and right_intensity >= INTENSITY_FLOOR_THRESHOLD
+            # ) or (
+            #     left_intensity >= INTENSITY_FLOOR_THRESHOLD
+            #     and right_intensity <= INTENSITY_LINE_THRESHOLD
+            # ):
+            #     # Possible corner
+            #     self.state = STATE_TURN
             # if (
             #     left_intensity >= INTENSITY_FLOOR_THRESHOLD
             #     and right_intensity >= INTENSITY_FLOOR_THRESHOLD
@@ -157,17 +168,42 @@ class LineFollowingBehavior(Behavior):
             #         # Possible corner
             #         self.state = STATE_TURN
 
-        elif self.state == STATE_TURN:
             if (
-                left_intensity <= INTENSITY_PART_LINE_THRESHOLD
-                or right_intensity <= INTENSITY_PART_LINE_THRESHOLD
+                # TODO: Maybe PART LINE here
+                left_intensity <= INTENSITY_LINE_THRESHOLD
+                and right_intensity <= INTENSITY_LINE_THRESHOLD
             ):
-                self.state = STATE_FOLLOW
-            else:
+                print("Black-Black")
+                self.state = STATE_TURN
                 if last_left < last_right:
                     return SHARP_LEFT_TURN
                 else:
                     return SHARP_RIGHT_TURN
+
+            if (
+                left_intensity >= INTENSITY_FLOOR_THRESHOLD
+                and right_intensity >= INTENSITY_FLOOR_THRESHOLD
+                and (
+                    LINE_GAP_THRESHOLD < last_left < LINE_END_THRESHOLD
+                    or LINE_GAP_THRESHOLD < last_right < LINE_END_THRESHOLD
+                )
+            ):
+                print("White-White")
+                self.state = STATE_TURN
+                if last_left < last_right:
+                    return SHARP_LEFT_TURN
+                else:
+                    return SHARP_RIGHT_TURN
+
+        elif self.state == STATE_TURN:
+            if (left_on and not right_on) or (right_on and not left_on):
+                print("Switching back")
+                self.state = STATE_FOLLOW
+
+            if last_left < last_right:
+                return SHARP_LEFT_TURN
+            else:
+                return SHARP_RIGHT_TURN
 
         # If hard turn is not needed we use the PID control.
         return WheelCommand(left_speed=left_control, right_speed=right_control)
