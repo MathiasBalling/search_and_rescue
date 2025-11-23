@@ -29,7 +29,6 @@ class GyroSensor(Sensor):
         if self.updates % 40 == 0:
             # Update offset if all in _last_values is under 3
             if all(x < 3 for x in self._last_values):
-                print("Gyro offset updated:", self.offset)
                 self.offset = self.sensor.value()
 
         self.value = self.sensor.value() - self.offset

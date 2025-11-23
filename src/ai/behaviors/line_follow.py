@@ -17,7 +17,6 @@ from params import (
     LAST_TIME_LINE_SEEN,
     LINE_END_THRESHOLD,
     LINE_FOLLOWING_BASE_SPEED,
-    LINE_FOLLOWING_SHARP_TURN_SPEED_BACK,
     LINE_FOLLOWING_TURN_SPEED_GAIN,
     INTENSITY_FLOOR_THRESHOLD,
     INTENSITY_PART_LINE_THRESHOLD,
@@ -28,6 +27,7 @@ from params import (
     LINE_GAP_THRESHOLD,
     MAX_METERS_PER_SEC,
     TURN_ANGLE_THRESHOLD,
+    deg_to_rad,
 )
 
 MODE_STRAIGHT = "straight"
@@ -39,12 +39,12 @@ STATE_TURN = "turn"
 
 
 SHARP_LEFT_TURN = WheelCommand(
-    left_speed=LINE_FOLLOWING_SHARP_TURN_SPEED_BACK,
+    left_speed=-LINE_FOLLOWING_SHARP_TURN_SPEED,
     right_speed=LINE_FOLLOWING_SHARP_TURN_SPEED,
 )
 SHARP_RIGHT_TURN = WheelCommand(
     left_speed=LINE_FOLLOWING_SHARP_TURN_SPEED,
-    right_speed=LINE_FOLLOWING_SHARP_TURN_SPEED_BACK,
+    right_speed=-LINE_FOLLOWING_SHARP_TURN_SPEED,
 )
 
 
@@ -187,9 +187,8 @@ class LineFollowingBehavior(Behavior):
             else:
                 self.turn_back = True
 
-                if (
-                    abs(angle_turned) > 5 * math.pi / 180
-                ):  # Return to within 5 degrees of where we started turning
+                if abs(angle_turned) > deg_to_rad(5):
+                    # Return to within 5 degrees of where we started turning
                     # Turn back
                     if last_left_full_line_seen < last_right_full_line_seen:
                         return SHARP_RIGHT_TURN

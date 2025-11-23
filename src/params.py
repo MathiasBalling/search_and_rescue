@@ -13,6 +13,14 @@ def mps_to_dps(mps):
     return round(max(-MAX_DEGREES_PER_SEC, min(dps, MAX_DEGREES_PER_SEC)))
 
 
+def deg_to_rad(deg):
+    return deg * math.pi / 180.0
+
+
+def rad_to_deg(rad):
+    return rad * 180.0 / math.pi
+
+
 DT = 0.02
 
 MOTOR_OFF = 0
@@ -38,20 +46,21 @@ LINE_FOLLOWING_PID_KI = 0.00
 LINE_FOLLOWING_PID_KD = 0.003
 LINE_FOLLOWING_TURN_SPEED_GAIN = 0.5
 LINE_FOLLOWING_SHARP_TURN_SPEED = 0.13  # m/s
-LINE_END_THRESHOLD = 1.0  # s
+LINE_END_THRESHOLD = 0.8  # s
 LINE_GAP_THRESHOLD = 0.5  # s
-TURN_ANGLE_THRESHOLD = math.pi / 2  # 90 degrees
+TURN_ANGLE_THRESHOLD = deg_to_rad(90)
 
 # Parameters for the return to line
 RETURN_TO_LINE_BASE_SPEED = 0.19  # m/s
 
 # Parameters for the can detection
-CAN_DETECTION_BASE_SPEED = 0.2  # m/s
-CAN_DETECTION_DISTANCE_THRESHOLD = 20  # cm
-CAN_DECTECTION_SCAN_DEGREES = 30
+CAN_DETECTION_BASE_SPEED = 0.02  # m/s
+CAN_DECTECTION_SCAN_DEGREES = deg_to_rad(70)
 
 # Parameters for the can pickup
 CAN_PICKUP_BASE_SPEED = 0.05  # m/s
+CAN_PICKUP_GRIP_SPEED = 0.015  # m/s
+CAN_PICKUP_DISTANCE_THRESHOLD = 25  # cm
 CAN_PICKUP_MAX_DISTANCE = 6
 
 

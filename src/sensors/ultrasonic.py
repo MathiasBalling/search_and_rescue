@@ -12,7 +12,7 @@ class UltrasonicSensor(Sensor):
         self.value = 0
 
     def update(self):
-        self.value = self.sensor.value() / 10.0
+        self.value = self.sensor.distance_centimeters
 
     def get_value(self):
         return self.value
