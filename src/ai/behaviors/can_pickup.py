@@ -57,7 +57,7 @@ class CanPickupBehavior(Behavior):
 
     def actuators_proposal(self):
         dist = self.ultrasonic_sensor.get_value()
-        print("Dist:", dist)
+        # print("Dist:", dist)
         if self.blackboard[CAN_PICKED_UP]:
             return ActuatorsProposal(StopCommand())
 

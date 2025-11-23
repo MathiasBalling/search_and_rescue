@@ -95,6 +95,7 @@ class Actuators:
         cmd = proposal.command
         if isinstance(cmd, WheelCommand):
             self.left_motor.run_forever(speed_sp=cmd.left_speed)
+
             self.right_motor.run_forever(speed_sp=cmd.right_speed)
         elif isinstance(cmd, GripperCommand):
             self.stop_motors()

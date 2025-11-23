@@ -102,7 +102,7 @@ class CanDetectionBehavior(Behavior):
         if self.start_angle is None:
             self.start_angle = angle
         dist = self.ultrasonic_sensor.get_value()
-        print("Dist:", dist, "Angle:", angle)
+        # print("Dist:", dist, "Angle:", angle)
 
         angle_turned = self.start_angle - angle
         if self.scan_step_index == SCAN_TURN_LEFT:
