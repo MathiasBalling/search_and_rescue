@@ -1,4 +1,4 @@
-from actuators import ActuatorsProposal, TurnCommand, WheelCommand
+from actuators import ActuatorsProposal, WheelCommand
 from ai.behaviors.behavior import Behavior
 from params import (
     CAN_PICKED_UP,
@@ -23,6 +23,7 @@ class LineReturnBehavior(Behavior):
         self.color_sensors = color_sensors
         self.pose = pose
         self.did_turn = False
+        self.turn_angle_start = None
 
     def update(self):
         self.weight = 0.5
@@ -41,17 +42,17 @@ class LineReturnBehavior(Behavior):
         if not self.did_turn:
             self.did_turn = True
 
-            can_degree, ccw = self.blackboard[CAN_SIDE_PICKUP]
-            if ccw:
-                if can_degree > 0:
-                    return ActuatorsProposal(TurnCommand(180 + can_degree, True))
-                else:
-                    return ActuatorsProposal(TurnCommand(180 + can_degree, False))
-            else:
-                if can_degree > 0:
-                    return ActuatorsProposal(TurnCommand(180 + can_degree, False))
-                else:
-                    return ActuatorsProposal(TurnCommand(180 + can_degree, True))
+            # can_degree, ccw = self.blackboard[CAN_SIDE_PICKUP]
+            # if ccw:
+            #     if can_degree > 0:
+            #         return ActuatorsProposal(TurnCommand(180 + can_degree, True))
+            #     else:
+            #         return ActuatorsProposal(TurnCommand(180 + can_degree, False))
+            # else:
+            #     if can_degree > 0:
+            #         return ActuatorsProposal(TurnCommand(180 + can_degree, False))
+            #     else:
+            #         return ActuatorsProposal(TurnCommand(180 + can_degree, True))
 
         # We did turn around after finding the can, now use search until we find the line
         left_value, right_value = self.color_sensors.get_value()

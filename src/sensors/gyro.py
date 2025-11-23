@@ -7,6 +7,7 @@ class GyroSensor(Sensor):
 
     def __init__(self):
         self.sensor = ev3.GyroSensor(ev3.INPUT_3)
+        assert self.sensor.connected
         # FIX: Update this to angle or angle+rate instead of rate
         # Or use rate and calculate the angle ourselves
 

@@ -10,15 +10,12 @@ class PoseSensor(Sensor):
         self.left_motor = left_motor
         self.right_motor = right_motor
 
-        self.left_motor.position = 0
-        self.right_motor.position = 0
-
         self.x = 0
         self.y = 0
-        self.angle = 0
+        self.theta = 0
 
-        self.last_left_position = 0
-        self.last_right_position = 0
+        self.last_left_position = self.left_motor.position
+        self.last_right_position = self.right_motor.position
 
     def update(self):
         d_l_position = self.left_motor.position - self.last_left_position
@@ -33,19 +30,19 @@ class PoseSensor(Sensor):
         D_l = N_l * WHEEL_CIRCUMFERENCE
         D_r = N_r * WHEEL_CIRCUMFERENCE
         D_avg = (D_l + D_r) / 2
-        d_angle = (D_r - D_l) / WHEEL_SEPARATION
+        d_theta = (D_r - D_l) / WHEEL_SEPARATION
 
-        self.angle = self.angle + d_angle
-        # if self.angle > pi:
-        #     self.angle -= 2 * pi
-        # elif self.angle < -pi:
-        #     self.angle += 2 * pi
+        self.theta = self.theta + d_theta
+        # if self.theta > pi:
+        #     self.theta -= 2 * pi
+        # elif self.theta < -pi:
+        #     self.theta += 2 * pi
 
-        d_x = D_avg * cos(self.angle)
-        d_y = D_avg * sin(self.angle)
+        d_x = D_avg * cos(self.theta)
+        d_y = D_avg * sin(self.theta)
 
         self.x += d_x
         self.y += d_y
 
     def get_value(self):
-        return (self.x, self.y, self.angle)
+        return (self.x, self.y, self.theta)

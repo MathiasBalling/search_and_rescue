@@ -10,9 +10,11 @@ class ColorSensors(Sensor):
 
     def __init__(self):
         self.left_sensor = ev3.ColorSensor(ev3.INPUT_1)
+        assert self.left_sensor.connected
         self.left_sensor.mode = ev3.ColorSensor.MODE_COL_REFLECT
 
         self.right_sensor = ev3.ColorSensor(ev3.INPUT_4)
+        assert self.right_sensor.connected
         self.right_sensor.mode = ev3.ColorSensor.MODE_COL_REFLECT
 
         self.left_value = 100

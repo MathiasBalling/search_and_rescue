@@ -2,7 +2,7 @@ import math
 import time
 
 from ai.behaviors.behavior import Behavior
-from actuators import ActuatorsProposal, WheelCommand
+from actuators import ActuatorsProposal, StopCommand, WheelCommand
 
 from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
@@ -26,6 +26,7 @@ from params import (
     LINE_FOLLOWING_PID_KI,
     LINE_FOLLOWING_SHARP_TURN_SPEED,
     LINE_GAP_THRESHOLD,
+    MAX_METERS_PER_SEC,
     TURN_ANGLE_THRESHOLD,
 )
 
@@ -66,7 +67,7 @@ class LineFollowingBehavior(Behavior):
             LINE_FOLLOWING_PID_KP,
             LINE_FOLLOWING_PID_KI,
             LINE_FOLLOWING_PID_KD,
-            (-100, 100),
+            (-MAX_METERS_PER_SEC, MAX_METERS_PER_SEC),
         )
         self.base_speed = LINE_FOLLOWING_BASE_SPEED
 
@@ -125,8 +126,12 @@ class LineFollowingBehavior(Behavior):
 
         pid_left_control = base_speed - control
         pid_right_control = base_speed + control
-        pid_left_control = min(max(-100, pid_left_control), 100)
-        pid_right_control = min(max(-100, pid_right_control), 100)
+        pid_left_control = min(
+            max(-MAX_METERS_PER_SEC, pid_left_control), MAX_METERS_PER_SEC
+        )
+        pid_right_control = min(
+            max(-MAX_METERS_PER_SEC, pid_right_control), MAX_METERS_PER_SEC
+        )
 
         last_left_full_line_seen = current_time - self.last_left_line_seen
         last_right_full_line_seen = current_time - self.last_right_line_seen
@@ -193,6 +198,7 @@ class LineFollowingBehavior(Behavior):
                 else:
                     self.reset_turn_logic()
                     self.state = STATE_FOLLOW
+                    return StopCommand()
                     # print("Turning failed")
 
         # If hard turn is not needed we use the PID control.

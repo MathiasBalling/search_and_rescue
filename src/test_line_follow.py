@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from actuators import Actuators
 from ai.behaviors.line_follow import LineFollowingBehavior
 from ai.controller import Controller
 from params import setup_blackboard
@@ -7,6 +6,7 @@ from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
 from sensors.pose import PoseSensor
 from sensors.ultrasonic import UltrasonicSensor
+from actuators import Actuators
 
 
 def main():
@@ -39,6 +39,7 @@ def main():
     controller.add_behavior(line_following_behavior)
 
     # Run the controller forever
+    print("Running controller")
     controller.run()
 
 

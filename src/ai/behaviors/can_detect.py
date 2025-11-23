@@ -12,7 +12,6 @@ from params import (
     CAN_PICKED_UP,
     CAN_SIDE_PICKUP,
     LAST_TIME_LINE_SEEN,
-    TURN_TIME_PER_DEGREE,
     CAN_DETECTION_BASE_SPEED,
 )
 
@@ -34,12 +33,15 @@ class CanDetectionBehavior(Behavior):
         self.gyro = gyro
         self.pose = pose
         self.ultrasonic_sensor = ultrasonic_sensor
+
+        self.start_angle = None
+
         self.scan_steps = [
             (True, CAN_DECTECTION_SCAN_DEGREES * 2),
             (False, CAN_DECTECTION_SCAN_DEGREES * 2),
         ]
         self.scan_sequence_index = 0
-        self.turn_segment_start = None
+
         self.deg = CAN_DECTECTION_SCAN_DEGREES
         self.ccw = True
 
@@ -64,6 +66,10 @@ class CanDetectionBehavior(Behavior):
     def actuators_proposal(self):
         if self.blackboard[CAN_PICKED_UP]:
             return ActuatorsProposal(WheelCommand(0, 0))
+
+        x, y, angle = self.pose.get_value()
+        if self.start_angle is None:
+            self.start_angle = self.pose.get_value()[1]
 
         current_time = time.time()
         if self.turn_segment_start is None:
@@ -95,3 +101,7 @@ class CanDetectionBehavior(Behavior):
             return ActuatorsProposal(TURN_LEFT)
         else:
             return ActuatorsProposal(TURN_RIGHT)
+
+    def reset(self):
+        self.start_angle = None
+        self.scan_sequence_index = 0
