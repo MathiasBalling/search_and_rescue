@@ -1,15 +1,20 @@
-from actuators import ActuatorsProposal, WheelCommand
+from actuators import ActuatorsProposal, StopCommand, WheelCommand
 from ai.behaviors.behavior import Behavior
 from params import (
     CAN_PICKED_UP,
-    CAN_SIDE_PICKUP,
+    CAN_ANGLE,
     INTENSITY_PART_LINE_THRESHOLD,
     RETURN_TO_LINE_BASE_SPEED,
+    RETURN_TO_LINE_TURN_SPEED,
     RETURNED_TO_LINE,
+    deg_to_rad,
 )
 from sensors.colors import ColorSensors
 from sensors.pose import PoseSensor
 from utils.blackboard import BlackBoard
+
+TURN_LEFT = WheelCommand(-RETURN_TO_LINE_TURN_SPEED, RETURN_TO_LINE_TURN_SPEED)
+TURN_RIGHT = WheelCommand(RETURN_TO_LINE_TURN_SPEED, -RETURN_TO_LINE_TURN_SPEED)
 
 
 class LineReturnBehavior(Behavior):
@@ -22,47 +27,46 @@ class LineReturnBehavior(Behavior):
         super().__init__(blackboard, 0.0)
         self.color_sensors = color_sensors
         self.pose = pose
-        self.did_turn = False
+
         self.turn_angle_start = None
+        self.target_angle = None
 
     def update(self):
-        self.weight = 0.5
+        self.weight = 0.0
         if self.blackboard[RETURNED_TO_LINE]:
-            self.weight = 0.0
             return
 
         if not self.blackboard[CAN_PICKED_UP]:
-            self.weight = 0.0
             return
         else:
             self.weight += 5.0
 
     def actuators_proposal(self):
-        # TODO: Back up and turn in here
-        if not self.did_turn:
-            self.did_turn = True
-
-            # can_degree, ccw = self.blackboard[CAN_SIDE_PICKUP]
-            # if ccw:
-            #     if can_degree > 0:
-            #         return ActuatorsProposal(TurnCommand(180 + can_degree, True))
-            #     else:
-            #         return ActuatorsProposal(TurnCommand(180 + can_degree, False))
-            # else:
-            #     if can_degree > 0:
-            #         return ActuatorsProposal(TurnCommand(180 + can_degree, False))
-            #     else:
-            #         return ActuatorsProposal(TurnCommand(180 + can_degree, True))
-
-        # We did turn around after finding the can, now use search until we find the line
         left_value, right_value = self.color_sensors.get_value()
         if (
             left_value < INTENSITY_PART_LINE_THRESHOLD
             or right_value < INTENSITY_PART_LINE_THRESHOLD
         ):
             self.blackboard[RETURNED_TO_LINE] = True
-            return ActuatorsProposal(WheelCommand(0, 0))
+            return ActuatorsProposal(StopCommand())
 
-        return ActuatorsProposal(
-            WheelCommand(RETURN_TO_LINE_BASE_SPEED, RETURN_TO_LINE_BASE_SPEED)
-        )
+        x, y, angle = self.pose.get_value()
+
+        if self.turn_angle_start is None:
+            self.turn_angle_start = angle
+
+        can_angle = self.blackboard[CAN_ANGLE]
+        if self.target_angle is None:
+            if can_angle > 0:
+                self.target_angle = deg_to_rad(-180) + can_angle
+            else:
+                self.target_angle = deg_to_rad(180) + can_angle
+
+        if abs(self.target_angle - angle) < deg_to_rad(3):
+            return ActuatorsProposal(
+                WheelCommand(RETURN_TO_LINE_BASE_SPEED, RETURN_TO_LINE_BASE_SPEED)
+            )
+        elif self.target_angle - angle < 0:
+            return ActuatorsProposal(TURN_LEFT)
+        else:
+            return ActuatorsProposal(TURN_RIGHT)

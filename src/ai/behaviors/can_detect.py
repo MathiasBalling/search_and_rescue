@@ -7,6 +7,7 @@ from sensors.pose import PoseSensor
 from sensors.ultrasonic import UltrasonicSensor
 from utils.blackboard import BlackBoard
 from params import (
+    CAN_ANGLE,
     CAN_DECTECTION_SCAN_DEGREES,
     CAN_PICKED_UP,
     LAST_TIME_LINE_SEEN,
@@ -122,6 +123,7 @@ class CanDetectionBehavior(Behavior):
             if self.can_angle is None:
                 best = self.measurements.find_best()
                 print("Best angle:", best.angle, best.distance, best.weight)
+                self.blackboard[CAN_ANGLE] = best.angle
                 # for m in self.measurements._measurements:
                 #     print(m.distance, m.angle, m.weight)
                 self.can_angle = best.angle

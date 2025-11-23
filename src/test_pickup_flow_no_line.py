@@ -2,8 +2,8 @@
 from actuators import Actuators
 from ai.behaviors.can_detect import CanDetectionBehavior
 from ai.behaviors.can_pickup import CanPickupBehavior
+from ai.behaviors.line_return import LineReturnBehavior
 from ai.controller import Controller
-from logger import Logging
 from params import setup_blackboard
 from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
@@ -46,12 +46,14 @@ def main():
         pose=pose_sensor,
     )
 
-    logging = Logging(blackboard, color_sensors, gyro_sensor, ultrasonic_sensor)
+    line_return_behavior = LineReturnBehavior(
+        blackboard=blackboard, color_sensors=color_sensors, pose=pose_sensor
+    )
 
     # Add behaviors to the controller
     controller.add_behavior(can_detect_behavior)
     controller.add_behavior(can_pickup_behavior)
-    controller.add_behavior(logging)
+    controller.add_behavior(line_return_behavior)
 
     # Run the controller forever
     controller.run()

@@ -52,6 +52,7 @@ TURN_ANGLE_THRESHOLD = deg_to_rad(90)
 
 # Parameters for the return to line
 RETURN_TO_LINE_BASE_SPEED = 0.19  # m/s
+RETURN_TO_LINE_TURN_SPEED = 0.13  # m/s
 
 # Parameters for the can detection
 CAN_DETECTION_BASE_SPEED = 0.02  # m/s
@@ -68,7 +69,7 @@ CAN_PICKUP_MAX_DISTANCE = 6
 LAST_TIME_LINE_SEEN = "last_time_line_seen"
 CAN_PICKED_UP = "can_picked_up"
 RETURNED_TO_LINE = "returned_to_line"
-CAN_SIDE_PICKUP = "can_side_pickup"
+CAN_ANGLE = "can_angle"
 
 
 def setup_blackboard() -> BlackBoard:
@@ -76,6 +77,6 @@ def setup_blackboard() -> BlackBoard:
     blackboard[LAST_TIME_LINE_SEEN] = time.time()
     blackboard[CAN_PICKED_UP] = False
     blackboard[RETURNED_TO_LINE] = False
-    blackboard[CAN_SIDE_PICKUP] = (0, True)
+    blackboard[CAN_ANGLE] = None
 
     return blackboard
