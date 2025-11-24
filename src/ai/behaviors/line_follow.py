@@ -8,11 +8,13 @@ from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
 from sensors.pose import PoseSensor
 
+from sensors.ultrasonic import UltrasonicSensor
 from utils.blackboard import BlackBoard
 from utils.pid_controller import PIDController
 
 
 from params import (
+    CAN_PICKED_UP,
     INTENSITY_LINE_THRESHOLD,
     LAST_TIME_LINE_SEEN,
     LINE_END_THRESHOLD,
@@ -56,18 +58,27 @@ class LineFollowingBehavior(Behavior):
         self,
         blackboard: BlackBoard,
         color_sensors: ColorSensors,
+        ultrasonic_sensor: UltrasonicSensor,
         gyro: GyroSensor,
         pose: PoseSensor,
     ):
         super().__init__(blackboard, 1.0)  # 1.0 because we start on the line
         self.color_sensors = color_sensors
         self.gyro = gyro
+        self.ultrasonic_sensor = ultrasonic_sensor
         self.pose = pose
-        self.pid = PIDController(
+        self.line_follow_pid = PIDController(
             LINE_FOLLOWING_PID_KP,
             LINE_FOLLOWING_PID_KI,
             LINE_FOLLOWING_PID_KD,
             (-MAX_METERS_PER_SEC, MAX_METERS_PER_SEC),
+            0.0,
+        )
+        self.turn_pid = PIDController(
+            0.2,
+            0.02,
+            0,
+            (-LINE_FOLLOWING_SHARP_TURN_SPEED, LINE_FOLLOWING_SHARP_TURN_SPEED),
         )
         self.base_speed = LINE_FOLLOWING_BASE_SPEED
 
@@ -78,7 +89,7 @@ class LineFollowingBehavior(Behavior):
         self.last_right_line_seen = 0
 
         self.turn_angle_start = None
-        self.turn_back = False
+        self.turned_back = False
 
     def update(self):
         l_val, r_val = self.color_sensors.get_value()
@@ -116,13 +127,22 @@ class LineFollowingBehavior(Behavior):
 
         diff = left_intensity - right_intensity
 
-        control = self.pid.compute(diff, current_time)
+        control = self.line_follow_pid.compute(diff, current_time)
 
-        base_speed = (
-            self.base_speed
-            if abs(diff) < 0.3
-            else self.base_speed * LINE_FOLLOWING_TURN_SPEED_GAIN
-        )
+        distance_front = self.ultrasonic_sensor.get_value()
+
+        base_speed = self.base_speed
+
+        if abs(diff) > 0.3:
+            base_speed = self.base_speed * LINE_FOLLOWING_TURN_SPEED_GAIN
+        # elif distance_front < 30 and (
+        #     left_intensity > INTENSITY_FLOOR_THRESHOLD
+        #     and right_intensity > INTENSITY_FLOOR_THRESHOLD
+        # ) and not self.blackboard[CAN_PICKED_UP]::
+        elif distance_front < 30 and not self.blackboard[CAN_PICKED_UP]:
+            # To now crash into the object
+            print("Slowing down (ultrasonic value:", distance_front, ")")
+            base_speed = self.base_speed * 0.2
 
         pid_left_control = base_speed - control
         pid_right_control = base_speed + control
@@ -178,34 +198,33 @@ class LineFollowingBehavior(Behavior):
                 )
 
             angle_turned = self.turn_angle_start - angle
-            if abs(angle_turned) < TURN_ANGLE_THRESHOLD and not self.turn_back:
+            if abs(angle_turned) < TURN_ANGLE_THRESHOLD and not self.turned_back:
                 # Turn
                 if last_left_full_line_seen < last_right_full_line_seen:
-                    return SHARP_LEFT_TURN
+                    self.turn_pid.setpoint = -TURN_ANGLE_THRESHOLD
                 else:
-                    return SHARP_RIGHT_TURN
+                    self.turn_pid.setpoint = TURN_ANGLE_THRESHOLD
             else:
-                self.turn_back = True
+                self.turned_back = True
+                self.turn_pid.setpoint = 0
 
-                if abs(angle_turned) > deg_to_rad(5):
-                    # Return to within 5 degrees of where we started turning
+                if abs(angle_turned) < deg_to_rad(0.5):
                     # Turn back
-                    if last_left_full_line_seen < last_right_full_line_seen:
-                        return SHARP_RIGHT_TURN
-                    else:
-                        return SHARP_LEFT_TURN
-                else:
                     self.reset_turn_logic()
                     self.state = STATE_FOLLOW
                     return StopCommand()
-                    # print("Turning failed")
+
+            turn_ctrl = self.turn_pid.compute(angle_turned, time.time())
+
+            return WheelCommand(turn_ctrl, -turn_ctrl)
 
         # If hard turn is not needed we use the PID control.
         return WheelCommand(left_speed=pid_left_control, right_speed=pid_right_control)
 
     def reset_turn_logic(self):
+        self.turn_pid.reset()
         self.turn_angle_start = None
-        self.turn_back = False
+        self.turned_back = False
 
     ############################################################
     # Other methods
@@ -220,22 +239,22 @@ class LineFollowingBehavior(Behavior):
     def set_controller_straight(self):
         if self.controller_mode == MODE_STRAIGHT:
             return
-        self.pid.kp = LINE_FOLLOWING_PID_KP
-        self.pid.ki = LINE_FOLLOWING_PID_KI
-        self.pid.kd = LINE_FOLLOWING_PID_KD
+        self.line_follow_pid.kp = LINE_FOLLOWING_PID_KP
+        self.line_follow_pid.ki = LINE_FOLLOWING_PID_KI
+        self.line_follow_pid.kd = LINE_FOLLOWING_PID_KD
         self.controller_mode = MODE_STRAIGHT
         self.base_speed = LINE_FOLLOWING_BASE_SPEED
-        self.pid.reset()
+        self.line_follow_pid.reset()
 
     def set_controller_uphill(self):
         if self.controller_mode == MODE_UPHILL:
             return
-        self.pid.kp = 40.0
-        self.pid.ki = 0
-        self.pid.kd = 0
+        self.line_follow_pid.kp = 40.0
+        self.line_follow_pid.ki = 0
+        self.line_follow_pid.kd = 0
         self.controller_mode = MODE_UPHILL
         self.base_speed = 70
-        self.pid.reset()
+        self.line_follow_pid.reset()
 
     def update_mode(self):
         angle = self.gyro.get_value()

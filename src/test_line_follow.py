@@ -31,6 +31,7 @@ def main():
     line_following_behavior = LineFollowingBehavior(
         blackboard=blackboard,
         color_sensors=color_sensors,
+        ultrasonic_sensor=ultrasonic_sensor,
         gyro=gyro_sensor,
         pose=pose_sensor,
     )

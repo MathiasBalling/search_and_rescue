@@ -13,8 +13,11 @@ from params import (
     LAST_TIME_LINE_SEEN,
     CAN_DETECTION_BASE_SPEED,
     LINE_END_THRESHOLD,
+    MAX_METERS_PER_SEC,
+    POINTING_AT_CAN,
     deg_to_rad,
 )
+from utils.pid_controller import PIDController
 
 TURN_LEFT = WheelCommand(-CAN_DETECTION_BASE_SPEED, CAN_DETECTION_BASE_SPEED)
 TURN_RIGHT = WheelCommand(CAN_DETECTION_BASE_SPEED, -CAN_DETECTION_BASE_SPEED)
@@ -49,6 +52,9 @@ class Measurements:
     def find_best(self) -> Measurement:
         return max(self._measurements, key=lambda m: m.weight)
 
+    def find_lowest_dist(self) -> Measurement:
+        return min(self._measurements, key=lambda m: m.distance)
+
     def reset(self):
         self._measurements = []
 
@@ -67,9 +73,11 @@ class CanDetectionBehavior(Behavior):
         self.gyro = gyro
         self.pose = pose
         self.ultrasonic_sensor = ultrasonic_sensor
+        self.pid = PIDController(
+            0.2, 0.0, 0.0, (-MAX_METERS_PER_SEC, MAX_METERS_PER_SEC)
+        )
 
         self.start_angle = None
-        self.target_deg = CAN_DECTECTION_SCAN_DEGREES / 2
         self.measurements = Measurements()
         self.can_angle = None
         self.scan_step_index = 0
@@ -96,7 +104,7 @@ class CanDetectionBehavior(Behavior):
 
     def actuators_proposal(self):
         if self.blackboard[CAN_PICKED_UP]:
-            return ActuatorsProposal(StopCommand)
+            return ActuatorsProposal(StopCommand())
 
         x, y, angle = self.pose.get_value()
         if self.start_angle is None:
@@ -108,14 +116,14 @@ class CanDetectionBehavior(Behavior):
         if self.scan_step_index == SCAN_TURN_LEFT:
             if angle_turned < -CAN_DECTECTION_SCAN_DEGREES / 2:
                 self.scan_step_index = SCAN_TURN_RIGHT
-                return ActuatorsProposal(StopCommand)
+                return ActuatorsProposal(StopCommand())
             else:
                 self.measurements.add(Measurement(dist, angle_turned))
                 return ActuatorsProposal(TURN_LEFT)
         elif self.scan_step_index == SCAN_TURN_RIGHT:
             if angle_turned > CAN_DECTECTION_SCAN_DEGREES / 2:
                 self.scan_step_index = SCAN_TURN_TO_BEST
-                return ActuatorsProposal(StopCommand)
+                return ActuatorsProposal(StopCommand())
             else:
                 self.measurements.add(Measurement(dist, angle_turned))
                 return ActuatorsProposal(TURN_RIGHT)
@@ -123,24 +131,27 @@ class CanDetectionBehavior(Behavior):
             if self.can_angle is None:
                 best = self.measurements.find_best()
                 print("Best angle:", best.angle, best.distance, best.weight)
+                lowest = self.measurements.find_lowest_dist()
+                print("lowest dist:", lowest.angle, lowest.distance, lowest.weight)
                 self.blackboard[CAN_ANGLE] = best.angle
-                # for m in self.measurements._measurements:
-                #     print(m.distance, m.angle, m.weight)
                 self.can_angle = best.angle
+                self.pid.setpoint = self.can_angle
 
-            if abs(self.can_angle - angle_turned) < deg_to_rad(2):
-                return ActuatorsProposal(StopCommand)
-            elif (self.can_angle - angle_turned) < 0:
-                return ActuatorsProposal(TURN_LEFT)
+            control = self.pid.compute(angle_turned, time.time())
+            if abs(self.can_angle - angle_turned) > deg_to_rad(0.5):
+                self.blackboard[POINTING_AT_CAN] = False
+                return ActuatorsProposal(WheelCommand(control, -control))
             else:
-                return ActuatorsProposal(TURN_RIGHT)
+                self.blackboard[POINTING_AT_CAN] = True
+                return ActuatorsProposal(StopCommand())
+
         else:
             print("Unknown scan step index:", self.scan_step_index)
-            return ActuatorsProposal(StopCommand)
+            return ActuatorsProposal(StopCommand())
 
     def reset(self):
         self.start_angle = None
-        self.target_deg = CAN_DECTECTION_SCAN_DEGREES / 2
         self.can_angle = None
         self.scan_step_index = 0
         self.measurements.reset()
+        self.pid.reset()

@@ -13,6 +13,7 @@ from params import (
     CAN_PICKUP_GRIP_SPEED,
     CAN_PICKUP_MAX_DISTANCE,
     LAST_TIME_LINE_SEEN,
+    POINTING_AT_CAN,
 )
 from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
@@ -55,19 +56,24 @@ class CanPickupBehavior(Behavior):
         if ultra_value <= CAN_PICKUP_MAX_DISTANCE:
             self.weight += 0.5
 
+        if self.blackboard[POINTING_AT_CAN]:
+            self.weight += 5.0
+
     def actuators_proposal(self):
         dist = self.ultrasonic_sensor.get_value()
-        # print("Dist:", dist)
         if self.blackboard[CAN_PICKED_UP]:
             return ActuatorsProposal(StopCommand())
 
-        if dist <= CAN_PICKUP_MAX_DISTANCE:
+        print("dist:", dist)
+        if (
+            dist <= CAN_PICKUP_MAX_DISTANCE or dist == 255
+        ):  # Too close to detect the can
             self.blackboard[CAN_PICKED_UP] = True
             return ActuatorsProposal(
                 WheelGripperCommand(CAN_PICKUP_GRIP_SPEED, CAN_PICKUP_GRIP_SPEED)
             )
 
-        if dist <= CAN_PICKUP_DISTANCE_THRESHOLD:
+        if dist <= CAN_PICKUP_DISTANCE_THRESHOLD or self.blackboard[POINTING_AT_CAN]:
             return ActuatorsProposal(
                 WheelCommand(CAN_PICKUP_BASE_SPEED, CAN_PICKUP_BASE_SPEED)
             )

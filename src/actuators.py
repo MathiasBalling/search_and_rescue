@@ -55,7 +55,7 @@ Command = Union[WheelCommand, GripperCommand, WheelGripperCommand, StopCommand]
 class ActuatorsProposal:
     def __init__(
         self,
-        command,
+        command: Command,
     ):
         self.command = command
 
