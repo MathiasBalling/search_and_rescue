@@ -5,7 +5,7 @@ class PIDController:
         ki: float,
         kd: float,
         output_limits=(None, None),
-        setpoint=0.0,
+        setpoint=None,
     ):
         self.kp = kp
         self.ki = ki
@@ -20,9 +20,13 @@ class PIDController:
     def reset(self):
         self._last_error = 0.0
         self._integral = 0.0
+        self.setpoint = None
         self._last_time = None
 
     def compute(self, measured_value: float, current_time: float) -> float:
+        if self.setpoint is None:
+            print("PID controller has no setpoint")
+            return 0.0
         error = self.setpoint - measured_value
         delta_time = 0.0
         if self._last_time is not None:

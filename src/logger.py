@@ -1,7 +1,7 @@
 import time
 from actuators import ActuatorsProposal, WheelCommand
 from ai.behaviors.behavior import Behavior
-from params import LINE_INTENSITY_WHITE_THRESHOLD
+from params import INTENSITY_FLOOR_THRESHOLD
 from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
 from sensors.ultrasonic import UltrasonicSensor
@@ -47,8 +47,8 @@ class Logging(Behavior):
         intensity_left, intensity_right = self.color_sensors.get_value()
         on_line = (
             True
-            if intensity_left < LINE_INTENSITY_WHITE_THRESHOLD
-            or intensity_right < LINE_INTENSITY_WHITE_THRESHOLD
+            if intensity_left < INTENSITY_FLOOR_THRESHOLD
+            or intensity_right < INTENSITY_FLOOR_THRESHOLD
             else False
         )
         distance_front = self.ultrasonic_sensor.get_value()

@@ -1,5 +1,6 @@
 from sensors.sensor import Sensor
 import ev3dev.ev3 as ev3
+from collections import deque
 
 
 class GyroSensor(Sensor):
@@ -7,6 +8,7 @@ class GyroSensor(Sensor):
 
     def __init__(self):
         self.sensor = ev3.GyroSensor(ev3.INPUT_3)
+        assert self.sensor.connected
         # FIX: Update this to angle or angle+rate instead of rate
         # Or use rate and calculate the angle ourselves
 
@@ -16,11 +18,22 @@ class GyroSensor(Sensor):
         self.offset = None
         self.value = 0
 
+        self.updates = 0
+        self._last_values = deque(maxlen=20)
+
     def update(self):
         if self.offset is None:
             # Assume we start on a straight surface.
             self.offset = self.sensor.value()
+
+        if self.updates % 40 == 0:
+            # Update offset if all in _last_values is under 3
+            if all(x < 3 for x in self._last_values):
+                self.offset = self.sensor.value()
+
         self.value = self.sensor.value() - self.offset
+        self._last_values.append(self.value)
+        self.updates += 1
 
     def get_value(self):
         return self.value

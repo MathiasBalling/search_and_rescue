@@ -1,20 +1,23 @@
 import time
 from actuators import (
     ActuatorsProposal,
-    GripperCommand,
+    StopCommand,
     WheelCommand,
     WheelGripperCommand,
 )
 from ai.behaviors.behavior import Behavior
 from params import (
-    CAN_DETECTION_DISTANCE_THRESHOLD,
+    CAN_PICKUP_DISTANCE_THRESHOLD,
     CAN_PICKED_UP,
     CAN_PICKUP_BASE_SPEED,
+    CAN_PICKUP_GRIP_SPEED,
     CAN_PICKUP_MAX_DISTANCE,
     LAST_TIME_LINE_SEEN,
+    POINTING_AT_CAN,
 )
 from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
+from sensors.pose import PoseSensor
 from sensors.ultrasonic import UltrasonicSensor
 from utils.blackboard import BlackBoard
 
@@ -26,10 +29,12 @@ class CanPickupBehavior(Behavior):
         color_sensors: ColorSensors,
         gyro: GyroSensor,
         ultrasonic_sensor: UltrasonicSensor,
+        pose: PoseSensor,
     ):
         super().__init__(blackboard, 0.0)
         self.color_sensors = color_sensors
         self.gyro = gyro
+        self.pose = pose
         self.ultrasonic_sensor = ultrasonic_sensor
 
     def update(self):
@@ -45,24 +50,34 @@ class CanPickupBehavior(Behavior):
         self.weight = 0.4
 
         ultra_value = self.ultrasonic_sensor.get_value()
-        if ultra_value <= CAN_DETECTION_DISTANCE_THRESHOLD:
+        if ultra_value <= CAN_PICKUP_DISTANCE_THRESHOLD:
             self.weight += 0.5
 
         if ultra_value <= CAN_PICKUP_MAX_DISTANCE:
             self.weight += 0.5
 
+        if self.blackboard[POINTING_AT_CAN]:
+            self.weight += 5.0
+
     def actuators_proposal(self):
+        dist = self.ultrasonic_sensor.get_value()
         if self.blackboard[CAN_PICKED_UP]:
-            return ActuatorsProposal(WheelCommand(0, 0))
+            return ActuatorsProposal(StopCommand())
 
-        if self.ultrasonic_sensor.get_value() <= CAN_PICKUP_MAX_DISTANCE:
+        print("dist:", dist)
+        if (
+            dist <= CAN_PICKUP_MAX_DISTANCE or dist == 255
+        ):  # Too close to detect the can
             self.blackboard[CAN_PICKED_UP] = True
-            return ActuatorsProposal(WheelGripperCommand(15, 15))
+            return ActuatorsProposal(
+                WheelGripperCommand(CAN_PICKUP_GRIP_SPEED, CAN_PICKUP_GRIP_SPEED)
+            )
 
-        if self.ultrasonic_sensor.get_value() <= CAN_DETECTION_DISTANCE_THRESHOLD:
+        if dist <= CAN_PICKUP_DISTANCE_THRESHOLD or self.blackboard[POINTING_AT_CAN]:
             return ActuatorsProposal(
                 WheelCommand(CAN_PICKUP_BASE_SPEED, CAN_PICKUP_BASE_SPEED)
             )
 
         # Something must be wrong in can detection
-        return ActuatorsProposal(WheelCommand(0, 0))
+        print("Something must be wrong in can detection, dist:", dist)
+        return ActuatorsProposal(StopCommand())

@@ -13,5 +13,4 @@ class Arbitrator:
         return proposal
 
     def choose_proposal_cooperative(self) -> ActuatorsProposal:
-        # TODO: Make if it makes sense to have more than one behavior
         return ActuatorsProposal(WheelCommand(0, 0))
