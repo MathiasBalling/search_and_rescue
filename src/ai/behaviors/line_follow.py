@@ -87,6 +87,8 @@ class LineFollowingBehavior(Behavior):
         self.controller_mode = MODE_STRAIGHT
         self.state = STATE_FOLLOW
 
+        self.last_left_part_line_seen = 0
+        self.last_right_part_line_seen = 0
         self.last_left_line_seen = 0
         self.last_right_line_seen = 0
 
@@ -128,7 +130,7 @@ class LineFollowingBehavior(Behavior):
         # print("gyro:", self.gyro.get_value())
         pitch = self.gyro.get_value()
 
-        self.update_line_seen()
+        self.update_part_line_seen()
 
         diff = left_intensity - right_intensity
 
@@ -169,6 +171,8 @@ class LineFollowingBehavior(Behavior):
             max(-MAX_METERS_PER_SEC, pid_right_control), MAX_METERS_PER_SEC
         )
 
+        last_part_left_line_seen = current_time - self.last_left_part_line_seen
+        last_part_right_line_seen = current_time - self.last_right_part_line_seen
         last_left_line_seen = current_time - self.last_left_line_seen
         last_right_line_seen = current_time - self.last_right_line_seen
 
@@ -196,8 +200,8 @@ class LineFollowingBehavior(Behavior):
                 left_intensity >= INTENSITY_FLOOR_THRESHOLD
                 and right_intensity >= INTENSITY_FLOOR_THRESHOLD
                 and (
-                    min_gap_time < last_left_line_seen < max_gap_time
-                    or min_gap_time < last_right_line_seen < max_gap_time
+                    min_gap_time < last_part_left_line_seen < max_gap_time
+                    or min_gap_time < last_part_right_line_seen < max_gap_time
                 )
             ):
                 # print("White-White")
@@ -225,7 +229,7 @@ class LineFollowingBehavior(Behavior):
             angle_turned = self.turn_angle_start - angle
             if abs(angle_turned) < TURN_ANGLE_THRESHOLD and not self.turned_back:
                 # Turn
-                if last_left_line_seen < last_right_line_seen:
+                if last_part_left_line_seen < last_part_right_line_seen:
                     self.turn_pid.setpoint = -TURN_ANGLE_THRESHOLD
                 else:
                     self.turn_pid.setpoint = TURN_ANGLE_THRESHOLD
@@ -268,9 +272,14 @@ class LineFollowingBehavior(Behavior):
         self.turn_angle_start = None
         self.turned_back = False
 
-    def update_line_seen(self):
+    def update_part_line_seen(self):
         left, right = self.color_sensors.get_value()
+        now = time.time()
         if left <= INTENSITY_PART_LINE_THRESHOLD:
-            self.last_left_line_seen = time.time()
+            self.last_left_part_line_seen = now
         if right <= INTENSITY_PART_LINE_THRESHOLD:
-            self.last_right_line_seen = time.time()
+            self.last_right_part_line_seen = now
+        if left <= INTENSITY_FLOOR_THRESHOLD:
+            self.last_left_line_seen = now
+        if right <= INTENSITY_FLOOR_THRESHOLD:
+            self.last_right_line_seen = now
