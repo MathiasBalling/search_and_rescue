@@ -38,7 +38,7 @@ MODE_UPHILL = "uphill"
 MODE_DOWNHILL = "downhill"
 
 STATE_FOLLOW = "follow"
-STATE_TURN = "turn"
+STATE_LINE_RECOVER = "turn"
 
 
 SHARP_LEFT_TURN = WheelCommand(
@@ -162,34 +162,34 @@ class LineFollowingBehavior(Behavior):
             max(-MAX_METERS_PER_SEC, pid_right_control), MAX_METERS_PER_SEC
         )
 
-        last_left_full_line_seen = current_time - self.last_left_line_seen
-        last_right_full_line_seen = current_time - self.last_right_line_seen
+        last_left_line_seen = current_time - self.last_left_line_seen
+        last_right_line_seen = current_time - self.last_right_line_seen
 
-        left_see_part_line = left_intensity < INTENSITY_PART_LINE_THRESHOLD
-        right_see_part_line = right_intensity < INTENSITY_PART_LINE_THRESHOLD
+        left_see_part_line = left_intensity <= INTENSITY_PART_LINE_THRESHOLD
+        right_see_part_line = right_intensity <= INTENSITY_PART_LINE_THRESHOLD
+
+        left_see_full_line = left_intensity <= INTENSITY_LINE_THRESHOLD
+        right_see_full_line = right_intensity <= INTENSITY_LINE_THRESHOLD
 
         x, y, angle = self.pose.get_value()
 
         if self.state == STATE_FOLLOW:
-            if (
-                left_intensity <= INTENSITY_LINE_THRESHOLD
-                and right_intensity <= INTENSITY_LINE_THRESHOLD
-            ):
+            if left_see_part_line and right_see_part_line:
                 # print("Black-Black")
-                self.state = STATE_TURN
+                self.state = STATE_LINE_RECOVER
 
             if (
                 left_intensity >= INTENSITY_FLOOR_THRESHOLD
                 and right_intensity >= INTENSITY_FLOOR_THRESHOLD
                 and (
-                    min_gap_time < last_left_full_line_seen < max_gap_time
-                    or min_gap_time < last_right_full_line_seen < max_gap_time
+                    min_gap_time < last_left_line_seen < max_gap_time
+                    or min_gap_time < last_right_line_seen < max_gap_time
                 )
             ):
                 # print("White-White")
-                self.state = STATE_TURN
+                self.state = STATE_LINE_RECOVER
 
-        elif self.state == STATE_TURN:
+        elif self.state == STATE_LINE_RECOVER:
             if self.turn_angle_start is None:
                 self.turn_angle_start = angle
 
@@ -207,7 +207,7 @@ class LineFollowingBehavior(Behavior):
             angle_turned = self.turn_angle_start - angle
             if abs(angle_turned) < TURN_ANGLE_THRESHOLD and not self.turned_back:
                 # Turn
-                if last_left_full_line_seen < last_right_full_line_seen:
+                if last_left_line_seen < last_right_line_seen:
                     self.turn_pid.setpoint = -TURN_ANGLE_THRESHOLD
                 else:
                     self.turn_pid.setpoint = TURN_ANGLE_THRESHOLD
@@ -233,12 +233,9 @@ class LineFollowingBehavior(Behavior):
         self.turn_angle_start = None
         self.turned_back = False
 
-    ############################################################
-    # Other methods
-    ############################################################
     def update_line_seen(self):
         left, right = self.color_sensors.get_value()
-        if left <= INTENSITY_LINE_THRESHOLD:
+        if left <= INTENSITY_PART_LINE_THRESHOLD:
             self.last_left_line_seen = time.time()
-        if right <= INTENSITY_LINE_THRESHOLD:
+        if right <= INTENSITY_PART_LINE_THRESHOLD:
             self.last_right_line_seen = time.time()
