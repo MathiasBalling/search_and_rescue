@@ -243,6 +243,18 @@ class LineFollowingBehavior(Behavior):
 
             return WheelCommand(turn_ctrl, -turn_ctrl)
         elif self.state == STATE_RAMP:
+            if last_left_line_seen > 2 and last_right_line_seen > 2:
+                if last_left_line_seen > last_right_line_seen:
+                    return WheelCommand(
+                        LINE_FOLLOWING_SHARP_TURN_SPEED / 2,
+                        -LINE_FOLLOWING_SHARP_TURN_SPEED / 2,
+                    )
+                else:
+                    return WheelCommand(
+                        -LINE_FOLLOWING_SHARP_TURN_SPEED / 2,
+                        LINE_FOLLOWING_SHARP_TURN_SPEED / 2,
+                    )
+
             return WheelCommand(
                 left_speed=pid_left_control, right_speed=pid_right_control
             )
