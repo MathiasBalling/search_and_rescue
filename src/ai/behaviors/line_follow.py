@@ -39,6 +39,7 @@ MODE_DOWNHILL = "downhill"
 
 STATE_FOLLOW = "follow"
 STATE_LINE_RECOVER = "turn"
+STATE_RAMP = "ramp"
 
 
 SHARP_LEFT_TURN = WheelCommand(
@@ -125,6 +126,7 @@ class LineFollowingBehavior(Behavior):
         # print("Line intensities:", left_intensity, right_intensity)
         # return WheelCommand(0, 0)
         # print("gyro:", self.gyro.get_value())
+        pitch = self.gyro.get_value()
 
         self.update_line_seen()
 
@@ -178,6 +180,13 @@ class LineFollowingBehavior(Behavior):
 
         x, y, angle = self.pose.get_value()
 
+        if pitch > 8:
+            if self.state == STATE_LINE_RECOVER:
+                self.reset_turn_logic()
+            self.state = STATE_RAMP
+        elif self.state == STATE_RAMP:
+            self.state = STATE_FOLLOW
+
         if self.state == STATE_FOLLOW:
             if left_see_full_line and right_see_full_line:
                 # print("Black-Black")
@@ -194,6 +203,9 @@ class LineFollowingBehavior(Behavior):
                 # print("White-White")
                 self.state = STATE_LINE_RECOVER
                 # print("Line recover")
+            return WheelCommand(
+                left_speed=pid_left_control, right_speed=pid_right_control
+            )
 
         elif self.state == STATE_LINE_RECOVER:
             if self.turn_angle_start is None:
@@ -230,10 +242,14 @@ class LineFollowingBehavior(Behavior):
             turn_ctrl = self.turn_pid.compute(angle_turned, time.time())
 
             return WheelCommand(turn_ctrl, -turn_ctrl)
-
-        # If hard turn is not needed we use the PID control.
-        # print("Following line")
-        return WheelCommand(left_speed=pid_left_control, right_speed=pid_right_control)
+        elif self.state == STATE_RAMP:
+            return WheelCommand(
+                left_speed=pid_left_control, right_speed=pid_right_control
+            )
+        else:
+            print("Unknown state:", self.state)
+            self.state = STATE_FOLLOW
+            return StopCommand()
 
     def reset_turn_logic(self):
         self.turn_pid.reset()
