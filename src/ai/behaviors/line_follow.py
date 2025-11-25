@@ -124,8 +124,6 @@ class LineFollowingBehavior(Behavior):
 
         self.update_line_seen()
 
-        # self.update_mode()
-
         diff = left_intensity - right_intensity
 
         control = self.line_follow_pid.compute(diff, current_time)
@@ -134,19 +132,26 @@ class LineFollowingBehavior(Behavior):
 
         base_speed = self.base_speed
 
+        min_gap_time = LINE_GAP_THRESHOLD
+        max_gap_time = LINE_END_THRESHOLD
+
         if abs(diff) > 0.3:
             base_speed = self.base_speed * LINE_FOLLOWING_TURN_SPEED_GAIN
-        # elif distance_front < 30 and (
-        #     left_intensity > INTENSITY_FLOOR_THRESHOLD
-        #     and right_intensity > INTENSITY_FLOOR_THRESHOLD
-        # ) and not self.blackboard[CAN_PICKED_UP]::
+            min_gap_time = LINE_GAP_THRESHOLD
+            max_gap_time = LINE_END_THRESHOLD * 1
         elif (
             distance_front < ULTRA_SOUND_THRESHOLD
+            and (
+                left_intensity > INTENSITY_FLOOR_THRESHOLD
+                and right_intensity > INTENSITY_FLOOR_THRESHOLD
+            )
             and not self.blackboard[CAN_PICKED_UP]
         ):
             # To now crash into the object
             # print("Slowing down (ultrasonic value:", distance_front, ")")
             base_speed = self.base_speed * 0.2
+            min_gap_time = LINE_GAP_THRESHOLD
+            max_gap_time = LINE_END_THRESHOLD * 2
 
         pid_left_control = base_speed - control
         pid_right_control = base_speed + control
@@ -177,10 +182,8 @@ class LineFollowingBehavior(Behavior):
                 left_intensity >= INTENSITY_FLOOR_THRESHOLD
                 and right_intensity >= INTENSITY_FLOOR_THRESHOLD
                 and (
-                    LINE_GAP_THRESHOLD < last_left_full_line_seen < LINE_END_THRESHOLD
-                    or LINE_GAP_THRESHOLD
-                    < last_right_full_line_seen
-                    < LINE_END_THRESHOLD
+                    min_gap_time < last_left_full_line_seen < max_gap_time
+                    or min_gap_time < last_right_full_line_seen < max_gap_time
                 )
             ):
                 # print("White-White")
@@ -239,31 +242,3 @@ class LineFollowingBehavior(Behavior):
             self.last_left_line_seen = time.time()
         if right <= INTENSITY_LINE_THRESHOLD:
             self.last_right_line_seen = time.time()
-
-    def set_controller_straight(self):
-        if self.controller_mode == MODE_STRAIGHT:
-            return
-        self.line_follow_pid.kp = LINE_FOLLOWING_PID_KP
-        self.line_follow_pid.ki = LINE_FOLLOWING_PID_KI
-        self.line_follow_pid.kd = LINE_FOLLOWING_PID_KD
-        self.controller_mode = MODE_STRAIGHT
-        self.base_speed = LINE_FOLLOWING_BASE_SPEED
-        self.line_follow_pid.reset()
-
-    def set_controller_uphill(self):
-        if self.controller_mode == MODE_UPHILL:
-            return
-        self.line_follow_pid.kp = 40.0
-        self.line_follow_pid.ki = 0
-        self.line_follow_pid.kd = 0
-        self.controller_mode = MODE_UPHILL
-        self.base_speed = 70
-        self.line_follow_pid.reset()
-
-    def update_mode(self):
-        angle = self.gyro.get_value()
-        if angle <= 15:
-            self.set_controller_straight()
-        else:
-            self.set_controller_uphill()
-        # print("Angle:", angle, "Mode:", self.controller_mode)
