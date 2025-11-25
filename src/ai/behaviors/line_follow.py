@@ -122,6 +122,9 @@ class LineFollowingBehavior(Behavior):
 
         left_intensity, right_intensity = self.color_sensors.get_value()
 
+        # print("Line intensities:", left_intensity, right_intensity)
+        # print("gyro:", self.gyro.get_value())
+
         self.update_line_seen()
 
         diff = left_intensity - right_intensity
@@ -152,6 +155,7 @@ class LineFollowingBehavior(Behavior):
             base_speed = self.base_speed * 0.2
             min_gap_time = LINE_GAP_THRESHOLD
             max_gap_time = LINE_END_THRESHOLD * 2
+            print("Wall detected, slowing down")
 
         pid_left_control = base_speed - control
         pid_right_control = base_speed + control
@@ -174,7 +178,7 @@ class LineFollowingBehavior(Behavior):
         x, y, angle = self.pose.get_value()
 
         if self.state == STATE_FOLLOW:
-            if left_see_part_line and right_see_part_line:
+            if left_see_full_line and right_see_full_line:
                 # print("Black-Black")
                 self.state = STATE_LINE_RECOVER
 
@@ -188,6 +192,7 @@ class LineFollowingBehavior(Behavior):
             ):
                 # print("White-White")
                 self.state = STATE_LINE_RECOVER
+                print("Line recover")
 
         elif self.state == STATE_LINE_RECOVER:
             if self.turn_angle_start is None:
