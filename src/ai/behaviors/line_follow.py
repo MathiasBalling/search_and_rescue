@@ -156,7 +156,7 @@ class LineFollowingBehavior(Behavior):
             base_speed = self.base_speed * 0.2
             min_gap_time = LINE_GAP_THRESHOLD
             max_gap_time = LINE_END_THRESHOLD * 2
-            print("Wall detected, slowing down")
+            # print("Wall detected, slowing down")
 
         pid_left_control = base_speed - control
         pid_right_control = base_speed + control
@@ -193,7 +193,7 @@ class LineFollowingBehavior(Behavior):
             ):
                 # print("White-White")
                 self.state = STATE_LINE_RECOVER
-                print("Line recover")
+                # print("Line recover")
 
         elif self.state == STATE_LINE_RECOVER:
             if self.turn_angle_start is None:
@@ -205,7 +205,7 @@ class LineFollowingBehavior(Behavior):
                 # print("Switching back")
                 self.reset_turn_logic()
                 self.state = STATE_FOLLOW
-                print("Following line")
+                # print("Following line")
                 return WheelCommand(
                     left_speed=pid_left_control, right_speed=pid_right_control
                 )
@@ -232,7 +232,7 @@ class LineFollowingBehavior(Behavior):
             return WheelCommand(turn_ctrl, -turn_ctrl)
 
         # If hard turn is not needed we use the PID control.
-        print("Following line")
+        # print("Following line")
         return WheelCommand(left_speed=pid_left_control, right_speed=pid_right_control)
 
     def reset_turn_logic(self):
