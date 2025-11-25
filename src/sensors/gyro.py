@@ -26,14 +26,14 @@ class GyroSensor(Sensor):
             # Assume we start on a straight surface.
             self.offset = self.sensor.value()
 
-        # if self.updates % 100 == 0 and self.updates > 0:
-        #     # Update offset if all in _last_values is under 3
-        #     if all(abs(x) < 3 for x in self._last_values):
-        #         print("Updating gyro offset:", self.sensor.value())
-        #         self.offset = self.sensor.value()
+        if self.updates % 100 == 0 and self.updates > 0:
+            # Update offset if all in _last_values is under 3
+            if all(abs(x) < 3 for x in self._last_values):
+                print("Updating gyro offset:", self.sensor.value())
+                self.offset = self.sensor.value()
 
         self.value = self.sensor.value() - self.offset
-        print(self.sensor.value())
+        # print(self.sensor.value())
         print("Gyro value:", self.value)
         self._last_values.append(self.value)
         self.updates += 1
