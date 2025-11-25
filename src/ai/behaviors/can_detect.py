@@ -129,6 +129,7 @@ class CanDetectionBehavior(Behavior):
                 return ActuatorsProposal(TURN_RIGHT)
         elif self.scan_step_index == SCAN_TURN_TO_BEST:
             if self.can_angle is None:
+                # FIX: Find groups instead and choose the best
                 best = self.measurements.find_best()
                 print("Best angle:", best.angle, best.distance, best.weight)
                 lowest = self.measurements.find_lowest_dist()
