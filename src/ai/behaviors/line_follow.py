@@ -30,6 +30,7 @@ from params import (
     MAX_METERS_PER_SEC,
     TURN_ANGLE_THRESHOLD,
     deg_to_rad,
+    ULTRA_SOUND_THRESHOLD,
 )
 
 MODE_STRAIGHT = "straight"
@@ -139,9 +140,12 @@ class LineFollowingBehavior(Behavior):
         #     left_intensity > INTENSITY_FLOOR_THRESHOLD
         #     and right_intensity > INTENSITY_FLOOR_THRESHOLD
         # ) and not self.blackboard[CAN_PICKED_UP]::
-        elif distance_front < 30 and not self.blackboard[CAN_PICKED_UP]:
+        elif (
+            distance_front < ULTRA_SOUND_THRESHOLD
+            and not self.blackboard[CAN_PICKED_UP]
+        ):
             # To now crash into the object
-            print("Slowing down (ultrasonic value:", distance_front, ")")
+            # print("Slowing down (ultrasonic value:", distance_front, ")")
             base_speed = self.base_speed * 0.2
 
         pid_left_control = base_speed - control
