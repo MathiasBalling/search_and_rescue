@@ -123,6 +123,7 @@ class LineFollowingBehavior(Behavior):
         left_intensity, right_intensity = self.color_sensors.get_value()
 
         # print("Line intensities:", left_intensity, right_intensity)
+        # return WheelCommand(0, 0)
         # print("gyro:", self.gyro.get_value())
 
         self.update_line_seen()
@@ -204,7 +205,7 @@ class LineFollowingBehavior(Behavior):
                 # print("Switching back")
                 self.reset_turn_logic()
                 self.state = STATE_FOLLOW
-
+                print("Following line")
                 return WheelCommand(
                     left_speed=pid_left_control, right_speed=pid_right_control
                 )
@@ -231,6 +232,7 @@ class LineFollowingBehavior(Behavior):
             return WheelCommand(turn_ctrl, -turn_ctrl)
 
         # If hard turn is not needed we use the PID control.
+        print("Following line")
         return WheelCommand(left_speed=pid_left_control, right_speed=pid_right_control)
 
     def reset_turn_logic(self):
