@@ -160,8 +160,8 @@ class LineFollowingBehavior(Behavior):
         last_left_full_line_seen = current_time - self.last_left_line_seen
         last_right_full_line_seen = current_time - self.last_right_line_seen
 
-        left_see_line = left_intensity < INTENSITY_PART_LINE_THRESHOLD
-        right_see_line = right_intensity < INTENSITY_PART_LINE_THRESHOLD
+        left_see_part_line = left_intensity < INTENSITY_PART_LINE_THRESHOLD
+        right_see_part_line = right_intensity < INTENSITY_PART_LINE_THRESHOLD
 
         x, y, angle = self.pose.get_value()
 
@@ -190,8 +190,8 @@ class LineFollowingBehavior(Behavior):
             if self.turn_angle_start is None:
                 self.turn_angle_start = angle
 
-            if (left_see_line and not right_see_line) or (
-                right_see_line and not left_see_line
+            if (left_see_part_line and not right_see_part_line) or (
+                right_see_part_line and not left_see_part_line
             ):
                 # print("Switching back")
                 self.reset_turn_logic()
