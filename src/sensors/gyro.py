@@ -19,16 +19,16 @@ class GyroSensor(Sensor):
         self.value = 0
 
         self.updates = 0
-        self._last_values = deque(maxlen=20)
+        self._last_values = deque(maxlen=100)
 
     def update(self):
         if self.offset is None:
             # Assume we start on a straight surface.
             self.offset = self.sensor.value()
 
-        if self.updates % 40 == 0:
+        if self.updates % 100 == 0:
             # Update offset if all in _last_values is under 3
-            if all(x < 3 for x in self._last_values):
+            if all(abs(x) < 3 for x in self._last_values):
                 self.offset = self.sensor.value()
 
         self.value = self.sensor.value() - self.offset
