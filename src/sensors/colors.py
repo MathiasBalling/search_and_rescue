@@ -1,7 +1,7 @@
 from sensors.sensor import Sensor
 import ev3dev.ev3 as ev3
 
-MAX_REFLECT = 28  # White
+MAX_REFLECT = 25  # White
 MIN_REFLECT = 3  # Black
 
 
