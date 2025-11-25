@@ -212,7 +212,7 @@ class LineFollowingBehavior(Behavior):
                 self.turned_back = True
                 self.turn_pid.setpoint = 0
 
-                if abs(angle_turned) < deg_to_rad(0.5):
+                if abs(angle_turned) < deg_to_rad(1):
                     # Turn back
                     self.reset_turn_logic()
                     self.state = STATE_FOLLOW

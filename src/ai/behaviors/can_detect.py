@@ -138,7 +138,7 @@ class CanDetectionBehavior(Behavior):
                 self.pid.setpoint = self.can_angle
 
             control = self.pid.compute(angle_turned, time.time())
-            if abs(self.can_angle - angle_turned) > deg_to_rad(0.5):
+            if abs(self.can_angle - angle_turned) > deg_to_rad(1):
                 self.blackboard[POINTING_AT_CAN] = False
                 return ActuatorsProposal(WheelCommand(control, -control))
             else:
