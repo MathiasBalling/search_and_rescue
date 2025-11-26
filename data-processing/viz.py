@@ -128,3 +128,22 @@ plt.xticks(rotation=0)
 plt.legend(title="Speed")
 plt.tight_layout()
 plt.show()
+
+# ========================================================
+# Line loss recovery
+# ========================================================
+print("\n=== Avg Energy per second ===")
+# Calculate success rate for each speed and pid combination
+success_rate = df.groupby(["speed", "pid"])["energy"].mean().reset_index()
+
+# Pivot for easier plotting
+pivot = success_rate.pivot(index="pid", columns="speed", values="energy")
+
+# Plot
+pivot.plot(kind="bar")
+plt.ylabel("Avg Energy per second")
+plt.title("Avg Energy per second by Speed and PID")
+plt.xticks(rotation=0)
+plt.legend(title="Speed")
+plt.tight_layout()
+plt.show()

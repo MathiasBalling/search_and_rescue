@@ -1,4 +1,5 @@
 import pandas as pd
+import scipy.stats as stats
 import numpy as np
 import glob
 import os
@@ -87,6 +88,38 @@ df["energy"] = df["test_id"].map(energy_values)
 print("\n=== Summary with Avg Energy per second ===")
 print(df)
 
+# ========================================================
+# QQ-plot and Levene's test for normality and homogeneity
+# ========================================================
+
+# QQ-plot for LLR
+plt.figure(figsize=(6, 6))
+stats.probplot(df["llr"], dist="norm", plot=plt)
+plt.title("QQ-plot of LLR")
+plt.tight_layout()
+plt.show()
+
+# QQ-plot for Energy
+plt.figure(figsize=(6, 6))
+stats.probplot(df["energy"].dropna(), dist="norm", plot=plt)
+plt.title("QQ-plot of Energy")
+plt.tight_layout()
+plt.show()
+
+# TODO: Change to bartlett
+# Levene's test for homogeneity of variances (LLR by pid)
+levene_llr = stats.levene(*[group["llr"].values for name, group in df.groupby("pid")])
+print(
+    f"Levene's test for LLR by pid: stat={levene_llr.statistic:.3f}, p={levene_llr.pvalue:.3g}"
+)
+
+# Levene's test for Energy by pid
+levene_energy = stats.levene(
+    *[group["energy"].dropna().values for name, group in df.groupby("pid")]
+)
+print(
+    f"Levene's test for Energy by pid: stat={levene_energy.statistic:.3f}, p={levene_energy.pvalue:.3g}"
+)
 
 # ========================================================
 # Two-way ANOVA – LLR
@@ -105,11 +138,20 @@ print(anova_lm(model_energy, typ=2))
 # ========================================================
 # Tukey HSD – groups
 # ========================================================
-print("\n=== Tukey test for LLR ===")
+print("\n=== Tukey test for LLR (P) ===")
 print(pairwise_tukeyhsd(df["llr"], df["pid"]))
 
-print("\n=== Tukey test for Energy ===")
+print("\n=== Tukey test for Energy (P) ===")
 print(pairwise_tukeyhsd(df["energy"], df["pid"]))
+
+# ========================================================
+# Tukey HSD – groups
+# ========================================================
+print("\n=== Tukey test for LLR (speed) ===")
+print(pairwise_tukeyhsd(df["llr"], df["speed"]))
+
+print("\n=== Tukey test for Energy (speed) ===")
+print(pairwise_tukeyhsd(df["energy"], df["speed"]))
 
 # ========================================================
 # Logistic regression
