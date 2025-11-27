@@ -125,9 +125,6 @@ class LineFollowingBehavior(Behavior):
 
         left_intensity, right_intensity = self.color_sensors.get_value()
 
-        # print("Line intensities:", left_intensity, right_intensity)
-        # return WheelCommand(0, 0)
-        # print("gyro:", self.gyro.get_value())
         pitch = self.gyro.get_value()
 
         self.update_part_line_seen()
@@ -263,7 +260,7 @@ class LineFollowingBehavior(Behavior):
                 left_speed=pid_left_control, right_speed=pid_right_control
             )
         else:
-            print("Unknown state:", self.state)
+            # print("Unknown state:", self.state)
             self.state = STATE_FOLLOW
             return StopCommand()
 
