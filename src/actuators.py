@@ -1,5 +1,6 @@
 import ev3dev.ev3 as ev3
 import time
+import atexit
 
 from params import GRIPPER_SPEED, MOTOR_OFF, TURN_TIME_PER_DEGREE
 
@@ -85,6 +86,9 @@ class ActuatorsProposal:
             return "Unknown command"
 
 
+atexit.register(lambda: Actuators().stop_motors())
+
+
 class Actuators:
     def __init__(self):
         self.left_motor = ev3.LargeMotor(ev3.OUTPUT_A)
@@ -128,6 +132,10 @@ class Actuators:
         sleep_time = 0.01333 * deg
         time.sleep(sleep_time)
         self.set_wheel_duty_cycles(left=MOTOR_OFF, right=MOTOR_OFF)
+
+    def stop_motors(self):
+        self.left_motor.duty_cycle_sp = 0
+        self.right_motor.duty_cycle_sp = 0
 
     def set_wheel_duty_cycles(self, left, right):
         self.left_motor.duty_cycle_sp = left
