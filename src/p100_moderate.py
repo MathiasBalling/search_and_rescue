@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-from ai.behaviors.can_pickup import CanPickupBehavior
+from ai.behaviors.line_follow import LineFollowingBehavior
+from logger import Logging
 from ai.controller import Controller
-from params import setup_blackboard
+from params import P_GAIN, SPEED_MODE, setup_blackboard
 from sensors.colors import ColorSensors
 from sensors.gyro import GyroSensor
 from sensors.ultrasonic import UltrasonicSensor
@@ -10,6 +11,8 @@ from sensors.ultrasonic import UltrasonicSensor
 def main():
     controller = Controller()
     blackboard = setup_blackboard()
+    blackboard[SPEED_MODE] = "moderate"
+    blackboard[P_GAIN] = 1.0
 
     # Create sensors
     color_sensors = ColorSensors()
@@ -22,16 +25,15 @@ def main():
     controller.add_sensor(ultrasonic_sensor)
 
     # Create behaviors
-
-    can_pickup_behavior = CanPickupBehavior(
-        blackboard=blackboard,
-        color_sensors=color_sensors,
-        gyro=gyro_sensor,
-        ultrasonic_sensor=ultrasonic_sensor,
+    line_following_behavior = LineFollowingBehavior(
+        blackboard=blackboard, color_sensors=color_sensors, gyro=gyro_sensor
     )
 
+    logger = Logging(blackboard, color_sensors, gyro_sensor, ultrasonic_sensor)
+
     # Add behaviors to the controller
-    controller.add_behavior(can_pickup_behavior)
+    controller.add_behavior(line_following_behavior)
+    controller.add_behavior(logger)
 
     # Run the controller forever
     controller.run()

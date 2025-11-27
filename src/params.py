@@ -40,6 +40,9 @@ LAST_TIME_LINE_SEEN = "last_time_line_seen"
 CAN_PICKED_UP = "can_picked_up"
 RETURNED_TO_LINE = "returned_to_line"
 CAN_SIDE_PICKUP = "can_side_pickup"
+LLR = "llr"
+SPEED_MODE = "speed_mode"
+P_GAIN = "p_gain"
 
 
 def setup_blackboard() -> BlackBoard:
@@ -48,5 +51,8 @@ def setup_blackboard() -> BlackBoard:
     blackboard[CAN_PICKED_UP] = False
     blackboard[RETURNED_TO_LINE] = False
     blackboard[CAN_SIDE_PICKUP] = (0, True)
+    blackboard[LLR] = 0
+    blackboard[SPEED_MODE] = "moderate"
+    blackboard[P_GAIN] = 1.0
 
     return blackboard

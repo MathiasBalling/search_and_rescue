@@ -20,6 +20,9 @@ from params import (
     LINE_FOLLOWING_PID_KI,
     LINE_FOLLOWING_SHARP_TURN_SPEED,
     LINE_FOLLOWING_SHARP_TURN_SPEED_BACK,
+    LLR,
+    P_GAIN,
+    SPEED_MODE,
 )
 
 MODE_STRAIGHT = "straight"
@@ -47,16 +50,20 @@ class LineFollowingBehavior(Behavior):
         self.gyro = gyro
         self.limits = (-100, 100)
         self.pid = PIDController(
-            LINE_FOLLOWING_PID_KP,
+            self.blackboard[P_GAIN],
             LINE_FOLLOWING_PID_KI,
             LINE_FOLLOWING_PID_KD,
             self.limits,
         )
         self.controller_mode = MODE_STRAIGHT
-        self.base_speed = LINE_FOLLOWING_BASE_SPEED
+        if self.blackboard[SPEED_MODE] == "moderate":
+            self.base_speed = 40
+        else:
+            self.base_speed = 80
 
         self.last_left_line_seen = 0
         self.last_right_line_seen = 0
+        self.is_recovering = False
 
     def update(self):
         l_val, r_val = self.color_sensors.get_value()
@@ -121,13 +128,25 @@ class LineFollowingBehavior(Behavior):
             turn_left = self.last_left_line_seen > self.last_right_line_seen
             if turn_left:
                 if 0.4 < (now - self.last_left_line_seen) < 1.0:
-                    # print("HARD LEFT")
+                    if not self.is_recovering:
+                        self.is_recovering = True
+                        self.blackboard[LLR] += 1
+                        print("HARD LEFT")
                     return WheelCommand(-80, 80)
+                else:
+                    self.is_recovering = False
             else:
                 if 0.4 < (now - self.last_right_line_seen) < 1.0:
-                    # print("HARD RIGHT")
+                    if not self.is_recovering:
+                        self.is_recovering = True
+                        self.blackboard[LLR] += 1
+                        print("HARD RIGHT")
                     return WheelCommand(80, -80)
+                else:
+                    self.is_recovering = False
 
+        else:
+            self.is_recovering = False
         # If hard turn is not needed we use the PID control.
         return WheelCommand(left_speed=left_control, right_speed=right_control)
 
