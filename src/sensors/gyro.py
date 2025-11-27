@@ -29,8 +29,6 @@ class GyroSensor(Sensor):
                 self.offset = self.sensor.value()
 
         self.value = self.sensor.value() - self.offset
-        # print(self.sensor.value())
-        print("Gyro value:", self.value)
         self._last_values.append(self.value)
         self.updates += 1
 

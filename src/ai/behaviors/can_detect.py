@@ -10,6 +10,7 @@ from params import (
     CAN_ANGLE,
     CAN_DECTECTION_SCAN_DEGREES,
     CAN_PICKED_UP,
+    CAN_PICKUP_DISTANCE_THRESHOLD,
     LAST_TIME_LINE_SEEN,
     CAN_DETECTION_BASE_SPEED,
     LINE_END_THRESHOLD,
@@ -56,26 +57,32 @@ class Measurements:
         idx = self._measurements.index(measurement)
         max_left, max_right = idx, idx
         while (
-            abs(
+            max_left - 1 >= 0
+            and abs(
                 self._measurements[max_left].distance
                 - self._measurements[max_left - 1].distance
             )
-            < 1.0
+            <= 1.0
         ):
             max_left -= 1
         while (
-            abs(
+            max_right + 1 < len(self._measurements)
+            and abs(
                 self._measurements[max_right].distance
                 - self._measurements[max_right + 1].distance
             )
-            < 1.0
+            <= 1.0
         ):
             max_right += 1
 
         left_measure = self._measurements[max_left]
         right_measure = self._measurements[max_right]
+        print("left", left_measure.angle, left_measure.distance)
+        print("right", right_measure.angle, right_measure.distance)
 
         center = (left_measure.angle + right_measure.angle) / 2
+        print("center", center)
+
         return center
 
     def find_lowest_dist(self) -> Measurement:
@@ -158,8 +165,8 @@ class CanDetectionBehavior(Behavior):
                 best = self.measurements.find_best()
                 print("Best angle:", best.angle, best.distance, best.weight)
                 center = self.measurements.find_center(best)
-                # lowest = self.measurements.find_lowest_dist()
-                # print("lowest dist:", lowest.angle, lowest.distance, lowest.weight)
+                for measurement in self.measurements._measurements:
+                    print(measurement.angle, measurement.distance, measurement.weight)
                 self.can_angle = center
                 self.blackboard[CAN_ANGLE] = self.can_angle
                 self.pid.setpoint = self.can_angle
@@ -168,9 +175,16 @@ class CanDetectionBehavior(Behavior):
             if abs(self.can_angle - angle_turned) > deg_to_rad(1):
                 self.blackboard[POINTING_AT_CAN] = False
                 return ActuatorsProposal(WheelCommand(control, -control))
-            else:
+            elif dist < CAN_PICKUP_DISTANCE_THRESHOLD:
                 self.blackboard[POINTING_AT_CAN] = True
                 return ActuatorsProposal(StopCommand())
+            else:
+                if self.can_angle < 0:
+                    self.pid.setpoint -= deg_to_rad(10)
+                    return ActuatorsProposal(TURN_LEFT)
+                else:
+                    self.pid.setpoint += deg_to_rad(10)
+                    return ActuatorsProposal(TURN_RIGHT)
 
         else:
             print("Unknown scan step index:", self.scan_step_index)

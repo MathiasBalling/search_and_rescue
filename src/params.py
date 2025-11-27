@@ -13,11 +13,11 @@ def mps_to_dps(mps):
     return round(max(-MAX_DEGREES_PER_SEC, min(dps, MAX_DEGREES_PER_SEC)))
 
 
-def deg_to_rad(deg):
+def deg_to_rad(deg) -> float:
     return deg * math.pi / 180.0
 
 
-def rad_to_deg(rad):
+def rad_to_deg(rad) -> float:
     return rad * 180.0 / math.pi
 
 
@@ -55,7 +55,7 @@ RETURN_TO_LINE_BASE_SPEED = 0.1  # m/s
 RETURN_TO_LINE_TURN_SPEED = 0.1  # m/s
 
 # Parameters for the can detection
-CAN_DETECTION_BASE_SPEED = 0.02  # m/s
+CAN_DETECTION_BASE_SPEED = 0.015  # m/s
 CAN_DECTECTION_SCAN_DEGREES = deg_to_rad(70)
 
 # Parameters for the can pickup
