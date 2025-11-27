@@ -52,6 +52,32 @@ class Measurements:
     def find_best(self) -> Measurement:
         return max(self._measurements, key=lambda m: m.weight)
 
+    def find_center(self, measurement: Measurement):
+        idx = self._measurements.index(measurement)
+        max_left, max_right = idx, idx
+        while (
+            abs(
+                self._measurements[max_left].distance
+                - self._measurements[max_left - 1].distance
+            )
+            < 1.0
+        ):
+            max_left -= 1
+        while (
+            abs(
+                self._measurements[max_right].distance
+                - self._measurements[max_right + 1].distance
+            )
+            < 1.0
+        ):
+            max_right += 1
+
+        left_measure = self._measurements[max_left]
+        right_measure = self._measurements[max_right]
+
+        center = (left_measure.angle + right_measure.angle) / 2
+        return center
+
     def find_lowest_dist(self) -> Measurement:
         return min(self._measurements, key=lambda m: m.distance)
 
@@ -118,7 +144,6 @@ class CanDetectionBehavior(Behavior):
                 self.scan_step_index = SCAN_TURN_RIGHT
                 return ActuatorsProposal(StopCommand())
             else:
-                self.measurements.add(Measurement(dist, angle_turned))
                 return ActuatorsProposal(TURN_LEFT)
         elif self.scan_step_index == SCAN_TURN_RIGHT:
             if angle_turned > CAN_DECTECTION_SCAN_DEGREES / 2:
@@ -132,10 +157,11 @@ class CanDetectionBehavior(Behavior):
                 # FIX: Find groups instead and choose the best
                 best = self.measurements.find_best()
                 print("Best angle:", best.angle, best.distance, best.weight)
-                lowest = self.measurements.find_lowest_dist()
-                print("lowest dist:", lowest.angle, lowest.distance, lowest.weight)
-                self.blackboard[CAN_ANGLE] = best.angle
-                self.can_angle = best.angle
+                center = self.measurements.find_center(best)
+                # lowest = self.measurements.find_lowest_dist()
+                # print("lowest dist:", lowest.angle, lowest.distance, lowest.weight)
+                self.can_angle = center
+                self.blackboard[CAN_ANGLE] = self.can_angle
                 self.pid.setpoint = self.can_angle
 
             control = self.pid.compute(angle_turned, time.time())
