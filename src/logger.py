@@ -35,10 +35,9 @@ class Logging(Behavior):
         log_filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S.csv")
         self.log_file = open(os.path.join(log_dir, log_filename), "w")
 
-        self.log_file.write("time,p_gain,speed_mode,voltage,current,LLR\n")
+        self.log_file.write("time,voltage,current,LLR\n")
         # print("Logging to {}".format(log_filename))
         self.start_time = time.time()
-        self.measurements = []
 
     def update(self):
         # Always 0
@@ -47,21 +46,24 @@ class Logging(Behavior):
         voltage = self.power.measured_voltage
         current = self.power.measured_current
         distance_front = self.ultrasonic_sensor.get_value()
-        self.measurements.append((duration, voltage, current, self.blackboard[LLR]))
+        self.log_file.write(
+            "{},{},{},{}\n".format(
+                duration,
+                voltage,
+                current,
+                self.blackboard[LLR],
+            )
+        )
 
         if distance_front <= 6:
-            for measurement in self.measurements:
-                self.log_file.write(
-                    "{},{},{},{},{},{}\n".format(
-                        measurement[0],
-                        self.blackboard[P_GAIN],
-                        self.blackboard[SPEED_MODE],
-                        measurement[1],
-                        measurement[2],
-                        measurement[3],
-                    )
+            self.log_file.write(
+                "{},{},{},{}\n".format(
+                    0,
+                    0,
+                    0,
+                    0,
                 )
-
+            )
             exit()
 
     def actuators_proposal(self) -> ActuatorsProposal:

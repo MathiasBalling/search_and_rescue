@@ -59,7 +59,7 @@ class LineFollowingBehavior(Behavior):
         if self.blackboard[SPEED_MODE] == "moderate":
             self.base_speed = 40
         else:
-            self.base_speed = 80
+            self.base_speed = 70
 
         self.last_left_line_seen = 0
         self.last_right_line_seen = 0
