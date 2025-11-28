@@ -9,6 +9,9 @@ class UltrasonicSensor(Sensor):
         self.sensor = ev3.UltrasonicSensor(ev3.INPUT_2)
         assert self.sensor.connected
         self.sensor.mode = ev3.UltrasonicSensor.MODE_US_DIST_CM
+        self.sensor.mode = (
+            ev3.UltrasonicSensor.MODE_US_SI_CM
+        )  # TODO: Maybe use this mode?
         self.value = 0
 
     def update(self):

@@ -105,6 +105,10 @@ class LineFollowingBehavior(Behavior):
         ):
             self.blackboard[LAST_TIME_LINE_SEEN] = now
 
+        if self.gyro.get_value() > 5:
+            self.weight = 10.0
+            return
+
         if self.state != STATE_FOLLOW:
             # Very important we recover the line
             self.weight = 5.0
