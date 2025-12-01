@@ -1,55 +1,13 @@
-import pandas as pd
-import numpy as np
-import glob
-import os
 import matplotlib.pyplot as plt
-from statsmodels.graphics.factorplots import interaction_plot
+from load import load_data
+import seaborn as sns
 
+
+plt.rcParams.update({"font.size": 14})
 # ========================================================
 # Load and process data from folders
 # ========================================================
-data = []
-
-folders = [
-    "1.0_aggressive",
-    "1.0_moderate",
-    "1.75_aggressive",
-    "1.75_moderate",
-    "2.5_aggressive",
-    "2.5_moderate",
-]
-
-for folder in folders:
-    p_gain, speed_mode = folder.split("_")
-    for file in glob.glob(f"./datalogs/{folder}/*.csv"):
-        test_id = os.path.splitext(os.path.basename(file))[0]
-        raw = pd.read_csv(file)
-        raw = raw.sort_values("time")
-        # Compute power in Watts: P = V * I
-        raw["power"] = (raw["voltage"] * 1e-6) * (raw["current"] * 1e-6)
-        # Integrate energy via trapezoid rule (Joules)
-        total_energy = np.trapezoid(raw["power"], raw["time"])
-        # Compute duration
-        llr = raw["LLR"].iloc[-1]
-        if speed_mode == "moderate":
-            total_energy = min(total_energy, 10)
-            llr = min(llr, 7)
-        else:
-            llr = max(llr, 7)
-
-        data.append(
-            {
-                "test_id": test_id,
-                "p_gain": p_gain,
-                "speed_mode": speed_mode,
-                "total_energy": total_energy,
-                "llr": llr,
-            }
-        )
-
-df = pd.DataFrame(data)
-print("\n=== Summary with Avg Energy per second and Mean LLR ===")
-print(df)
+df = load_data()
 
 # ========================================================
 # Line loss recovery
@@ -86,5 +44,33 @@ plt.ylabel("Avg Energy per run")
 plt.title("Avg Energy per run by Speed and PID")
 plt.xticks(rotation=0)
 plt.legend(title="Speed")
+plt.tight_layout()
+plt.show()
+
+print("\n=== Line loss recovery ===")
+# Box plot for LLR by speed and p_gain
+
+plt.figure(figsize=(8, 6))
+sns.boxplot(data=df, x="p_gain", y="llr", hue="speed_mode")
+plt.ylabel("Line Loss Recovery", fontsize=16)
+plt.xlabel("p_gain", fontsize=16)
+plt.title("Line Loss Recovery by Speed and PID", fontsize=18)
+plt.legend(title="Speed", fontsize=14, title_fontsize=15)
+plt.tight_layout()
+plt.show()
+
+print("\n=== Avg Energy per run ===")
+# Box plot for total_energy by speed and p_gain
+plt.figure(figsize=(8, 6))
+sns.boxplot(
+    data=df,
+    x="p_gain",
+    y="llr",
+    hue="speed_mode",
+)
+plt.ylabel("Line Loss Recovery", fontsize=16)
+plt.title("Line Loss Recovery by Speed and PID", fontsize=18)
+plt.xlabel("p_gain", fontsize=16)
+plt.legend(title="Speed", fontsize=14, title_fontsize=15)
 plt.tight_layout()
 plt.show()

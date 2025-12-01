@@ -11,5 +11,6 @@ dependencies = [
     "pandas>=2.3.3",
     "python-ev3dev>=1.2.0",
     "python-ev3dev2>=2.1.0.post1",
+    "seaborn>=0.13.2",
     "statsmodels>=0.14.5",
 ]

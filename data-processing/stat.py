@@ -1,71 +1,16 @@
 import pandas as pd
 import scipy.stats as stats
-import numpy as np
-import glob
-import os
 import matplotlib.pyplot as plt
-import statsmodels.api as sm
 import statsmodels.formula.api as smf
 from statsmodels.stats.anova import anova_lm
+from statsmodels.stats.oneway import anova_oneway
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
-from statsmodels.graphics.factorplots import interaction_plot
-import pandas as pd
-import numpy as np
-import glob
-import os
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-import statsmodels.formula.api as smf
-from statsmodels.stats.anova import anova_lm
-from statsmodels.stats.multicomp import pairwise_tukeyhsd
-from statsmodels.graphics.factorplots import interaction_plot
+from load import load_data
 
 # ========================================================
 # Load and process data from folders
 # ========================================================
-data = []
-
-folders = [
-    "1.0_aggressive",
-    "1.0_moderate",
-    "1.75_aggressive",
-    "1.75_moderate",
-    "2.5_aggressive",
-    "2.5_moderate",
-]
-
-for folder in folders:
-    p_gain, speed_mode = folder.split("_")
-    for file in glob.glob(f"./datalogs/{folder}/*.csv"):
-        test_id = os.path.splitext(os.path.basename(file))[0]
-        raw = pd.read_csv(file)
-        raw = raw.sort_values("time")
-        # Compute power in Watts: P = V * I
-        raw["power"] = (raw["voltage"] * 1e-6) * (raw["current"] * 1e-6)
-        # Integrate energy via trapezoid rule (Joules)
-        total_energy = np.trapezoid(raw["power"], raw["time"])
-        # Compute duration
-        llr = raw["LLR"].iloc[-1]
-        if speed_mode == "moderate":
-            llr = min(llr, 7)
-        else:
-            llr = max(llr, 7)
-
-        data.append(
-            {
-                "test_id": test_id,
-                "p_gain": p_gain,
-                "speed_mode": speed_mode,
-                "total_energy": total_energy,
-                "llr": llr,
-            }
-        )
-
-df = pd.DataFrame(data)
-print("\n=== Summary with Avg Energy per second and Mean LLR ===")
-# Print every line in the dataframe
-for index, row in df.iterrows():
-    print(row)
+df = load_data()
 
 # ========================================================
 # QQ-plot and Levene's test for normality and homogeneity
@@ -85,7 +30,6 @@ plt.title("QQ-plot of Energy")
 plt.tight_layout()
 plt.show()
 
-# TODO: Change to bartlett
 # Levene's test for homogeneity of variances (LLR by p_gain)
 levene_llr = stats.levene(
     *[group["llr"].values for name, group in df.groupby("p_gain")]
@@ -93,7 +37,6 @@ levene_llr = stats.levene(
 print(
     f"Levene's test for LLR by p_gain: stat={levene_llr.statistic:.3f}, p={levene_llr.pvalue:.3g}"
 )
-
 # Levene's test for Energy by p_gain
 levene_energy = stats.levene(
     *[group["total_energy"].dropna().values for name, group in df.groupby("p_gain")]
@@ -117,6 +60,36 @@ print(
     f"Bartlett's test for Energy by p_gain: stat={bartlett_energy.statistic:.3f}, p={bartlett_energy.pvalue:.3g}"
 )
 
+# Levene's test for homogeneity of variances (LLR by speed_mode)
+levene_llr = stats.levene(
+    *[group["llr"].values for name, group in df.groupby("speed_mode")]
+)
+print(
+    f"Levene's test for LLR by speed_mode: stat={levene_llr.statistic:.3f}, p={levene_llr.pvalue:.3g}"
+)
+# Levene's test for Energy by speed_mode
+levene_energy = stats.levene(
+    *[group["total_energy"].dropna().values for name, group in df.groupby("speed_mode")]
+)
+print(
+    f"Levene's test for Energy by speed_mode: stat={levene_energy.statistic:.3f}, p={levene_energy.pvalue:.3g}"
+)
+
+bartlett_llr = stats.bartlett(
+    *[group["llr"].values for _, group in df.groupby("speed_mode")]
+)
+print(
+    f"Bartlett's test for LLR by speed_mode: stat={bartlett_llr.statistic:.3f}, p={bartlett_llr.pvalue:.3g}"
+)
+
+# Bartlett's test for Energy by speed_mode
+bartlett_energy = stats.bartlett(
+    *[group["total_energy"].dropna().values for _, group in df.groupby("speed_mode")]
+)
+print(
+    f"Bartlett's test for Energy by speed_mode: stat={bartlett_energy.statistic:.3f}, p={bartlett_energy.pvalue:.3g}"
+)
+
 # ========================================================
 # Two-way ANOVA – LLR
 # ========================================================
@@ -124,13 +97,38 @@ print("\n=== ANOVA LLR ===")
 model_llr = smf.ols("llr ~ C(speed_mode) * C(p_gain)", data=df).fit()
 print(anova_lm(model_llr, typ=2))
 
-# ========================================================
-# Two-way ANOVA – Avg Energy
-# ========================================================
 print("\n=== ANOVA Energy (Avg per second) ===")
 model_energy = smf.ols("total_energy ~ C(speed_mode) * C(p_gain)", data=df).fit()
 print(anova_lm(model_energy, typ=2))
 
+# ========================================================
+# One-way ANOVA
+# ========================================================
+print("\n=== Welch's ANOVA for LLR by p_gain ===")
+welch_llr_pgain = anova_oneway(
+    [group["llr"].values for _, group in df.groupby("p_gain")], use_var="unequal"
+)
+print(welch_llr_pgain)
+
+print("\n=== Welch's ANOVA for Energy by p_gain ===")
+welch_energy_pgain = anova_oneway(
+    [group["total_energy"].dropna().values for _, group in df.groupby("p_gain")],
+    use_var="unequal",
+)
+print(welch_energy_pgain)
+
+print("\n=== Welch's ANOVA for LLR by speed_mode ===")
+welch_llr_speed = anova_oneway(
+    [group["llr"].values for _, group in df.groupby("speed_mode")], use_var="unequal"
+)
+print(welch_llr_speed)
+
+print("\n=== Welch's ANOVA for Energy by speed_mode ===")
+welch_energy_speed = anova_oneway(
+    [group["total_energy"].dropna().values for _, group in df.groupby("speed_mode")],
+    use_var="unequal",
+)
+print(welch_energy_speed)
 # ========================================================
 # Tukey HSD – groups
 # ========================================================
