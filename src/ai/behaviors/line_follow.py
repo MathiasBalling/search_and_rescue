@@ -5,7 +5,6 @@ from ai.behaviors.behavior import Behavior
 from actuators import ActuatorsProposal, StopCommand, WheelCommand
 
 from sensors.colors import ColorSensors
-from sensors.gyro import GyroSensor
 from sensors.pose import PoseSensor
 
 from sensors.ultrasonic import UltrasonicSensor
@@ -61,12 +60,10 @@ class LineFollowingBehavior(Behavior):
         blackboard: BlackBoard,
         color_sensors: ColorSensors,
         ultrasonic_sensor: UltrasonicSensor,
-        gyro: GyroSensor,
         pose: PoseSensor,
     ):
         super().__init__(blackboard, 1.0)  # 1.0 because we start on the line
         self.color_sensors = color_sensors
-        self.gyro = gyro
         self.ultrasonic_sensor = ultrasonic_sensor
         self.pose = pose
         self.line_follow_pid = PIDController(
@@ -105,10 +102,6 @@ class LineFollowingBehavior(Behavior):
         ):
             self.blackboard[LAST_TIME_LINE_SEEN] = now
 
-        if self.gyro.get_value() > 5:
-            self.weight = 10.0
-            return
-
         if self.state != STATE_FOLLOW:
             # Very important we recover the line
             self.weight = 5.0
@@ -129,8 +122,6 @@ class LineFollowingBehavior(Behavior):
         current_time = time.time()
 
         left_intensity, right_intensity = self.color_sensors.get_value()
-
-        pitch = self.gyro.get_value()
 
         self.update_part_line_seen()
 

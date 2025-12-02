@@ -16,7 +16,6 @@ from params import (
     POINTING_AT_CAN,
 )
 from sensors.colors import ColorSensors
-from sensors.gyro import GyroSensor
 from sensors.pose import PoseSensor
 from sensors.ultrasonic import UltrasonicSensor
 from utils.blackboard import BlackBoard
@@ -27,13 +26,11 @@ class CanPickupBehavior(Behavior):
         self,
         blackboard: BlackBoard,
         color_sensors: ColorSensors,
-        gyro: GyroSensor,
         ultrasonic_sensor: UltrasonicSensor,
         pose: PoseSensor,
     ):
         super().__init__(blackboard, 0.0)
         self.color_sensors = color_sensors
-        self.gyro = gyro
         self.pose = pose
         self.ultrasonic_sensor = ultrasonic_sensor
 

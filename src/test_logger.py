@@ -4,7 +4,6 @@ from ai.controller import Controller
 from logger import Logging
 from params import setup_blackboard
 from sensors.colors import ColorSensors
-from sensors.gyro import GyroSensor
 from sensors.ultrasonic import UltrasonicSensor
 
 
@@ -15,16 +14,14 @@ def main():
 
     # Create sensors
     color_sensors = ColorSensors()
-    gyro_sensor = GyroSensor()
     ultrasonic_sensor = UltrasonicSensor()
 
     # Add sensors to the controller
     controller.add_sensor(color_sensors)
-    controller.add_sensor(gyro_sensor)
     controller.add_sensor(ultrasonic_sensor)
 
     # Create behaviors
-    logger = Logging(blackboard, color_sensors, gyro_sensor, ultrasonic_sensor)
+    # logger = Logging(blackboard, color_sensors, gyro_sensor, ultrasonic_sensor)
 
     # Add behaviors to the controller
     controller.add_behavior(logger)

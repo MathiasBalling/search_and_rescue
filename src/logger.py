@@ -3,7 +3,6 @@ from actuators import ActuatorsProposal, WheelCommand
 from ai.behaviors.behavior import Behavior
 from params import INTENSITY_FLOOR_THRESHOLD
 from sensors.colors import ColorSensors
-from sensors.gyro import GyroSensor
 from sensors.ultrasonic import UltrasonicSensor
 from utils.blackboard import BlackBoard
 
@@ -18,12 +17,10 @@ class Logging(Behavior):
         self,
         blackboard: BlackBoard,
         color_sensors: ColorSensors,
-        gyro: GyroSensor,
         ultrasonic_sensor: UltrasonicSensor,
     ):
         super().__init__(blackboard, 0.0)
         self.color_sensors = color_sensors
-        self.gyro = gyro
         self.ultrasonic_sensor = ultrasonic_sensor
         self.power = PowerSupply()
 
@@ -52,7 +49,6 @@ class Logging(Behavior):
             else False
         )
         distance_front = self.ultrasonic_sensor.get_value()
-        slope_angle = self.gyro.get_value()
 
         self.log_file.write(
             "{},{},{},{},{},{},{},{}\n".format(

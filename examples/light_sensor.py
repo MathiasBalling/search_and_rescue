@@ -25,11 +25,11 @@ min_right, max_right = 100, 0
 while True:
     print(
         "middle:",
-        light_sensor.value(),
+        light_sensor.reflected_light_intensity,
         "left:",
-        cl_sensor_left.value(),
+        cl_sensor_left.reflected_light_intensity,
         "right:",
-        cl_sensor_right.value(),
+        cl_sensor_right.reflected_light_intensity,
     )
 
 
