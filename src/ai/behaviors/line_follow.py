@@ -93,7 +93,7 @@ class LineFollowingBehavior(Behavior):
         self.turned_back = False
 
     def update(self):
-        l_val, r_val = self.color_sensors.get_value()
+        l_val, m_val, r_val = self.color_sensors.get_value()
         now = time.time()
 
         if (
@@ -121,7 +121,9 @@ class LineFollowingBehavior(Behavior):
     def follow_line(self):
         current_time = time.time()
 
-        left_intensity, right_intensity = self.color_sensors.get_value()
+        left_intensity, middle_intensity, right_intensity = (
+            self.color_sensors.get_value()
+        )
 
         self.update_part_line_seen()
 
@@ -265,7 +267,7 @@ class LineFollowingBehavior(Behavior):
         self.turned_back = False
 
     def update_part_line_seen(self):
-        left, right = self.color_sensors.get_value()
+        left,middle, right = self.color_sensors.get_value()
         now = time.time()
         if left <= INTENSITY_LINE_THRESHOLD:
             self.last_left_part_line_seen = now

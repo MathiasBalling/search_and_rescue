@@ -41,7 +41,9 @@ class Logging(Behavior):
         now = time.time()
         voltage = self.power.measured_voltage
         current = self.power.measured_current
-        intensity_left, intensity_right = self.color_sensors.get_value()
+        intensity_left, intensity_middle, intensity_right = (
+            self.color_sensors.get_value()
+        )
         on_line = (
             True
             if intensity_left < INTENSITY_FLOOR_THRESHOLD
@@ -51,7 +53,7 @@ class Logging(Behavior):
         distance_front = self.ultrasonic_sensor.get_value()
 
         self.log_file.write(
-            "{},{},{},{},{},{},{},{}\n".format(
+            "{},{},{},{},{},{},{}\n".format(
                 now,
                 voltage,
                 current,
@@ -59,7 +61,6 @@ class Logging(Behavior):
                 intensity_right,
                 on_line,
                 distance_front,
-                slope_angle,
             )
         )
         # print("Logged data at time {}".format(now))

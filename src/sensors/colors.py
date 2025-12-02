@@ -26,18 +26,29 @@ class ColorSensors(Sensor):
         assert self.right_sensor.connected
         self.right_sensor.mode = ev3.ColorSensor.MODE_COL_REFLECT
 
-        self.left_value = 100
-        self.right_value = 100
+        self.middle_sensor = ev3.LightSensor(ev3.INPUT_3)
+        assert self.middle_sensor.connected
+        self.middle_sensor.mode = ev3.LightSensor.MODE_REFLECT
+
+        self.left_value = 1
+        self.right_value = 1
+        self.middle_value = 1
 
     def update(self):
         self.left_value = (self.left_sensor.value() - MIN_REFLECT_COLOR) / (
             MAX_REFLECT_COLOR - MIN_REFLECT_COLOR
         )
         self.left_value = max(0.0, min(1.0, self.left_value))
+
         self.right_value = (self.right_sensor.value() - MIN_REFLECT_COLOR) / (
             MAX_REFLECT_COLOR - MIN_REFLECT_COLOR
         )
         self.right_value = max(0.0, min(1.0, self.right_value))
 
+        self.middle_value = (
+            self.middle_sensor.reflected_light_intensity - MIN_REFLECT_LIGHT
+        ) / (MAX_REFLECT_LIGHT - MIN_REFLECT_LIGHT)
+        self.middle_value = max(0.0, min(1.0, self.middle_value))
+
     def get_value(self):
-        return (self.left_value, self.right_value)
+        return (self.left_value, self.middle_value, self.right_value)

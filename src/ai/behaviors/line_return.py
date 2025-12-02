@@ -42,7 +42,7 @@ class LineReturnBehavior(Behavior):
             self.weight += 5.0
 
     def actuators_proposal(self):
-        left_value, right_value = self.color_sensors.get_value()
+        left_value, middle_value, right_value = self.color_sensors.get_value()
         if (
             left_value < INTENSITY_PART_LINE_THRESHOLD
             or right_value < INTENSITY_PART_LINE_THRESHOLD
