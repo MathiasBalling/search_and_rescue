@@ -13,7 +13,7 @@ class GyroSensor(Sensor):
 
         self.sensor.mode = sensor.GyroSensor.MODE_GYRO_ANG
         self.value = 0
-        # comment test
+
         self.updates = 0
         self._last_values = deque(maxlen=50)
 
