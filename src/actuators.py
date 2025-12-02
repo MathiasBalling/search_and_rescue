@@ -88,8 +88,7 @@ class Actuators:
 
         self.gripper_motor = ev3.MediumMotor(ev3.OUTPUT_C)
         assert self.gripper_motor.connected
-        self.gripper_motor.run_direct()
-        self.gripper_motor.duty_cycle_sp = MOTOR_OFF
+        self.gripper_motor.run_direct(duty_cycle_sp=MOTOR_OFF)
 
     def do_proposal(self, proposal: ActuatorsProposal):
         cmd = proposal.command
@@ -108,11 +107,11 @@ class Actuators:
             self.stop_motors()
 
     def grip_object(self):
-        self.gripper_motor.duty_cycle_sp = -GRIPPER_SPEED
+        self.gripper_motor.run_forever(duty_cycle_sp=-GRIPPER_SPEED)
         time.sleep(3.5)
-        self.gripper_motor.duty_cycle_sp = GRIPPER_SPEED
+        self.gripper_motor.run_forever(duty_cycle_sp=GRIPPER_SPEED)
         time.sleep(3.5)
-        self.gripper_motor.duty_cycle_sp = MOTOR_OFF
+        self.gripper_motor.stop(stop_action=ev3.MediumMotor.STOP_ACTION_BRAKE)
 
     def get_wheel_motors(self):
         return self.left_motor, self.right_motor
@@ -120,3 +119,4 @@ class Actuators:
     def stop_motors(self):
         self.left_motor.stop(stop_action=ev3.LargeMotor.STOP_ACTION_BRAKE)
         self.right_motor.stop(stop_action=ev3.LargeMotor.STOP_ACTION_BRAKE)
+        self.gripper_motor.stop(stop_action=ev3.MediumMotor.STOP_ACTION_BRAKE)
