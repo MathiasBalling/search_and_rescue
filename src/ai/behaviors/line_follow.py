@@ -191,7 +191,7 @@ class LineFollowingBehavior(Behavior):
             self.state = STATE_RAMP
         elif self.state == STATE_RAMP:
             self.state = STATE_FOLLOW
-
+        # print(self.state)
         if self.state == STATE_FOLLOW:
             if left_see_full_line and right_see_full_line:
                 # print("Black-Black")
@@ -207,7 +207,6 @@ class LineFollowingBehavior(Behavior):
             ):
                 # print("White-White")
                 self.state = STATE_LINE_RECOVER
-                # print("Line recover")
             return WheelCommand(
                 left_speed=pid_left_control, right_speed=pid_right_control
             )
@@ -276,9 +275,9 @@ class LineFollowingBehavior(Behavior):
     def update_part_line_seen(self):
         left, right = self.color_sensors.get_value()
         now = time.time()
-        if left <= INTENSITY_PART_LINE_THRESHOLD:
+        if left <= INTENSITY_LINE_THRESHOLD:
             self.last_left_part_line_seen = now
-        if right <= INTENSITY_PART_LINE_THRESHOLD:
+        if right <= INTENSITY_LINE_THRESHOLD:
             self.last_right_part_line_seen = now
         if left <= INTENSITY_FLOOR_THRESHOLD:
             self.last_left_line_seen = now

@@ -36,8 +36,8 @@ mR.run_direct()
 min_left, max_left = 100, 0
 min_right, max_right = 100, 0
 
-while True:
-    print(gyro.value())
+# while True:
+#     print(gyro.value())
 
 
 while True:
