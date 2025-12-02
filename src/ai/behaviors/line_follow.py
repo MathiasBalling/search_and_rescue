@@ -191,8 +191,8 @@ class LineFollowingBehavior(Behavior):
                 # )
                 and (
                     min_gap_time < last_left_line_seen < max_gap_time
-                    and min_gap_time < last_right_line_seen < max_gap_time
-                    and min_gap_time < last_middle_line_seen < max_gap_time
+                    or min_gap_time < last_right_line_seen < max_gap_time
+                    or min_gap_time < last_middle_line_seen < max_gap_time
                 )
             ):
                 # print("White-White")
