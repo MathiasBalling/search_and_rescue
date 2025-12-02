@@ -138,24 +138,24 @@ class LineFollowingBehavior(Behavior):
         min_gap_time = LINE_GAP_THRESHOLD
         max_gap_time = LINE_END_THRESHOLD
 
-        if abs(diff) > 0.3:
+        if middle_intensity > 0.8:
             base_speed = self.base_speed * LINE_FOLLOWING_TURN_SPEED_GAIN
             min_gap_time = LINE_GAP_THRESHOLD
             max_gap_time = LINE_END_THRESHOLD
-        elif (
-            distance_front < ULTRA_SOUND_THRESHOLD
-            and (
-                left_intensity > INTENSITY_FLOOR_THRESHOLD
-                and right_intensity > INTENSITY_FLOOR_THRESHOLD
-            )
-            and not self.blackboard[CAN_PICKED_UP]
-        ):
-            # To now crash into the object
-            # print("Slowing down (ultrasonic value:", distance_front, ")")
-            base_speed = self.base_speed * 0.2
-            min_gap_time = LINE_GAP_THRESHOLD
-            max_gap_time = LINE_END_THRESHOLD * 2
-            # print("Wall detected, slowing down")
+        # elif (
+        #     distance_front < ULTRA_SOUND_THRESHOLD
+        #     and (
+        #         left_intensity > INTENSITY_FLOOR_THRESHOLD
+        #         and right_intensity > INTENSITY_FLOOR_THRESHOLD
+        #     )
+        #     and not self.blackboard[CAN_PICKED_UP]
+        # ):
+        #     # To now crash into the object
+        #     # print("Slowing down (ultrasonic value:", distance_front, ")")
+        #     base_speed = self.base_speed * 0.2
+        #     min_gap_time = LINE_GAP_THRESHOLD
+        #     max_gap_time = LINE_END_THRESHOLD * 2
+        #     # print("Wall detected, slowing down")
 
         pid_left_control = base_speed - control
         pid_right_control = base_speed + control
@@ -165,6 +165,8 @@ class LineFollowingBehavior(Behavior):
         pid_right_control = min(
             max(-MAX_METERS_PER_SEC, pid_right_control), MAX_METERS_PER_SEC
         )
+
+        return WheelCommand(left_speed=pid_left_control, right_speed=pid_right_control)
 
         last_part_left_line_seen = current_time - self.last_left_part_line_seen
         last_part_right_line_seen = current_time - self.last_right_part_line_seen
@@ -179,12 +181,6 @@ class LineFollowingBehavior(Behavior):
 
         x, y, angle = self.pose.get_value()
 
-        if pitch > 10:
-            if self.state == STATE_LINE_RECOVER:
-                self.reset_turn_logic()
-            self.state = STATE_RAMP
-        elif self.state == STATE_RAMP:
-            self.state = STATE_FOLLOW
         # print(self.state)
         if self.state == STATE_FOLLOW:
             if left_see_full_line and right_see_full_line:
@@ -267,7 +263,7 @@ class LineFollowingBehavior(Behavior):
         self.turned_back = False
 
     def update_part_line_seen(self):
-        left,middle, right = self.color_sensors.get_value()
+        left, middle, right = self.color_sensors.get_value()
         now = time.time()
         if left <= INTENSITY_LINE_THRESHOLD:
             self.last_left_part_line_seen = now
