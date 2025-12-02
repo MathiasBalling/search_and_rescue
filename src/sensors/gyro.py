@@ -15,12 +15,12 @@ class GyroSensor(Sensor):
         self.value = 0
 
         self.updates = 0
-        self._last_values = deque(maxlen=50)
+        self._last_values = deque(maxlen=100)
 
     def update(self):
-        if self.updates % 50 == 0 and self.updates > 0:
+        if self.updates % 100 == 0 and self.updates > 0:
             # Update offset if all in _last_values is under 3
-            if all(x < 5 for x in self._last_values):
+            if all(abs(x) < 10 for x in self._last_values):
                 print("Updating gyro offset:", self.sensor.value())
                 self.offset = self.sensor.reset()
 

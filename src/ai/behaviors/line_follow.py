@@ -186,7 +186,7 @@ class LineFollowingBehavior(Behavior):
 
         x, y, angle = self.pose.get_value()
 
-        if abs(pitch) > 5:
+        if pitch > 10:
             if self.state == STATE_LINE_RECOVER:
                 self.reset_turn_logic()
             self.state = STATE_RAMP
