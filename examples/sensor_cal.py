@@ -18,9 +18,6 @@ cl_sensor_left.mode = ev3.ColorSensor.MODE_COL_REFLECT
 cl_sensor_right = ev3.ColorSensor(ev3.INPUT_4)
 cl_sensor_right.mode = ev3.ColorSensor.MODE_COL_REFLECT
 
-gyro = ev3.GyroSensor(ev3.INPUT_3)
-assert gyro.connected
-gyro.mode = ev3.GyroSensor.MODE_GYRO_ANG
 
 assert mL.connected, "Motor A is not connected to port A"
 assert mR.connected, "Motor B is not connected to port D"
@@ -35,9 +32,6 @@ mR.run_direct()
 
 min_left, max_left = 100, 0
 min_right, max_right = 100, 0
-
-# while True:
-#     print(gyro.value())
 
 
 while True:
