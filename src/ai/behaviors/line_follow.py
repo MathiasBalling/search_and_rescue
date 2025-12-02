@@ -143,20 +143,18 @@ class LineFollowingBehavior(Behavior):
             base_speed = self.base_speed * LINE_FOLLOWING_TURN_SPEED_GAIN
             min_gap_time = LINE_GAP_THRESHOLD
             max_gap_time = LINE_END_THRESHOLD
-        # elif (
-        #     distance_front < ULTRA_SOUND_THRESHOLD
-        #     and (
-        #         left_intensity > INTENSITY_FLOOR_THRESHOLD
-        #         and right_intensity > INTENSITY_FLOOR_THRESHOLD
-        #     )
-        #     and not self.blackboard[CAN_PICKED_UP]
-        # ):
-        #     # To now crash into the object
-        #     # print("Slowing down (ultrasonic value:", distance_front, ")")
-        #     base_speed = self.base_speed * 0.2
-        #     min_gap_time = LINE_GAP_THRESHOLD
-        #     max_gap_time = LINE_END_THRESHOLD * 2
-        #     # print("Wall detected, slowing down")
+
+        if (
+            distance_front < ULTRA_SOUND_THRESHOLD
+            and not self.min_one_see_line()
+            and not self.blackboard[CAN_PICKED_UP]
+        ):
+            # To now crash into the object
+            # print("Slowing down (ultrasonic value:", distance_front, ")")
+            base_speed = self.base_speed * 0.2
+            min_gap_time = LINE_GAP_THRESHOLD
+            max_gap_time = LINE_END_THRESHOLD * 2
+            # print("Wall detected, slowing down")
 
         pid_left_control = base_speed - control
         pid_right_control = base_speed + control
@@ -174,15 +172,10 @@ class LineFollowingBehavior(Behavior):
         x, y, angle = self.pose.get_value()
 
         if self.state == STATE_FOLLOW:
-            if (
-                left_intensity >= INTENSITY_FLOOR_THRESHOLD
-                and right_intensity >= INTENSITY_FLOOR_THRESHOLD
-                and middle_intensity >= INTENSITY_FLOOR_THRESHOLD
-                and (
-                    min_gap_time < last_left_line_seen < max_gap_time
-                    or min_gap_time < last_right_line_seen < max_gap_time
-                    or min_gap_time < last_middle_line_seen < max_gap_time
-                )
+            if not self.min_one_see_line() and (
+                min_gap_time < last_left_line_seen < max_gap_time
+                or min_gap_time < last_right_line_seen < max_gap_time
+                or min_gap_time < last_middle_line_seen < max_gap_time
             ):
                 # print("White-White")
                 self.state = STATE_LINE_RECOVER
@@ -236,7 +229,7 @@ class LineFollowingBehavior(Behavior):
         self.turn_angle_target = None
         self.turning_back = False
 
-    def one_see_line(self):
+    def min_one_see_line(self):
         left, middle, right = self.color_sensors.get_value()
         return (
             left < INTENSITY_FLOOR_THRESHOLD
