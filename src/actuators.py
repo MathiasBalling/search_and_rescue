@@ -107,9 +107,9 @@ class Actuators:
             self.stop_motors()
 
     def grip_object(self):
-        self.gripper_motor.run_forever(duty_cycle_sp=-GRIPPER_SPEED)
+        self.gripper_motor.run_direct(duty_cycle_sp=-GRIPPER_SPEED)
         time.sleep(3.5)
-        self.gripper_motor.run_forever(duty_cycle_sp=GRIPPER_SPEED)
+        self.gripper_motor.run_direct(duty_cycle_sp=GRIPPER_SPEED)
         time.sleep(3.5)
         self.gripper_motor.stop(stop_action=ev3.MediumMotor.STOP_ACTION_BRAKE)
 
