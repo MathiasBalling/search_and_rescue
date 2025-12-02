@@ -167,9 +167,6 @@ class LineFollowingBehavior(Behavior):
             max(-MAX_METERS_PER_SEC, pid_right_control), MAX_METERS_PER_SEC
         )
 
-        last_part_left_line_seen = current_time - self.last_left_part_line_seen
-        last_part_right_line_seen = current_time - self.last_right_part_line_seen
-        last_middle_part_line_seen = current_time - self.last_middle_part_line_seen
         last_left_line_seen = current_time - self.last_left_line_seen
         last_right_line_seen = current_time - self.last_right_line_seen
         last_middle_line_seen = current_time - self.last_middle_line_seen
@@ -177,18 +174,10 @@ class LineFollowingBehavior(Behavior):
         x, y, angle = self.pose.get_value()
 
         if self.state == STATE_FOLLOW:
-            # if self.min_two_see_line():
-            #     # print("Black-Black")
-            #     self.state = STATE_LINE_RECOVER
-
             if (
                 left_intensity >= INTENSITY_FLOOR_THRESHOLD
                 and right_intensity >= INTENSITY_FLOOR_THRESHOLD
                 and middle_intensity >= INTENSITY_FLOOR_THRESHOLD
-                # and (
-                #     min_gap_time < last_part_left_line_seen < max_gap_time
-                #     or min_gap_time < last_part_right_line_seen < max_gap_time
-                # )
                 and (
                     min_gap_time < last_left_line_seen < max_gap_time
                     or min_gap_time < last_right_line_seen < max_gap_time
