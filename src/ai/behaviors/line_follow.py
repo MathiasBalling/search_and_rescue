@@ -97,10 +97,7 @@ class LineFollowingBehavior(Behavior):
         l_val, m_val, r_val = self.color_sensors.get_value()
         now = time.time()
 
-        if (
-            l_val < INTENSITY_PART_LINE_THRESHOLD
-            or r_val < INTENSITY_PART_LINE_THRESHOLD
-        ):
+        if self.min_one_see_line():
             self.blackboard[LAST_TIME_LINE_SEEN] = now
 
         if self.state != STATE_FOLLOW:
