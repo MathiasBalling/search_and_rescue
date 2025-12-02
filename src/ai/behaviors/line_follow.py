@@ -122,6 +122,7 @@ class LineFollowingBehavior(Behavior):
 
     def actuators_proposal(self):
         cmd = self.follow_line()
+
         return ActuatorsProposal(cmd)
 
     def follow_line(self):
@@ -147,7 +148,7 @@ class LineFollowingBehavior(Behavior):
         if abs(diff) > 0.3:
             base_speed = self.base_speed * LINE_FOLLOWING_TURN_SPEED_GAIN
             min_gap_time = LINE_GAP_THRESHOLD
-            max_gap_time = LINE_END_THRESHOLD * 1
+            max_gap_time = LINE_END_THRESHOLD
         elif (
             distance_front < ULTRA_SOUND_THRESHOLD
             and (
@@ -185,7 +186,7 @@ class LineFollowingBehavior(Behavior):
 
         x, y, angle = self.pose.get_value()
 
-        if abs(pitch) > 8:
+        if abs(pitch) > 5:
             if self.state == STATE_LINE_RECOVER:
                 self.reset_turn_logic()
             self.state = STATE_RAMP

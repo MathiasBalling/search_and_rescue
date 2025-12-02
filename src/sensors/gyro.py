@@ -1,5 +1,5 @@
 from sensors.sensor import Sensor
-import ev3dev.ev3 as ev3
+import ev3dev2.sensor.lego as sensor
 from collections import deque
 
 
@@ -7,28 +7,24 @@ class GyroSensor(Sensor):
     __slots__ = ["sensor", "value"]
 
     def __init__(self):
-        self.sensor = ev3.GyroSensor(ev3.INPUT_3)
-        assert self.sensor.connected
+        self.sensor = sensor.GyroSensor()
+        self.sensor.reset()
+        self.sensor.calibrate()
 
-        self.sensor.mode = ev3.GyroSensor.MODE_GYRO_ANG
-        self.offset = None
+        self.sensor.mode = sensor.GyroSensor.MODE_GYRO_ANG
         self.value = 0
 
         self.updates = 0
         self._last_values = deque(maxlen=50)
 
     def update(self):
-        if self.offset is None:
-            # Assume we start on a straight surface.
-            self.offset = self.sensor.value()
-
         if self.updates % 50 == 0 and self.updates > 0:
             # Update offset if all in _last_values is under 3
             if all(x < 5 for x in self._last_values):
                 print("Updating gyro offset:", self.sensor.value())
-                self.offset = self.sensor.value()
+                self.offset = self.sensor.reset()
 
-        self.value = self.sensor.value() - self.offset
+        self.value = self.sensor.value()
         self._last_values.append(self.value)
         self.updates += 1
 
