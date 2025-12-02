@@ -169,6 +169,18 @@ class LineFollowingBehavior(Behavior):
         x, y, angle = self.pose.get_value()
 
         if self.state == STATE_FOLLOW:
+            if middle_intensity < INTENSITY_PART_LINE_THRESHOLD and (
+                left_intensity < INTENSITY_PART_LINE_THRESHOLD
+                or right_intensity < INTENSITY_PART_LINE_THRESHOLD
+            ):
+                print("Black-Black")
+                self.state = STATE_LINE_RECOVER
+                self.turn_angle_start = angle
+                if left_intensity < right_intensity:
+                    self.turn_angle_target = -TURN_ANGLE_THRESHOLD
+                else:
+                    self.turn_angle_target = TURN_ANGLE_THRESHOLD
+
             if not self.min_one_see_line() and (
                 min_gap_time < last_left_line_seen < max_gap_time
                 or min_gap_time < last_right_line_seen < max_gap_time
@@ -201,7 +213,8 @@ class LineFollowingBehavior(Behavior):
                         self.turn_angle_target = -TURN_ANGLE_THRESHOLD
                     else:
                         self.turn_angle_target = TURN_ANGLE_THRESHOLD
-                    self.turn_pid.setpoint = self.turn_angle_target
+
+                self.turn_pid.setpoint = self.turn_angle_target
             else:
                 self.turning_back = True
                 self.turn_pid.setpoint = 0
