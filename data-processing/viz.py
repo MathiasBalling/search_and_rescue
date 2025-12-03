@@ -9,6 +9,10 @@ plt.rcParams.update({"font.size": 14})
 # ========================================================
 df = load_data()
 
+# Averaage lenght of the run
+print("\n=== Average length of the run ===")
+print(df["completion_time"].mean())
+
 # ========================================================
 # Line loss recovery
 # ========================================================
@@ -65,11 +69,26 @@ plt.figure(figsize=(8, 6))
 sns.boxplot(
     data=df,
     x="p_gain",
-    y="llr",
+    y="total_energy",
     hue="speed_mode",
 )
-plt.ylabel("Line Loss Recovery", fontsize=16)
-plt.title("Line Loss Recovery by Speed and PID", fontsize=18)
+plt.ylabel("Energy per run", fontsize=16)
+plt.title("Energy per run by Speed and PID", fontsize=18)
+plt.xlabel("p_gain", fontsize=16)
+plt.legend(title="Speed", fontsize=14, title_fontsize=15)
+plt.tight_layout()
+plt.show()
+
+print("\n=== Completion Time ===")
+plt.figure(figsize=(8, 6))
+sns.boxplot(
+    data=df,
+    x="p_gain",
+    y="completion_time",
+    hue="speed_mode",
+)
+plt.ylabel("Completion Time", fontsize=16)
+plt.title("Completion Time by Speed and PID", fontsize=18)
 plt.xlabel("p_gain", fontsize=16)
 plt.legend(title="Speed", fontsize=14, title_fontsize=15)
 plt.tight_layout()

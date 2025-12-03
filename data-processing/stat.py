@@ -31,19 +31,19 @@ plt.tight_layout()
 plt.show()
 
 # Levene's test for homogeneity of variances (LLR by p_gain)
-levene_llr = stats.levene(
-    *[group["llr"].values for name, group in df.groupby("p_gain")]
-)
-print(
-    f"Levene's test for LLR by p_gain: stat={levene_llr.statistic:.3f}, p={levene_llr.pvalue:.3g}"
-)
-# Levene's test for Energy by p_gain
-levene_energy = stats.levene(
-    *[group["total_energy"].dropna().values for name, group in df.groupby("p_gain")]
-)
-print(
-    f"Levene's test for Energy by p_gain: stat={levene_energy.statistic:.3f}, p={levene_energy.pvalue:.3g}"
-)
+# levene_llr = stats.levene(
+#     *[group["llr"].values for name, group in df.groupby("p_gain")]
+# )
+# print(
+#     f"Levene's test for LLR by p_gain: stat={levene_llr.statistic:.3f}, p={levene_llr.pvalue:.3g}"
+# )
+# # Levene's test for Energy by p_gain
+# levene_energy = stats.levene(
+#     *[group["total_energy"].dropna().values for name, group in df.groupby("p_gain")]
+# )
+# print(
+#     f"Levene's test for Energy by p_gain: stat={levene_energy.statistic:.3f}, p={levene_energy.pvalue:.3g}"
+# )
 
 bartlett_llr = stats.bartlett(
     *[group["llr"].values for _, group in df.groupby("p_gain")]
@@ -61,19 +61,19 @@ print(
 )
 
 # Levene's test for homogeneity of variances (LLR by speed_mode)
-levene_llr = stats.levene(
-    *[group["llr"].values for name, group in df.groupby("speed_mode")]
-)
-print(
-    f"Levene's test for LLR by speed_mode: stat={levene_llr.statistic:.3f}, p={levene_llr.pvalue:.3g}"
-)
-# Levene's test for Energy by speed_mode
-levene_energy = stats.levene(
-    *[group["total_energy"].dropna().values for name, group in df.groupby("speed_mode")]
-)
-print(
-    f"Levene's test for Energy by speed_mode: stat={levene_energy.statistic:.3f}, p={levene_energy.pvalue:.3g}"
-)
+# levene_llr = stats.levene(
+#     *[group["llr"].values for name, group in df.groupby("speed_mode")]
+# )
+# print(
+#     f"Levene's test for LLR by speed_mode: stat={levene_llr.statistic:.3f}, p={levene_llr.pvalue:.3g}"
+# )
+# # Levene's test for Energy by speed_mode
+# levene_energy = stats.levene(
+#     *[group["total_energy"].dropna().values for name, group in df.groupby("speed_mode")]
+# )
+# print(
+#     f"Levene's test for Energy by speed_mode: stat={levene_energy.statistic:.3f}, p={levene_energy.pvalue:.3g}"
+# )
 
 bartlett_llr = stats.bartlett(
     *[group["llr"].values for _, group in df.groupby("speed_mode")]
@@ -97,38 +97,38 @@ print("\n=== ANOVA LLR ===")
 model_llr = smf.ols("llr ~ C(speed_mode) * C(p_gain)", data=df).fit()
 print(anova_lm(model_llr, typ=2))
 
-print("\n=== ANOVA Energy (Avg per second) ===")
+print("\n=== ANOVA Energy  ===")
 model_energy = smf.ols("total_energy ~ C(speed_mode) * C(p_gain)", data=df).fit()
 print(anova_lm(model_energy, typ=2))
 
 # ========================================================
 # One-way ANOVA
 # ========================================================
-print("\n=== Welch's ANOVA for LLR by p_gain ===")
-welch_llr_pgain = anova_oneway(
-    [group["llr"].values for _, group in df.groupby("p_gain")], use_var="unequal"
-)
-print(welch_llr_pgain)
-
-print("\n=== Welch's ANOVA for Energy by p_gain ===")
-welch_energy_pgain = anova_oneway(
-    [group["total_energy"].dropna().values for _, group in df.groupby("p_gain")],
-    use_var="unequal",
-)
-print(welch_energy_pgain)
-
-print("\n=== Welch's ANOVA for LLR by speed_mode ===")
-welch_llr_speed = anova_oneway(
-    [group["llr"].values for _, group in df.groupby("speed_mode")], use_var="unequal"
-)
-print(welch_llr_speed)
-
-print("\n=== Welch's ANOVA for Energy by speed_mode ===")
-welch_energy_speed = anova_oneway(
-    [group["total_energy"].dropna().values for _, group in df.groupby("speed_mode")],
-    use_var="unequal",
-)
-print(welch_energy_speed)
+# print("\n=== Welch's ANOVA for LLR by p_gain ===")
+# welch_llr_pgain = anova_oneway(
+#     [group["llr"].values for _, group in df.groupby("p_gain")], use_var="unequal"
+# )
+# print(welch_llr_pgain)
+#
+# print("\n=== Welch's ANOVA for Energy by p_gain ===")
+# welch_energy_pgain = anova_oneway(
+#     [group["total_energy"].dropna().values for _, group in df.groupby("p_gain")],
+#     use_var="unequal",
+# )
+# print(welch_energy_pgain)
+#
+# print("\n=== Welch's ANOVA for LLR by speed_mode ===")
+# welch_llr_speed = anova_oneway(
+#     [group["llr"].values for _, group in df.groupby("speed_mode")], use_var="unequal"
+# )
+# print(welch_llr_speed)
+#
+# print("\n=== Welch's ANOVA for Energy by speed_mode ===")
+# welch_energy_speed = anova_oneway(
+#     [group["total_energy"].dropna().values for _, group in df.groupby("speed_mode")],
+#     use_var="unequal",
+# )
+# print(welch_energy_speed)
 # ========================================================
 # Tukey HSD – groups
 # ========================================================

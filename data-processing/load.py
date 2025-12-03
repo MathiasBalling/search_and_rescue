@@ -30,6 +30,8 @@ def load_data():
             # Integrate energy via trapezoid rule (Joules)
             total_energy = np.trapezoid(raw["power"], raw["time"])
             # Compute duration
+            completion_time = raw["time"].iloc[-1]
+
             llr = raw["LLR"].iloc[-1]
             if speed_mode == "moderate":
                 # total_energy = min(total_energy, 45)
@@ -48,6 +50,7 @@ def load_data():
                     "speed_mode": speed_mode,
                     "total_energy": total_energy,
                     "llr": llr,
+                    "completion_time": completion_time,
                 }
             )
 
