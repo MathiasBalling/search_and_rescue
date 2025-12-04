@@ -160,7 +160,7 @@ class CanDetectionBehavior(Behavior):
             if self.can_angle is None:
                 # FIX: Find groups instead and choose the best
                 best = self.measurements.find_best()
-                print("Best angle:", best.angle, best.distance, best.weight)
+                # print("Best angle:", best.angle, best.distance, best.weight)
                 center = self.measurements.find_center(best)
                 for measurement in self.measurements._measurements:
                     print(measurement.angle, measurement.distance, measurement.weight)

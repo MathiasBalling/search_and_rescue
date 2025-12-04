@@ -48,7 +48,7 @@ class LineReturnBehavior(Behavior):
             or right_value < INTENSITY_PART_LINE_THRESHOLD
         ):
             self.blackboard[RETURNED_TO_LINE] = True
-            print("Returned to line")
+            # print("Returned to line")
             return ActuatorsProposal(StopCommand())
 
         x, y, angle = self.pose.get_value()

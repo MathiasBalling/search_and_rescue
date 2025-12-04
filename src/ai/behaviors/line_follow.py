@@ -173,7 +173,7 @@ class LineFollowingBehavior(Behavior):
                 left_intensity < INTENSITY_PART_LINE_THRESHOLD
                 or right_intensity < INTENSITY_PART_LINE_THRESHOLD
             ):
-                print("Black-Black")
+                # print("Black-Black")
                 self.state = STATE_LINE_RECOVER
                 self.turn_angle_start = angle
                 if left_intensity < right_intensity:

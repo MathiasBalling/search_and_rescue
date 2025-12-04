@@ -61,7 +61,7 @@ class CanPickupBehavior(Behavior):
         if self.blackboard[CAN_PICKED_UP]:
             return ActuatorsProposal(StopCommand())
 
-        print("dist:", dist)
+        # print("dist:", dist)
         if (
             dist <= CAN_PICKUP_MAX_DISTANCE or dist == 255
         ):  # Too close to detect the can

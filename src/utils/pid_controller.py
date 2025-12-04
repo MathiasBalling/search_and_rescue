@@ -25,7 +25,7 @@ class PIDController:
 
     def compute(self, measured_value: float, current_time: float) -> float:
         if self.setpoint is None:
-            print("PID controller has no setpoint")
+            # print("PID controller has no setpoint")
             return 0.0
         error = self.setpoint - measured_value
         delta_time = 0.0
