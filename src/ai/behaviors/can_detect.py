@@ -172,16 +172,15 @@ class CanDetectionBehavior(Behavior):
             if abs(self.can_angle - angle_turned) > deg_to_rad(1):
                 self.blackboard[POINTING_AT_CAN] = False
                 return ActuatorsProposal(WheelCommand(control, -control))
-            elif dist < CAN_PICKUP_DISTANCE_THRESHOLD:
+            else:
                 self.blackboard[POINTING_AT_CAN] = True
                 return ActuatorsProposal(StopCommand())
-            else:
-                if self.can_angle < 0:
-                    self.pid.setpoint -= deg_to_rad(10)
-                    return ActuatorsProposal(TURN_LEFT)
-                else:
-                    self.pid.setpoint += deg_to_rad(10)
-                    return ActuatorsProposal(TURN_RIGHT)
+            # elif dist < CAN_PICKUP_DISTANCE_THRESHOLD:
+            #     self.blackboard[POINTING_AT_CAN] = True
+            #     return ActuatorsProposal(StopCommand())
+            # else:
+            #     self.reset()
+            #     return ActuatorsProposal(StopCommand())
 
         else:
             print("Unknown scan step index:", self.scan_step_index)
