@@ -3,8 +3,19 @@ from ai.arbitrator import Arbitrator
 from ai.behaviors.behavior import Behavior
 from params import DT
 from sensors.sensor import Sensor
+import atexit
 
 import time
+
+start_time = time.time()
+
+
+def ctrl_c():
+    print("Total time: ", time.time() - start_time)
+    Actuators().stop_motors()
+
+
+atexit.register(ctrl_c)
 
 
 class Controller:
@@ -38,7 +49,8 @@ class Controller:
         """
         Runs the controller in DT time steps forever.
         """
-        print("Start time: ", time.time())
+        global start_time
+        start_time = time.time()
         last_update_time = time.time()
         while True:
             # Sleep until the next update

@@ -1,6 +1,5 @@
 import ev3dev.ev3 as ev3
 import time
-import atexit
 
 from params import (
     GRIPPER_SPEED,
@@ -74,14 +73,6 @@ class ActuatorsProposal:
             return "stop"
         else:
             return "Unknown command"
-
-
-def ctrl_c():
-    print("End time: ", time.time())
-    Actuators().stop_motors()
-
-
-atexit.register(ctrl_c)
 
 
 class Actuators:
