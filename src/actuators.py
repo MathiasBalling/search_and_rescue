@@ -76,7 +76,12 @@ class ActuatorsProposal:
             return "Unknown command"
 
 
-atexit.register(lambda: Actuators().stop_motors())
+def ctrl_c():
+    print("End time: ", time.time())
+    Actuators().stop_motors()
+
+
+atexit.register(ctrl_c)
 
 
 class Actuators:

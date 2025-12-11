@@ -38,6 +38,7 @@ class Controller:
         """
         Runs the controller in DT time steps forever.
         """
+        print("Start time: ", time.time())
         last_update_time = time.time()
         while True:
             # Sleep until the next update
