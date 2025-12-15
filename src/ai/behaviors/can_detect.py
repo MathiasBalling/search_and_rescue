@@ -162,8 +162,8 @@ class CanDetectionBehavior(Behavior):
                 best = self.measurements.find_best()
                 # print("Best angle:", best.angle, best.distance, best.weight)
                 center = self.measurements.find_center(best)
-                for measurement in self.measurements._measurements:
-                    print(measurement.angle, measurement.distance, measurement.weight)
+                # for measurement in self.measurements._measurements:
+                #     print(measurement.angle, measurement.distance, measurement.weight)
                 self.can_angle = center
                 self.blackboard[CAN_ANGLE] = self.can_angle
                 self.pid.setpoint = self.can_angle
